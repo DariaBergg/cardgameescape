@@ -28,5 +28,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8f3d02d75294841d3a8d0335a5374dde, type: 2}
   - {fileID: 11400000, guid: 12aaf43d1d1d248519547e5ded540df8, type: 2}
   - {fileID: 11400000, guid: 297e040dc4fb1418588f239b603149e1, type: 2}
+  - {fileID: 11400000, guid: 9bea3b0087bf54f60903cee9eee99a62, type: 2}
+  - {fileID: 11400000, guid: 20218951d4a3c44b2a182d670bf073c6, type: 2}
+  - {fileID: 11400000, guid: 63facfacc1cad4486b81178d455d3c02, type: 2}
   wound: {fileID: 11400000, guid: 372a3669b2034475798a2eec83139336, type: 2}
   debt: {fileID: 11400000, guid: c52bf7932e062464b9d7ff10cd2875dd, type: 2}
