@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd49e783fbcc547798c1325981836f36, type: 3}
+  m_Name: LizardWarrior
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterName: "\u0414\u0440\u0430\u043A\u043E\u0440\u043E\u0436\u0434\u0451\u043D\u043D\u044B\u0439
+    \u044F\u0449\u0435\u0440\u043E-\u0432\u043E\u0438\u043D"
+  description: "\u0412\u043E\u0438\u043D-\u044F\u0449\u0435\u0440\u043E\u043B\u044E\u0434
+    \u0441 \u0434\u0440\u0430\u043A\u043E\u043D\u044C\u0435\u0439 \u043A\u0440\u043E\u0432\u044C\u044E.
+    \u0414\u044B\u0448\u0438\u0442 \u043E\u0433\u043D\u0451\u043C, \u0437\u0430\u0449\u0438\u0449\u0430\u0435\u0442\u0441\u044F
+    \u0447\u0435\u0448\u0443\u0451\u0439, \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E
+    \u0440\u0435\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u0443\u0435\u0442."
+  maxHP: 50
+  sprite: {fileID: 21300000, guid: e1ee471552732466e9c99c9303a4738c, type: 3}
+  startingDeck:
+  - {fileID: 11400000, guid: b0cfe685e4a23410e94b11858136d49a, type: 2}
+  - {fileID: 11400000, guid: a79717600600a439c81555561f0d4dae, type: 2}
+  rewardCards:
+  - {fileID: 11400000, guid: 5651df672bcb94284943d21c41af89af, type: 2}
+  - {fileID: 11400000, guid: e819efead0c8c41b0bba0a259a6e32c1, type: 2}
+  - {fileID: 11400000, guid: 1b7289c0465584082ba6bb04778bb1f2, type: 2}

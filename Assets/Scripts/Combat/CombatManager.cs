@@ -1,0 +1,477 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class CombatManager : MonoBehaviour
+{
+    public static CombatManager Instance { get; private set; }
+
+    public int handSize = 3;
+
+    EnemyData enemy;
+    EnemyMove currentMove;
+    int moveIndex = -1;
+    int enemyHP;
+    int enemyBlock;
+    int enemyPoisonDamage;
+    int enemyPoisonTurns;
+    int enemyWeakAmount;
+    int enemyWeakTurns;
+
+    int playerBlock;
+    int poisonDamage;
+    int poisonTurns;
+    int nextHandPenalty;
+
+    int cardsPlayedThisTurn;
+    bool combatActive;
+    bool enemyActing;
+
+    readonly List<CardData> drawPile = new List<CardData>();
+    readonly List<CardData> hand = new List<CardData>();
+    readonly List<CardData> discardPile = new List<CardData>();
+
+    GameObject enemyVisual;
+    SpriteRenderer enemyRenderer;
+    SpriteRenderer playerRenderer;
+    CombatUI ui;
+    CombatFX fx;
+
+    static readonly Color DamageColor = new Color(1f, 0.35f, 0.3f);
+    static readonly Color BlockColor = new Color(0.4f, 0.7f, 1f);
+    static readonly Color HealColor = new Color(0.4f, 1f, 0.5f);
+    static readonly Color PoisonColor = new Color(0.6f, 1f, 0.3f);
+    static readonly Color DebuffColor = new Color(0.85f, 0.6f, 1f);
+
+    public string LastEvent { get; private set; } = "";
+    public bool CombatActive => combatActive;
+    public bool EnemyActing => enemyActing;
+    public string EnemyName => enemy != null ? enemy.enemyName : "";
+    public int EnemyHP => enemyHP;
+    public int EnemyMaxHP => enemy != null ? enemy.maxHP : 0;
+    public int EnemyBlock => enemyBlock;
+    public EnemyMove CurrentMove => currentMove;
+    public Transform EnemyTransform => enemyVisual != null ? enemyVisual.transform : null;
+    public Vector3 EnemyTop => enemyRenderer != null ? new Vector3(enemyRenderer.bounds.center.x, enemyRenderer.bounds.max.y, 0) : new Vector3(0, 2.5f, 0);
+    public int PlayerBlock => playerBlock;
+    public IReadOnlyList<CardData> Hand => hand;
+    public int DrawPileCount => drawPile.Count;
+    public int DiscardPileCount => discardPile.Count;
+    public int CardsLeftThisTurn => Mathf.Max(0, GameManager.Instance.maxCardsPerTurn - cardsPlayedThisTurn);
+    public bool CanPlayCard => combatActive && !enemyActing && CardsLeftThisTurn > 0;
+    public bool CanEndTurn => combatActive && !enemyActing;
+
+    public int EnemyWeakAmount => enemyWeakTurns > 0 ? enemyWeakAmount : 0;
+
+    public string EnemyStatusText
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (enemyBlock > 0) parts.Add($"Блок {enemyBlock}");
+            if (enemyPoisonTurns > 0) parts.Add($"Яд {enemyPoisonDamage}×{enemyPoisonTurns}");
+            if (enemyWeakTurns > 0) parts.Add($"Ослаблен −{enemyWeakAmount} ({enemyWeakTurns} х.)");
+            return string.Join("   ", parts);
+        }
+    }
+
+    public string PlayerStatusText
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (poisonTurns > 0) parts.Add($"Яд: {poisonDamage} урона в начале хода, ещё {poisonTurns} х.");
+            if (nextHandPenalty > 0) parts.Add($"Ослаблен: −{nextHandPenalty} карта в следующий ход");
+            return string.Join("   ", parts);
+        }
+    }
+
+    void Awake()
+    {
+        Instance = this;
+        fx = GetComponent<CombatFX>();
+        if (fx == null) fx = gameObject.AddComponent<CombatFX>();
+    }
+
+    public void StartCombat(EnemyData data)
+    {
+        enemy = data;
+        enemyHP = data.maxHP;
+        enemyBlock = 0;
+        enemyPoisonDamage = 0;
+        enemyPoisonTurns = 0;
+        enemyWeakAmount = 0;
+        enemyWeakTurns = 0;
+        moveIndex = -1;
+        playerBlock = 0;
+        poisonDamage = 0;
+        poisonTurns = 0;
+        nextHandPenalty = 0;
+        combatActive = true;
+        enemyActing = false;
+
+        drawPile.Clear();
+        drawPile.AddRange(GameManager.Instance.playerDeck);
+        Shuffle(drawPile);
+        hand.Clear();
+        discardPile.Clear();
+
+        var player = FindFirstObjectByType<PlayerController>();
+        playerRenderer = player != null ? player.GetComponent<SpriteRenderer>() : null;
+
+        enemyVisual = new GameObject("Enemy_" + data.enemyName);
+        enemyRenderer = enemyVisual.AddComponent<SpriteRenderer>();
+        enemyRenderer.sortingOrder = 2;
+        enemyVisual.transform.position = new Vector3(0, 1.5f, 0);
+        if (data.sprite != null)
+        {
+            enemyRenderer.sprite = data.sprite;
+        }
+        else
+        {
+            enemyRenderer.sprite = PlaceholderSprites.Square(data.color);
+            enemyVisual.transform.localScale = Vector3.one * 1.6f;
+        }
+
+        if (ui == null) ui = CombatUI.Create(this);
+        ui.Show();
+        LastEvent = $"{enemy.enemyName} появляется!";
+        ChooseNextMove();
+        StartPlayerTurn();
+    }
+
+    void ChooseNextMove()
+    {
+        if (enemy.moves.Count == 0)
+        {
+            currentMove = null;
+            return;
+        }
+        if (enemy.randomMoves && enemy.moves.Count > 1)
+        {
+            int next;
+            do next = Random.Range(0, enemy.moves.Count);
+            while (next == moveIndex);
+            moveIndex = next;
+        }
+        else
+        {
+            moveIndex = (moveIndex + 1) % enemy.moves.Count;
+        }
+        currentMove = enemy.moves[moveIndex];
+    }
+
+    void StartPlayerTurn()
+    {
+        cardsPlayedThisTurn = 0;
+        playerBlock = 0;
+
+        if (poisonTurns > 0)
+        {
+            GameManager.Instance.TakeDamage(poisonDamage);
+            poisonTurns--;
+            LastEvent += $"  Яд: −{poisonDamage} HP.";
+            fx.Flash(playerRenderer, PoisonColor);
+            fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"-{poisonDamage} яд", PoisonColor);
+            if (GameManager.Instance.currentHP <= 0)
+            {
+                Lose();
+                return;
+            }
+        }
+
+        DiscardHand();
+        int totalCards = drawPile.Count + discardPile.Count;
+        int normalDraws = Mathf.Min(handSize, totalCards);
+        int draws = Mathf.Max(1, normalDraws - nextHandPenalty);
+        if (nextHandPenalty > 0)
+        {
+            LastEvent += $"  Припасы испорчены: в этом ходу у тебя {draws} карт(а) вместо {normalDraws}.";
+            fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"-{normalDraws - draws} карта", DebuffColor);
+        }
+        nextHandPenalty = 0;
+        for (int i = 0; i < draws; i++) DrawCard();
+        ui.Refresh();
+    }
+
+    void DiscardHand()
+    {
+        discardPile.AddRange(hand);
+        hand.Clear();
+    }
+
+    void DrawCard()
+    {
+        if (drawPile.Count == 0)
+        {
+            if (discardPile.Count == 0) return;
+            drawPile.AddRange(discardPile);
+            discardPile.Clear();
+            Shuffle(drawPile);
+        }
+        int last = drawPile.Count - 1;
+        hand.Add(drawPile[last]);
+        drawPile.RemoveAt(last);
+    }
+
+    public void PlayCard(CardData card)
+    {
+        if (!CanPlayCard || !hand.Contains(card)) return;
+
+        hand.Remove(card);
+        discardPile.Add(card);
+        cardsPlayedThisTurn++;
+        ApplyCardEffect(card);
+
+        if (enemyHP <= 0)
+        {
+            Win();
+            return;
+        }
+        ui.Refresh();
+
+        if (CardsLeftThisTurn == 0) StartCoroutine(AutoEndTurn());
+    }
+
+    IEnumerator AutoEndTurn()
+    {
+        enemyActing = true;
+        ui.Refresh();
+        yield return new WaitForSeconds(0.7f);
+        enemyActing = false;
+        if (combatActive) StartCoroutine(EnemyTurnRoutine());
+    }
+
+    Vector3 PlayerPos => playerRenderer != null ? playerRenderer.transform.position : Vector3.down * 3f;
+
+    void ApplyCardEffect(CardData card)
+    {
+        var log = new List<string>();
+        foreach (var effect in card.effects)
+        {
+            switch (effect.type)
+            {
+                case CardEffectType.Damage:
+                {
+                    int totalDamage = 0, totalAbsorbed = 0;
+                    for (int i = 0; i < effect.hits; i++)
+                    {
+                        int absorbed = Mathf.Min(enemyBlock, effect.value);
+                        int damage = effect.value - absorbed;
+                        enemyBlock -= absorbed;
+                        enemyHP = Mathf.Max(0, enemyHP - damage);
+                        totalDamage += damage;
+                        totalAbsorbed += absorbed;
+                    }
+                    string entry = $"{totalDamage} урона";
+                    if (totalAbsorbed > 0) entry += $" (блок поглотил {totalAbsorbed})";
+                    log.Add(entry);
+                    fx.Flash(enemyRenderer, DamageColor);
+                    fx.Shake(enemyVisual.transform);
+                    string popup = totalDamage > 0 ? (effect.hits > 1 ? $"-{totalDamage} (×{effect.hits})" : $"-{totalDamage}") : "Блок!";
+                    fx.FloatingText(EnemyTop + Vector3.up * 0.3f, popup, totalDamage > 0 ? DamageColor : BlockColor);
+                    break;
+                }
+                case CardEffectType.Block:
+                    playerBlock += effect.value;
+                    log.Add($"+{effect.value} блока");
+                    fx.Flash(playerRenderer, BlockColor);
+                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"+{effect.value} блок", BlockColor);
+                    break;
+                case CardEffectType.Heal:
+                    GameManager.Instance.Heal(effect.value);
+                    log.Add($"+{effect.value} HP");
+                    fx.Flash(playerRenderer, HealColor);
+                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"+{effect.value} HP", HealColor);
+                    break;
+                case CardEffectType.PoisonEnemy:
+                    enemyPoisonDamage = Mathf.Max(enemyPoisonDamage, effect.value);
+                    enemyPoisonTurns += effect.turns;
+                    log.Add($"яд {effect.value}×{effect.turns}");
+                    fx.Flash(enemyRenderer, PoisonColor);
+                    fx.FloatingText(EnemyTop + Vector3.up * 0.6f, "Яд!", PoisonColor);
+                    break;
+                case CardEffectType.WeakenEnemy:
+                    enemyWeakAmount = Mathf.Max(enemyWeakAmount, effect.value);
+                    enemyWeakTurns += effect.turns;
+                    log.Add($"враг ослаблен −{effect.value} ({effect.turns} х.)");
+                    fx.Flash(enemyRenderer, DebuffColor);
+                    fx.FloatingText(EnemyTop + Vector3.up * 0.6f, "Ослаблен!", DebuffColor);
+                    break;
+            }
+        }
+        LastEvent = $"«{card.cardName}»: {string.Join(", ", log)}";
+    }
+
+    public void EndTurn()
+    {
+        if (!CanEndTurn) return;
+        StartCoroutine(EnemyTurnRoutine());
+    }
+
+    IEnumerator EnemyTurnRoutine()
+    {
+        enemyActing = true;
+        enemyBlock = 0;
+        var move = currentMove;
+
+        if (enemyPoisonTurns > 0)
+        {
+            enemyHP = Mathf.Max(0, enemyHP - enemyPoisonDamage);
+            enemyPoisonTurns--;
+            LastEvent = $"Яд: {enemy.enemyName} теряет {enemyPoisonDamage} HP.";
+            fx.Flash(enemyRenderer, PoisonColor);
+            fx.FloatingText(EnemyTop + Vector3.up * 0.3f, $"-{enemyPoisonDamage} яд", PoisonColor);
+            ui.Refresh();
+            yield return new WaitForSeconds(0.6f);
+            if (enemyHP <= 0)
+            {
+                enemyActing = false;
+                Win();
+                yield break;
+            }
+        }
+
+        if (move == null)
+        {
+            LastEvent = $"{enemy.enemyName} ничего не делает.";
+            ui.Refresh();
+            yield return new WaitForSeconds(0.6f);
+        }
+        else
+        {
+            LastEvent = $"{enemy.enemyName} использует «{move.moveName}»";
+            ui.Refresh();
+            yield return new WaitForSeconds(0.5f);
+
+            if (move.damage > 0)
+            {
+                Vector3 toPlayer = (PlayerPos - enemyVisual.transform.position).normalized * 1.3f;
+                yield return fx.Lunge(enemyVisual.transform, toPlayer, 0.3f);
+
+                int weakened = Mathf.Min(EnemyWeakAmount, move.damage);
+                int attack = move.damage - weakened;
+                int absorbed = Mathf.Min(playerBlock, attack);
+                int damage = attack - absorbed;
+                playerBlock -= absorbed;
+                GameManager.Instance.TakeDamage(damage);
+
+                LastEvent = $"{enemy.enemyName} атакует на {move.damage}.";
+                if (weakened > 0) LastEvent += $" Ослабление сняло {weakened}.";
+                if (absorbed > 0) LastEvent += $" Блок поглотил {absorbed}.";
+                LastEvent += damage > 0 ? $" Ты получил {damage} урона." : " Урон не прошёл.";
+
+                if (damage > 0)
+                {
+                    fx.Flash(playerRenderer, DamageColor);
+                    if (playerRenderer != null) fx.Shake(playerRenderer.transform);
+                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"-{damage}", DamageColor);
+                }
+                else
+                {
+                    fx.Flash(playerRenderer, BlockColor);
+                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, "Блок!", BlockColor);
+                }
+                ui.Refresh();
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            if (move.block > 0)
+            {
+                enemyBlock += move.block;
+                LastEvent = $"{enemy.enemyName} получает {move.block} блока.";
+                fx.Flash(enemyRenderer, BlockColor);
+                fx.FloatingText(EnemyTop + Vector3.up * 0.3f, $"+{move.block} блок", BlockColor);
+                ui.Refresh();
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            if (move.poisonTurns > 0)
+            {
+                poisonDamage = Mathf.Max(poisonDamage, move.poisonDamage);
+                poisonTurns += move.poisonTurns;
+                LastEvent = $"Ты отравлен: {move.poisonDamage} урона в начале хода, {move.poisonTurns} х.";
+                fx.Flash(playerRenderer, PoisonColor);
+                fx.FloatingText(PlayerPos + Vector3.up * 0.8f, "Яд!", PoisonColor);
+                ui.Refresh();
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            if (move.handReduce > 0)
+            {
+                nextHandPenalty += move.handReduce;
+                LastEvent = $"Ты ослаблен: в следующий ход на {move.handReduce} карту меньше.";
+                fx.Flash(playerRenderer, DebuffColor);
+                fx.FloatingText(PlayerPos + Vector3.up * 0.8f, "Ослаблен!", DebuffColor);
+                ui.Refresh();
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+
+        if (enemyWeakTurns > 0) enemyWeakTurns--;
+
+        enemyActing = false;
+        if (GameManager.Instance.currentHP <= 0)
+        {
+            Lose();
+            yield break;
+        }
+        ChooseNextMove();
+        StartPlayerTurn();
+    }
+
+    void Win()
+    {
+        combatActive = false;
+        LastEvent = $"{enemy.enemyName} повержен!";
+        ui.Refresh();
+        ui.ShowRewards(PickRewards(), OnRewardChosen);
+    }
+
+    List<CardData> PickRewards()
+    {
+        var rewards = new List<CardData>();
+        var basePool = GameManager.Instance.selectedCharacter.rewardCards;
+        if (basePool.Count > 0) rewards.Add(basePool[Random.Range(0, basePool.Count)]);
+        if (enemy.rewardCards.Count > 0) rewards.Add(enemy.rewardCards[Random.Range(0, enemy.rewardCards.Count)]);
+        return rewards;
+    }
+
+    void OnRewardChosen(CardData card)
+    {
+        if (card != null) GameManager.Instance.playerDeck.Add(card);
+        EndCombat();
+        RoomManager.Instance.OnRoomCleared();
+    }
+
+    void EndCombat()
+    {
+        if (enemyVisual != null) Destroy(enemyVisual);
+        ui.Hide();
+        enemy = null;
+        currentMove = null;
+    }
+
+    void Lose()
+    {
+        combatActive = false;
+        ui.Refresh();
+        ui.ShowDefeat();
+    }
+
+    public void RestartRun()
+    {
+        GameManager.Instance.ResetRun();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    static void Shuffle<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+    }
+}
