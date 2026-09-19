@@ -26,13 +26,13 @@ public class CardData : ScriptableObject
     public CardData CreateUpgradedCopy()
     {
         var copy = Instantiate(this);
-        copy.name = name + "+";
-        copy.cardName = cardName + "+";
+        copy.name = name;
+        copy.cardName = cardName;
         copy.upgradeLevel = upgradeLevel + 1;
         copy.effects = new List<CardEffect>();
         foreach (var e in effects)
         {
-            var u = new CardEffect { type = e.type, value = e.value, hits = e.hits, turns = e.turns };
+            var u = new CardEffect { type = e.type, value = e.value, hits = e.hits, turns = e.turns, condition = e.condition };
             switch (e.type)
             {
                 case CardEffectType.Damage: u.value += 2; break;
@@ -40,6 +40,9 @@ public class CardData : ScriptableObject
                 case CardEffectType.Heal: u.value += 3; break;
                 case CardEffectType.PoisonEnemy: u.value += 1; break;
                 case CardEffectType.WeakenEnemy: u.turns += 1; break;
+                case CardEffectType.BurnEnemy: u.value += 1; break;
+                case CardEffectType.PierceDamage: u.value += 2; break;
+                case CardEffectType.Thorns: u.value += 2; break;
             }
             copy.effects.Add(u);
         }
@@ -49,6 +52,20 @@ public class CardData : ScriptableObject
     public string EffectsSummary => string.Join(", ", effects.Select(e => e.Summary));
 
     public string RulesText => string.Join("\n", effects.Select(e => e.RulesText));
+
+    public string ShortText => string.Join("\n", effects.Select(e => Capitalize(e.Summary)));
+
+    public string UpgradePreviewShortText()
+    {
+        var upgraded = CreateUpgradedCopy();
+        var lines = new List<string>();
+        for (int i = 0; i < upgraded.effects.Count; i++)
+            lines.Add(Capitalize(upgraded.effects[i].SummaryComparedTo(effects[i])));
+        DestroyImmediate(upgraded);
+        return string.Join("\n", lines);
+    }
+
+    static string Capitalize(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0]) + s.Substring(1);
 
     public string UpgradePreviewRulesText()
     {
@@ -66,8 +83,8 @@ public class CardData : ScriptableObject
     {
         get
         {
-            string text = $"<b>{cardName}</b>\n<color=#ffd27f>{EffectsSummary}</color>";
-            if (!string.IsNullOrEmpty(description)) text += $"\n\n{description}";
+            string text = $"<b>{cardName}</b>\n<color=#ffd27f>{RulesText}</color>";
+            if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{description}</i>";
             if (IsMarked) text += $"\n\n<color=#d9a6ff>{MarkSummary}</color>\nКаждая такая карта в колоде повышает шанс, что за фиолетовой дверью окажется {eliteMark.enemyName}.";
             return text;
         }

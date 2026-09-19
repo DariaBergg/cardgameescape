@@ -37,6 +37,19 @@ public class GameHUD : MonoBehaviour
         exitButton = UIFactory.CreateButton(canvas, "ExitButton", "Выйти", 22, new Vector2(0.5f, 0), new Vector2(0, 40), new Vector2(220, 56), new Color(0.3f, 0.3f, 0.4f, 0.95f));
         exitButton.onClick.AddListener(() => { var cb = onExit; HideExitButton(); cb?.Invoke(); });
         exitButton.gameObject.SetActive(false);
+
+        deckButton = UIFactory.CreateButton(canvas, "DeckButton", "Колода", 18, new Vector2(1, 1), new Vector2(-16, -14), new Vector2(130, 40), new Color(0.25f, 0.25f, 0.35f, 0.9f));
+        deckButton.onClick.AddListener(OpenDeck);
+        deckButton.gameObject.SetActive(false);
+    }
+
+    Button deckButton;
+    public int deckUnlockCombats = 3;
+
+    void OpenDeck()
+    {
+        var gm = GameManager.Instance;
+        DeckPickerUI.Get().Show($"Колода — {gm.playerDeck.Count} карт", gm.playerDeck, card => false, null, null, closeLabel: "Закрыть");
     }
 
     Button exitButton;
@@ -99,6 +112,8 @@ public class GameHUD : MonoBehaviour
             foreach (var elite in MarkedElites(gm))
                 elites += $"{elite.enemyName}: +{gm.EliteChance(elite)}% за фиолетовой дверью\n";
             eliteText.text = elites;
+
+            deckButton.gameObject.SetActive(gm.combatsWon >= deckUnlockCombats && !inCombat);
         }
         if (Time.time > notifyUntil) notifyText.text = "";
     }

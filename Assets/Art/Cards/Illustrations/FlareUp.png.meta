@@ -1,15 +1,15 @@
 fileFormatVersion: 2
-guid: c2238fdda9be44ed9937c8d267ed9a42
+guid: cfa04b67f067945a1b8f611d24bdbf58
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1328775296355138918
-    second: Flare Up _0
+      213: 3529657009332054622
+    second: FlareUp_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Flare Up _0
+      name: FlareUp_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 66dff858712c07210800000000000000
-      internalID: 1328775296355138918
+      spriteID: e5a643c595cdbf030800000000000000
+      internalID: 3529657009332054622
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Flare Up _0: 1328775296355138918
+      FlareUp_0: 3529657009332054622
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

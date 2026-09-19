@@ -110,10 +110,11 @@ public static class CardView
         rules.color = visuals.textColor;
         rules.resizeTextForBestFit = true;
         rules.resizeTextMinSize = 6;
-        rules.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.08f);
+        rules.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.11f);
+        rules.fontStyle = FontStyle.Bold;
         rules.horizontalOverflow = HorizontalWrapMode.Wrap;
         rules.verticalOverflow = VerticalWrapMode.Truncate;
-        rules.text = card.RulesText;
+        rules.text = card.ShortText;
         rules.raycastTarget = false;
     }
 
@@ -155,9 +156,9 @@ public static class CardView
             nameText = name;
             rulesText = rules;
             originalName = card.cardName;
-            originalRules = card.RulesText;
-            previewName = card.cardName + "+";
-            previewRules = card.UpgradePreviewRulesText();
+            originalRules = card.ShortText;
+            previewName = card.cardName;
+            previewRules = card.UpgradePreviewShortText();
         }
 
         public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData)

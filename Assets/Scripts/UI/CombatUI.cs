@@ -26,7 +26,7 @@ public class CombatUI : MonoBehaviour
     static readonly Vector2 IntentIconSize = new Vector2(96, 96);
     static readonly Vector2 IntentWordSize = new Vector2(200, 44);
     static readonly Vector2 HandCardSize = new Vector2(163, 240);
-    static readonly Vector2 RewardCardSize = new Vector2(203, 300);
+    static readonly Vector2 RewardCardSize = new Vector2(271, 400);
     static readonly Color PillColor = new Color(0.05f, 0.05f, 0.08f, 0.7f);
 
     public static CombatUI Create(CombatManager combat)
@@ -72,9 +72,9 @@ public class CombatUI : MonoBehaviour
         endTurnButton.onClick.AddListener(() => combat.EndTurn());
 
         rewardPanel = UIFactory.CreateFullscreenPanel(root.transform, "RewardPanel", new Color(0, 0, 0, 0.75f));
-        UIFactory.CreateText(rewardPanel, "Title", "Победа! Выбери карту", 34, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 190), new Vector2(800, 50));
-        rewardCardsArea = UIFactory.CreateRect(rewardPanel, "Cards", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(800, 300));
-        var skip = UIFactory.CreateButton(rewardPanel, "SkipButton", "Пропустить", 20, new Vector2(0.5f, 0.5f), new Vector2(0, -200), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
+        UIFactory.CreateText(rewardPanel, "Title", "Победа! Выбери карту", 34, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(800, 50));
+        rewardCardsArea = UIFactory.CreateRect(rewardPanel, "Cards", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900, 420));
+        var skip = UIFactory.CreateButton(rewardPanel, "SkipButton", "Пропустить", 20, new Vector2(0.5f, 0.5f), new Vector2(0, -265), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
         skip.onClick.AddListener(() => rewardCallback?.Invoke(null));
         rewardPanel.gameObject.SetActive(false);
 
@@ -177,7 +177,7 @@ public class CombatUI : MonoBehaviour
         foreach (Transform child in rewardCardsArea) Destroy(child.gameObject);
 
         int count = rewards.Count;
-        const float spacing = 240f;
+        const float spacing = 310f;
         for (int i = 0; i < count; i++)
         {
             var card = rewards[i];

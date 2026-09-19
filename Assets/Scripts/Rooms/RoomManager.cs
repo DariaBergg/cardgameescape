@@ -14,7 +14,9 @@ public class RoomManager : MonoBehaviour
     public List<Sprite> combatBackgrounds = new List<Sprite>();
     public List<RestRoomVariant> restVariants = new List<RestRoomVariant>();
 
-    [Tooltip("Лёгкие враги для первых комнат (обучение)")]
+    [Tooltip("Строгая последовательность первых боёв (мышь, слизень, крыса...)")]
+    public List<EnemyData> tutorialSequence = new List<EnemyData>();
+    [Tooltip("Лёгкие враги для ранних комнат после обучения")]
     public List<EnemyData> easyEnemies = new List<EnemyData>();
     [Tooltip("Обычные враги за красной дверью")]
     public List<EnemyData> enemies = new List<EnemyData>();
@@ -23,10 +25,12 @@ public class RoomManager : MonoBehaviour
     [Tooltip("Элиты: могут выйти за фиолетовой дверью, метки на картах повышают их шанс")]
     public List<EnemyData> elites = new List<EnemyData>();
     [Range(0, 100)] public int eliteBaseChance = 25;
-    [Tooltip("Комнаты 1..N — только лёгкие бои, награда без меток")]
-    public int tutorialRooms = 2;
+    [Tooltip("Комнаты 1..N после боя дают усиление карты вместо новой карты")]
+    public int upgradeRewardRooms = 2;
     [Tooltip("Комнаты до N включительно — смешанные враги, без фиолетовой двери")]
     public int earlyRooms = 4;
+    [Tooltip("Перед этой комнатой одна из дверей гарантированно зелёная")]
+    public int guaranteedRestRoom = 4;
     public int doorsPerChoice = 2;
     public Vector3 playerSpawn = new Vector3(0, -3f, 0);
     public float doorsY = 3.5f;
@@ -45,7 +49,8 @@ public class RoomManager : MonoBehaviour
 
     int NextRoomIndex => GameManager.Instance.roomsVisited + 1;
     int CurrentRoomIndex => GameManager.Instance.roomsVisited;
-    public bool MarkedRewardsUnlocked => CurrentRoomIndex > tutorialRooms;
+    int TutorialRooms => tutorialSequence.Count;
+    public bool MarkedRewardsUnlocked => CurrentRoomIndex > upgradeRewardRooms;
 
     class RoomPlan
     {
@@ -108,8 +113,8 @@ public class RoomManager : MonoBehaviour
         {
             case DoorType.Combat:
             {
-                var enemy = CurrentRoomIndex <= tutorialRooms && easyEnemies.Count > 0
-                    ? easyEnemies[(CurrentRoomIndex - 1) % easyEnemies.Count]
+                var enemy = CurrentRoomIndex <= TutorialRooms
+                    ? tutorialSequence[CurrentRoomIndex - 1]
                     : Pick(CombatPool());
                 return new RoomPlan { title = "Бой", background = PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
             }
@@ -242,7 +247,6 @@ public class RoomManager : MonoBehaviour
     List<EnemyData> CombatPool()
     {
         int room = CurrentRoomIndex;
-        if (room <= tutorialRooms && easyEnemies.Count > 0) return easyEnemies;
         if (room <= earlyRooms && easyEnemies.Count > 0)
         {
             var mixed = new List<EnemyData>(easyEnemies);
@@ -255,7 +259,7 @@ public class RoomManager : MonoBehaviour
     DoorType[] DoorPool()
     {
         int room = NextRoomIndex;
-        if (room <= tutorialRooms) return tutorialDoors;
+        if (room <= TutorialRooms) return tutorialDoors;
         if (room <= earlyRooms) return earlyDoors;
         return fullDoors;
     }
@@ -265,10 +269,12 @@ public class RoomManager : MonoBehaviour
         ClearDoors();
         var pool = DoorPool();
         int count = doorsPerChoice;
+        int restSlot = NextRoomIndex == guaranteedRestRoom ? Random.Range(0, count) : -1;
         for (int i = 0; i < count; i++)
         {
             float x = (i - (count - 1) / 2f) * doorSpacing;
-            var type = pool[Random.Range(0, pool.Length)];
+            var type = i == restSlot ? DoorType.Rest : pool[Random.Range(0, pool.Length)];
+            if (restSlot >= 0 && i != restSlot && type == DoorType.Rest) type = DoorType.Combat;
             doors.Add(Door.Create(type, new Vector3(x, doorsY, 0)).gameObject);
         }
     }

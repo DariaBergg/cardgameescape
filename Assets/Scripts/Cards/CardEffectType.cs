@@ -4,5 +4,16 @@ public enum CardEffectType
     Block,
     Heal,
     PoisonEnemy,
-    WeakenEnemy
+    WeakenEnemy,
+    BurnEnemy,
+    PierceDamage,
+    Thorns,
+    Cleanse
+}
+
+public enum CardCondition
+{
+    None,
+    EnemyBurning,
+    EnemyNotBurning
 }

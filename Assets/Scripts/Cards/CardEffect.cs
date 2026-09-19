@@ -7,6 +7,7 @@ public class CardEffect
     public int value;
     [Min(1)] public int hits = 1;
     [Min(1)] public int turns = 1;
+    public CardCondition condition = CardCondition.None;
 
     public string RulesText => RulesTextComparedTo(null);
 
@@ -14,15 +15,50 @@ public class CardEffect
     {
         string v = Mark(value, previous?.value);
         string t = Mark(turns, previous?.turns);
+        string body;
         switch (type)
         {
-            case CardEffectType.Damage: return hits > 1 ? $"Нанести {v} урона {hits} раза." : $"Нанести {v} урона.";
-            case CardEffectType.Block: return $"Получить {v} блока.";
-            case CardEffectType.Heal: return $"Восстановить {v} HP.";
-            case CardEffectType.PoisonEnemy: return $"Отравить врага: {v} урона в ход, {t} х.";
-            case CardEffectType.WeakenEnemy: return $"Ослабить врага на {v} ({t} х.).";
-            default: return type.ToString();
+            case CardEffectType.Damage: body = hits > 1 ? $"Нанести {v} урона {hits} раза." : $"Нанести {v} урона."; break;
+            case CardEffectType.Block: body = $"Получить {v} блока."; break;
+            case CardEffectType.Heal: body = $"Восстановить {v} HP."; break;
+            case CardEffectType.PoisonEnemy: body = $"Отравить врага: {v} урона в ход, {t} х."; break;
+            case CardEffectType.WeakenEnemy: body = $"Ослабить врага на {v} ({t} х.)."; break;
+            case CardEffectType.BurnEnemy: body = $"Поджечь врага: {v} урона в начале его хода, {t} х."; break;
+            case CardEffectType.PierceDamage: body = $"Нанести {v} урона, игнорируя блок."; break;
+            case CardEffectType.Thorns: body = $"Если враг атакует в этот ход — он получает {v} урона."; break;
+            case CardEffectType.Cleanse: body = "Снять с себя один отрицательный эффект."; break;
+            default: body = type.ToString(); break;
         }
+
+        switch (condition)
+        {
+            case CardCondition.EnemyBurning: return $"Если враг горит — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
+            default: return body;
+        }
+    }
+
+    public string Summary => SummaryComparedTo(null);
+
+    public string SummaryComparedTo(CardEffect previous)
+    {
+        string v = Mark(value, previous?.value);
+        string t = Mark(turns, previous?.turns);
+        string s;
+        switch (type)
+        {
+            case CardEffectType.Damage: s = hits > 1 ? $"{v} урона ×{hits}" : $"{v} урона"; break;
+            case CardEffectType.Block: s = $"{v} блока"; break;
+            case CardEffectType.Heal: s = $"+{v} HP"; break;
+            case CardEffectType.PoisonEnemy: s = $"яд {v}×{t}"; break;
+            case CardEffectType.WeakenEnemy: s = $"ослабить −{v} ({t} х.)"; break;
+            case CardEffectType.BurnEnemy: s = $"горение {v}×{t}"; break;
+            case CardEffectType.PierceDamage: s = $"{v} сквозь блок"; break;
+            case CardEffectType.Thorns: s = $"шипы {v}"; break;
+            case CardEffectType.Cleanse: s = "снять эффект"; break;
+            default: s = type.ToString(); break;
+        }
+        if (condition == CardCondition.EnemyBurning) s = "если горит: " + s;
+        return s;
     }
 
     static string Mark(int current, int? previous)
@@ -30,19 +66,5 @@ public class CardEffect
         return previous.HasValue && previous.Value != current ? $"<color=#2e8b3a><b>{current}</b></color>" : current.ToString();
     }
 
-    public string Summary
-    {
-        get
-        {
-            switch (type)
-            {
-                case CardEffectType.Damage: return hits > 1 ? $"{value} урона ×{hits}" : $"{value} урона";
-                case CardEffectType.Block: return $"{value} блока";
-                case CardEffectType.Heal: return $"+{value} HP";
-                case CardEffectType.PoisonEnemy: return $"яд врагу {value}×{turns}";
-                case CardEffectType.WeakenEnemy: return $"враг ослаблен −{value} ({turns} х.)";
-                default: return type.ToString();
-            }
-        }
-    }
+    static string LowerFirst(string s) => string.IsNullOrEmpty(s) ? s : char.ToLower(s[0]) + s.Substring(1);
 }

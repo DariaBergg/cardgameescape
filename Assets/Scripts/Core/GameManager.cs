@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public int currentHP;
     public int maxCardsPerTurn = 1;
     public int roomsVisited;
+    public int combatsWon;
 
     public int MaxHP => selectedCharacter != null ? selectedCharacter.maxHP : 0;
 
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
     public void ResetRun()
     {
         roomsVisited = 0;
+        combatsWon = 0;
         maxCardsPerTurn = 1;
         if (selectedCharacter != null)
         {

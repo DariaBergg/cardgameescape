@@ -22,8 +22,11 @@ public class CombatManager : MonoBehaviour
     int enemyPoisonTurns;
     int enemyWeakAmount;
     int enemyWeakTurns;
+    int enemyBurnDamage;
+    int enemyBurnTurns;
 
     int playerBlock;
+    int playerThorns;
     int poisonDamage;
     int poisonTurns;
     int nextHandPenalty;
@@ -47,6 +50,7 @@ public class CombatManager : MonoBehaviour
     static readonly Color HealColor = new Color(0.4f, 1f, 0.5f);
     static readonly Color PoisonColor = new Color(0.6f, 1f, 0.3f);
     static readonly Color DebuffColor = new Color(0.85f, 0.6f, 1f);
+    static readonly Color BurnColor = new Color(1f, 0.6f, 0.2f);
 
     public string LastEvent { get; private set; } = "";
     public bool CombatActive => combatActive;
@@ -76,6 +80,7 @@ public class CombatManager : MonoBehaviour
             if (enemyBlock > 0) parts.Add($"Блок {enemyBlock}");
             if (enemyPoisonTurns > 0) parts.Add($"Яд {enemyPoisonDamage}×{enemyPoisonTurns}");
             if (enemyWeakTurns > 0) parts.Add($"Ослаблен −{enemyWeakAmount} ({enemyWeakTurns} х.)");
+            if (enemyBurnTurns > 0) parts.Add($"Горит {enemyBurnDamage}×{enemyBurnTurns}");
             return string.Join("   ", parts);
         }
     }
@@ -85,6 +90,7 @@ public class CombatManager : MonoBehaviour
         get
         {
             var parts = new List<string>();
+            if (playerThorns > 0) parts.Add($"Шипы {playerThorns}");
             if (poisonTurns > 0) parts.Add($"Яд: {poisonDamage} урона в начале хода, ещё {poisonTurns} х.");
             if (nextHandPenalty > 0) parts.Add($"Ослаблен: −{nextHandPenalty} карта в следующий ход");
             return string.Join("   ", parts);
@@ -107,8 +113,11 @@ public class CombatManager : MonoBehaviour
         enemyPoisonTurns = 0;
         enemyWeakAmount = 0;
         enemyWeakTurns = 0;
+        enemyBurnDamage = 0;
+        enemyBurnTurns = 0;
         moveIndex = -1;
         playerBlock = 0;
+        playerThorns = 0;
         poisonDamage = 0;
         poisonTurns = 0;
         nextHandPenalty = 0;
@@ -175,6 +184,7 @@ public class CombatManager : MonoBehaviour
     {
         cardsPlayedThisTurn = 0;
         playerBlock = 0;
+        playerThorns = 0;
 
         if (poisonTurns > 0)
         {
@@ -267,6 +277,8 @@ public class CombatManager : MonoBehaviour
         var log = new List<string>();
         foreach (var effect in card.effects)
         {
+            if (effect.condition == CardCondition.EnemyBurning && enemyBurnTurns <= 0) continue;
+            if (effect.condition == CardCondition.EnemyNotBurning && enemyBurnTurns > 0) continue;
             switch (effect.type)
             {
                 case CardEffectType.Damage:
@@ -316,6 +328,33 @@ public class CombatManager : MonoBehaviour
                     fx.Flash(enemyRenderer, DebuffColor);
                     fx.FloatingText(EnemyCenter, "Ослаблен!", DebuffColor);
                     break;
+                case CardEffectType.BurnEnemy:
+                    enemyBurnDamage = Mathf.Max(enemyBurnDamage, effect.value);
+                    enemyBurnTurns = Mathf.Max(enemyBurnTurns, effect.turns);
+                    log.Add($"горение {effect.value}×{effect.turns}");
+                    fx.Flash(enemyRenderer, BurnColor);
+                    fx.FloatingText(EnemyCenter, "Горит!", BurnColor);
+                    break;
+                case CardEffectType.PierceDamage:
+                    enemyHP = Mathf.Max(0, enemyHP - effect.value);
+                    log.Add($"{effect.value} урона сквозь блок");
+                    fx.Flash(enemyRenderer, DamageColor);
+                    fx.Shake(enemyVisual.transform);
+                    fx.FloatingText(EnemyCenter, $"-{effect.value}", DamageColor);
+                    break;
+                case CardEffectType.Thorns:
+                    playerThorns += effect.value;
+                    log.Add($"шипы {effect.value}");
+                    fx.Flash(playerRenderer, BlockColor);
+                    fx.FloatingText(PlayerHead, $"Шипы {playerThorns}", BlockColor);
+                    break;
+                case CardEffectType.Cleanse:
+                    if (poisonTurns > 0) { poisonTurns = 0; poisonDamage = 0; log.Add("яд снят"); }
+                    else if (nextHandPenalty > 0) { nextHandPenalty = 0; log.Add("ослабление снято"); }
+                    else log.Add("нечего снимать");
+                    fx.Flash(playerRenderer, HealColor);
+                    fx.FloatingText(PlayerHead, "Очищение", HealColor);
+                    break;
             }
         }
         LastEvent = $"«{card.cardName}»: {string.Join(", ", log)}";
@@ -340,6 +379,23 @@ public class CombatManager : MonoBehaviour
             LastEvent = $"Яд: {enemy.enemyName} теряет {enemyPoisonDamage} HP.";
             fx.Flash(enemyRenderer, PoisonColor);
             fx.FloatingText(EnemyCenter, $"-{enemyPoisonDamage} яд", PoisonColor);
+            ui.Refresh();
+            yield return new WaitForSeconds(0.6f);
+            if (enemyHP <= 0)
+            {
+                enemyActing = false;
+                Win();
+                yield break;
+            }
+        }
+
+        if (enemyBurnTurns > 0)
+        {
+            enemyHP = Mathf.Max(0, enemyHP - enemyBurnDamage);
+            enemyBurnTurns--;
+            LastEvent = $"Горение: {enemy.enemyName} теряет {enemyBurnDamage} HP.";
+            fx.Flash(enemyRenderer, BurnColor);
+            fx.FloatingText(EnemyCenter, $"-{enemyBurnDamage} огонь", BurnColor);
             ui.Refresh();
             yield return new WaitForSeconds(0.6f);
             if (enemyHP <= 0)
@@ -405,6 +461,23 @@ public class CombatManager : MonoBehaviour
                     yield return new WaitForSeconds(move.hits > 1 ? 0.25f : 0.5f);
                     if (GameManager.Instance.currentHP <= 0) break;
                 }
+
+                if (playerThorns > 0 && GameManager.Instance.currentHP > 0)
+                {
+                    enemyHP = Mathf.Max(0, enemyHP - playerThorns);
+                    LastEvent = $"Шипы: {enemy.enemyName} получает {playerThorns} урона.";
+                    fx.Flash(enemyRenderer, DamageColor);
+                    fx.Shake(enemyVisual.transform);
+                    fx.FloatingText(EnemyCenter, $"-{playerThorns} шипы", DamageColor);
+                    ui.Refresh();
+                    yield return new WaitForSeconds(0.5f);
+                    if (enemyHP <= 0)
+                    {
+                        enemyActing = false;
+                        Win();
+                        yield break;
+                    }
+                }
             }
 
             if (move.block > 0)
@@ -455,6 +528,7 @@ public class CombatManager : MonoBehaviour
     {
         combatActive = false;
         enemyActing = true;
+        GameManager.Instance.combatsWon++;
         LastEvent = $"{enemy.enemyName} повержен!";
         ui.Refresh();
         StartCoroutine(WinRoutine());
