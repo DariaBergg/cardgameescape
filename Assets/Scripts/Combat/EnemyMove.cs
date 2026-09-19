@@ -14,18 +14,36 @@ public class EnemyMove
     public int handReduce;
     [TextArea] public string description;
 
-    public string Summary
+    [Header("Особое")]
+    [Tooltip("Уйти под воду / спрятаться: спрайт меняется на скрытый до следующего хода")]
+    public bool submerge;
+    [Tooltip("Следующий ход будет именно этим (индекс в списке ходов), -1 = обычный порядок")]
+    public int forceNextMove = -1;
+    [Tooltip("Бонус к урону следующего хода")]
+    public int nextDamageBonus;
+
+    public bool HasEffect => damage > 0 || block > 0 || poisonTurns > 0 || handReduce > 0;
+
+    public string Summary => SummaryWithBonus(0);
+
+    public string SummaryWithBonus(int damageBonus)
     {
-        get
-        {
-            var parts = new List<string>();
-            if (damage > 0) parts.Add(hits > 1 ? $"Атака {damage}×{hits}" : $"Атака {damage}");
-            if (block > 0) parts.Add($"Блок {block}");
-            if (poisonTurns > 0) parts.Add($"Яд {poisonDamage}×{poisonTurns}");
-            if (handReduce > 0) parts.Add($"−{handReduce} карта");
-            return parts.Count > 0 ? string.Join(" + ", parts) : "Ничего";
-        }
+        var parts = new List<string>();
+        int dmg = damage + (damage > 0 ? damageBonus : 0);
+        if (damage > 0) parts.Add(hits > 1 ? $"Атака {dmg}×{hits}" : $"Атака {dmg}");
+        if (block > 0) parts.Add($"Блок {block}");
+        if (poisonTurns > 0) parts.Add($"Яд {poisonDamage}×{poisonTurns}");
+        if (handReduce > 0) parts.Add($"−{handReduce} карта");
+        if (submerge) parts.Add("Прячется");
+        return parts.Count > 0 ? string.Join(" + ", parts) : "Ничего";
     }
 
-    public string TooltipText => $"<b>{moveName}</b>\n<color=#ffb3a7>{Summary}</color>\n\n{description}";
+    public string TooltipText => TooltipTextWithBonus(0);
+
+    public string TooltipTextWithBonus(int damageBonus)
+    {
+        string text = $"<b>{moveName}</b>\n<color=#ffb3a7>{SummaryWithBonus(damageBonus)}</color>\n\n{description}";
+        if (damageBonus > 0 && damage > 0) text += $"\n\n<color=#ff8080>Усиленный удар: +{damageBonus} урона.</color>";
+        return text;
+    }
 }

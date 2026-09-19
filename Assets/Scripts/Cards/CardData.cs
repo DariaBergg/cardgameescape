@@ -23,6 +23,12 @@ public class CardData : ScriptableObject
 
     public bool IsMarked => eliteMark != null;
 
+    public bool HasEffect(CardEffectType type)
+    {
+        foreach (var e in effects) if (e.type == type) return true;
+        return false;
+    }
+
     public CardData CreateUpgradedCopy()
     {
         var copy = Instantiate(this);
@@ -43,6 +49,7 @@ public class CardData : ScriptableObject
                 case CardEffectType.BurnEnemy: u.value += 1; break;
                 case CardEffectType.PierceDamage: u.value += 2; break;
                 case CardEffectType.Thorns: u.value += 2; break;
+                case CardEffectType.SelfDamage: u.value = Mathf.Max(0, u.value - 1); break;
             }
             copy.effects.Add(u);
         }
@@ -63,6 +70,19 @@ public class CardData : ScriptableObject
             lines.Add(Capitalize(upgraded.effects[i].SummaryComparedTo(effects[i])));
         DestroyImmediate(upgraded);
         return string.Join("\n", lines);
+    }
+
+    public string UpgradePreviewTooltipText()
+    {
+        var upgraded = CreateUpgradedCopy();
+        var lines = new List<string>();
+        for (int i = 0; i < upgraded.effects.Count; i++)
+            lines.Add(upgraded.effects[i].RulesTextComparedTo(effects[i]));
+        DestroyImmediate(upgraded);
+        string text = $"<b>{cardName}</b>\n<color=#ffd27f>{string.Join("\n", lines)}</color>";
+        if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{description}</i>";
+        if (IsMarked) text += $"\n\n<color=#d9a6ff>{MarkSummary}</color>";
+        return text;
     }
 
     static string Capitalize(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0]) + s.Substring(1);

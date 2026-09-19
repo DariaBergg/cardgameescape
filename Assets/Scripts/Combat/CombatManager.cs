@@ -24,9 +24,14 @@ public class CombatManager : MonoBehaviour
     int enemyWeakTurns;
     int enemyBurnDamage;
     int enemyBurnTurns;
+    int forcedNextMove = -1;
+    int pendingDamageBonus;
+    bool enemyHidden;
 
     int playerBlock;
     int playerThorns;
+    bool blockLockedNextTurn;
+    bool blockLocked;
     int poisonDamage;
     int poisonTurns;
     int nextHandPenalty;
@@ -60,6 +65,7 @@ public class CombatManager : MonoBehaviour
     public int EnemyMaxHP => enemy != null ? enemy.maxHP : 0;
     public int EnemyBlock => enemyBlock;
     public EnemyMove CurrentMove => currentMove;
+    public int PendingDamageBonus => pendingDamageBonus;
     public Transform EnemyTransform => enemyVisual != null ? enemyVisual.transform : null;
     public Vector3 EnemyTop => enemyRenderer != null ? new Vector3(enemyRenderer.bounds.center.x, enemyRenderer.bounds.max.y, 0) : new Vector3(0, 2.5f, 0);
     public int PlayerBlock => playerBlock;
@@ -68,6 +74,7 @@ public class CombatManager : MonoBehaviour
     public int DiscardPileCount => discardPile.Count;
     public int CardsLeftThisTurn => Mathf.Max(0, GameManager.Instance.maxCardsPerTurn - cardsPlayedThisTurn);
     public bool CanPlayCard => combatActive && !enemyActing && CardsLeftThisTurn > 0;
+    public bool CanPlay(CardData card) => CanPlayCard && !(blockLocked && card.HasEffect(CardEffectType.Block));
     public bool CanEndTurn => combatActive && !enemyActing;
 
     public int EnemyWeakAmount => enemyWeakTurns > 0 ? enemyWeakAmount : 0;
@@ -91,6 +98,8 @@ public class CombatManager : MonoBehaviour
         {
             var parts = new List<string>();
             if (playerThorns > 0) parts.Add($"Шипы {playerThorns}");
+            if (blockLocked) parts.Add("Нельзя защищаться в этот ход");
+            else if (blockLockedNextTurn) parts.Add("В следующий ход нельзя защищаться");
             if (poisonTurns > 0) parts.Add($"Яд: {poisonDamage} урона в начале хода, ещё {poisonTurns} х.");
             if (nextHandPenalty > 0) parts.Add($"Ослаблен: −{nextHandPenalty} карта в следующий ход");
             return string.Join("   ", parts);
@@ -115,9 +124,14 @@ public class CombatManager : MonoBehaviour
         enemyWeakTurns = 0;
         enemyBurnDamage = 0;
         enemyBurnTurns = 0;
+        forcedNextMove = -1;
+        pendingDamageBonus = 0;
+        enemyHidden = false;
         moveIndex = -1;
         playerBlock = 0;
         playerThorns = 0;
+        blockLocked = false;
+        blockLockedNextTurn = false;
         poisonDamage = 0;
         poisonTurns = 0;
         nextHandPenalty = 0;
@@ -132,10 +146,10 @@ public class CombatManager : MonoBehaviour
 
         var player = FindFirstObjectByType<PlayerController>();
         playerRenderer = player != null ? player.GetComponent<SpriteRenderer>() : null;
-        if (player != null) player.EnterCombatPose(combatPlayerPosition, combatPlayerScale);
+        if (player != null) player.EnterCombatPose(data.overridePlayerPosition ? data.playerPosition : combatPlayerPosition, combatPlayerScale);
 
         enemyVisual = new GameObject("Enemy_" + data.enemyName);
-        enemyVisual.transform.position = combatEnemyPosition;
+        enemyVisual.transform.position = data.overrideEnemyPosition ? data.enemyPosition : combatEnemyPosition;
         var spriteObject = new GameObject("Sprite");
         spriteObject.transform.SetParent(enemyVisual.transform, false);
         enemyRenderer = spriteObject.AddComponent<SpriteRenderer>();
@@ -166,6 +180,13 @@ public class CombatManager : MonoBehaviour
             currentMove = null;
             return;
         }
+        if (forcedNextMove >= 0 && forcedNextMove < enemy.moves.Count)
+        {
+            moveIndex = forcedNextMove;
+            forcedNextMove = -1;
+            currentMove = enemy.moves[moveIndex];
+            return;
+        }
         if (enemy.randomMoves && enemy.moves.Count > 1)
         {
             int next;
@@ -185,6 +206,9 @@ public class CombatManager : MonoBehaviour
         cardsPlayedThisTurn = 0;
         playerBlock = 0;
         playerThorns = 0;
+        blockLocked = blockLockedNextTurn;
+        blockLockedNextTurn = false;
+        if (blockLocked) fx.FloatingText(PlayerHead, "Без защиты!", DebuffColor);
 
         if (poisonTurns > 0)
         {
@@ -242,7 +266,7 @@ public class CombatManager : MonoBehaviour
 
     public void PlayCard(CardData card)
     {
-        if (!CanPlayCard || !hand.Contains(card)) return;
+        if (!CanPlay(card) || !hand.Contains(card)) return;
 
         hand.Remove(card);
         discardPile.Add(card);
@@ -252,6 +276,11 @@ public class CombatManager : MonoBehaviour
         if (enemyHP <= 0)
         {
             Win();
+            return;
+        }
+        if (GameManager.Instance.currentHP <= 0)
+        {
+            Lose();
             return;
         }
         ui.Refresh();
@@ -279,6 +308,8 @@ public class CombatManager : MonoBehaviour
         {
             if (effect.condition == CardCondition.EnemyBurning && enemyBurnTurns <= 0) continue;
             if (effect.condition == CardCondition.EnemyNotBurning && enemyBurnTurns > 0) continue;
+            if (effect.condition == CardCondition.EnemyHasBlock && enemyBlock <= 0) continue;
+            if (effect.condition == CardCondition.EnemyNoBlock && enemyBlock > 0) continue;
             switch (effect.type)
             {
                 case CardEffectType.Damage:
@@ -347,6 +378,16 @@ public class CombatManager : MonoBehaviour
                     log.Add($"шипы {effect.value}");
                     fx.Flash(playerRenderer, BlockColor);
                     fx.FloatingText(PlayerHead, $"Шипы {playerThorns}", BlockColor);
+                    break;
+                case CardEffectType.SelfDamage:
+                    GameManager.Instance.TakeDamage(effect.value);
+                    log.Add($"−{effect.value} HP себе");
+                    fx.Flash(playerRenderer, DamageColor);
+                    fx.FloatingText(PlayerHead, $"-{effect.value}", DamageColor);
+                    break;
+                case CardEffectType.NoBlockNextTurn:
+                    blockLockedNextTurn = true;
+                    log.Add("без защиты в след. ход");
                     break;
                 case CardEffectType.Cleanse:
                     if (poisonTurns > 0) { poisonTurns = 0; poisonDamage = 0; log.Add("яд снят"); }
@@ -418,7 +459,17 @@ public class CombatManager : MonoBehaviour
             ui.Refresh();
             yield return new WaitForSeconds(0.5f);
 
-            bool hasEffect = move.damage > 0 || move.block > 0 || move.poisonTurns > 0 || move.handReduce > 0;
+            if (enemyHidden && !move.submerge)
+            {
+                enemyHidden = false;
+                if (enemy.sprite != null) enemyRenderer.sprite = enemy.sprite;
+                yield return fx.Lunge(enemyVisual.transform, Vector3.up * 0.6f, 0.3f);
+            }
+
+            int damageBonus = pendingDamageBonus;
+            pendingDamageBonus = 0;
+
+            bool hasEffect = move.HasEffect || move.submerge;
             if (!hasEffect)
             {
                 yield return fx.Flutter(enemyVisual.transform, 1.1f);
@@ -434,14 +485,14 @@ public class CombatManager : MonoBehaviour
                     Vector3 toPlayer = (PlayerPos - enemyVisual.transform.position).normalized * 1.3f;
                     yield return fx.Lunge(enemyVisual.transform, toPlayer, move.hits > 1 ? 0.22f : 0.3f);
 
-                    int weakened = Mathf.Min(EnemyWeakAmount, move.damage);
-                    int attack = move.damage - weakened;
+                    int weakened = Mathf.Min(EnemyWeakAmount, move.damage + damageBonus);
+                    int attack = move.damage + damageBonus - weakened;
                     int absorbed = Mathf.Min(playerBlock, attack);
                     int damage = attack - absorbed;
                     playerBlock -= absorbed;
                     GameManager.Instance.TakeDamage(damage);
 
-                    LastEvent = $"{enemy.enemyName} атакует на {move.damage}.";
+                    LastEvent = $"{enemy.enemyName} атакует на {move.damage + damageBonus}.";
                     if (weakened > 0) LastEvent += $" Ослабление сняло {weakened}.";
                     if (absorbed > 0) LastEvent += $" Блок поглотил {absorbed}.";
                     LastEvent += damage > 0 ? $" Ты получил {damage} урона." : " Урон не прошёл.";
@@ -510,6 +561,21 @@ public class CombatManager : MonoBehaviour
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
             }
+        }
+
+        if (move != null && move.submerge)
+        {
+            enemyHidden = true;
+            yield return fx.Lunge(enemyVisual.transform, Vector3.down * 0.5f, 0.4f);
+            if (enemy.hiddenSprite != null) enemyRenderer.sprite = enemy.hiddenSprite;
+            LastEvent = $"{enemy.enemyName} скрывается из виду.";
+            ui.Refresh();
+            yield return new WaitForSeconds(0.4f);
+        }
+        if (move != null)
+        {
+            if (move.forceNextMove >= 0) forcedNextMove = move.forceNextMove;
+            if (move.nextDamageBonus > 0) pendingDamageBonus += move.nextDamageBonus;
         }
 
         if (enemyWeakTurns > 0) enemyWeakTurns--;

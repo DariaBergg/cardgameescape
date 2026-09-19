@@ -27,12 +27,15 @@ public class CardEffect
             case CardEffectType.PierceDamage: body = $"Нанести {v} урона, игнорируя блок."; break;
             case CardEffectType.Thorns: body = $"Если враг атакует в этот ход — он получает {v} урона."; break;
             case CardEffectType.Cleanse: body = "Снять с себя один отрицательный эффект."; break;
+            case CardEffectType.SelfDamage: body = $"Получить {v} урона самому."; break;
+            case CardEffectType.NoBlockNextTurn: body = "В следующий ход нельзя играть защитные карты."; break;
             default: body = type.ToString(); break;
         }
 
         switch (condition)
         {
             case CardCondition.EnemyBurning: return $"Если враг горит — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
+            case CardCondition.EnemyHasBlock: return $"Если у врага есть блок — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
             default: return body;
         }
     }
@@ -55,9 +58,12 @@ public class CardEffect
             case CardEffectType.PierceDamage: s = $"{v} сквозь блок"; break;
             case CardEffectType.Thorns: s = $"шипы {v}"; break;
             case CardEffectType.Cleanse: s = "снять эффект"; break;
+            case CardEffectType.SelfDamage: s = $"−{v} HP себе"; break;
+            case CardEffectType.NoBlockNextTurn: s = "без защиты в след. ход"; break;
             default: s = type.ToString(); break;
         }
         if (condition == CardCondition.EnemyBurning) s = "если горит: " + s;
+        if (condition == CardCondition.EnemyHasBlock) s = "если враг в блоке: " + s;
         return s;
     }
 

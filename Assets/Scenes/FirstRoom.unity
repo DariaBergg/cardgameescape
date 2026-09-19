@@ -618,6 +618,21 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 52b59945d5b904c4f8b001e2cf249260, type: 3}
   restVariants:
   - {fileID: 11400000, guid: 0daeebb012d4e41ceb13c86a8ff8c264, type: 2}
+  eventVariants:
+  - {fileID: 11400000, guid: 0daeebb012d4e41ceb13c86a8ff8c264, type: 2}
+  - {fileID: 11400000, guid: 4fd68444fe6f04847827d5d241f58a85, type: 2}
+  treasureBackground: {fileID: 21300000, guid: c440074ab47954e8598056aa90ebd41c, type: 3}
+  chestClosed: {fileID: 21300000, guid: a6eb883f83f0c4241a927c945a50c755, type: 3}
+  chestOpen: {fileID: 21300000, guid: ebcba0f1c6c7644a1a8bb8b4815e0495, type: 3}
+  chestPosition: {x: 3, y: -1.6, z: 0}
+  treasureCards:
+  - {fileID: 11400000, guid: 220e7308ca9f541198649c1efd5e55cb, type: 2}
+  - {fileID: 11400000, guid: db8f21783efe4489bbc2dbbf6577c964, type: 2}
+  - {fileID: 11400000, guid: 05109c9c09872494ca310a3fedcbd957, type: 2}
+  - {fileID: 11400000, guid: 2ba7ef9a426274e479dc3db16725e875, type: 2}
+  - {fileID: 11400000, guid: 8f3d02d75294841d3a8d0335a5374dde, type: 2}
+  - {fileID: 11400000, guid: 12aaf43d1d1d248519547e5ded540df8, type: 2}
+  treasureChoices: 3
   tutorialSequence:
   - {fileID: 11400000, guid: a12de2a92c9124dc6bca29c7f6a4267b, type: 2}
   - {fileID: 11400000, guid: 724460c7606e246d285a997477440a49, type: 2}
@@ -627,6 +642,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 724460c7606e246d285a997477440a49, type: 2}
   enemies:
   - {fileID: 11400000, guid: f7259fd198f924923805ecb51ec964b6, type: 2}
+  - {fileID: 11400000, guid: 499724c8a5b94479097c0f7ece6a0ed3, type: 2}
   dangerEnemies: []
   elites:
   - {fileID: 11400000, guid: a8871c368cbc548f9bc1119a95857ea6, type: 2}

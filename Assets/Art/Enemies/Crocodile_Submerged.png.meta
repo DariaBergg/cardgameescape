@@ -1,0 +1,689 @@
+fileFormatVersion: 2
+guid: d420be0408c164044b07f66dec25a3c7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4271536026165781904
+    second: Crocodile_Submerged_0
+  - first:
+      213: -4698754005446852733
+    second: Crocodile_Submerged_1
+  - first:
+      213: 4135534207187309097
+    second: Crocodile_Submerged_2
+  - first:
+      213: 2490183343744459940
+    second: Crocodile_Submerged_3
+  - first:
+      213: 8713494328695027116
+    second: Crocodile_Submerged_4
+  - first:
+      213: -3797126286866283657
+    second: Crocodile_Submerged_5
+  - first:
+      213: 5282179967605653182
+    second: Crocodile_Submerged_6
+  - first:
+      213: 2699967873665634089
+    second: Crocodile_Submerged_7
+  - first:
+      213: -8506450307775646170
+    second: Crocodile_Submerged_8
+  - first:
+      213: -425212594653687033
+    second: Crocodile_Submerged_9
+  - first:
+      213: -6508895537035603560
+    second: Crocodile_Submerged_10
+  - first:
+      213: -3231277985532659611
+    second: Crocodile_Submerged_11
+  - first:
+      213: -3635546940827023704
+    second: Crocodile_Submerged_12
+  - first:
+      213: -2731533698198850341
+    second: Crocodile_Submerged_13
+  - first:
+      213: -7583800322801850214
+    second: Crocodile_Submerged_14
+  - first:
+      213: 6685568339875424304
+    second: Crocodile_Submerged_15
+  - first:
+      213: -1776735257340505191
+    second: Crocodile_Submerged_16
+  - first:
+      213: -7842118722504555364
+    second: Crocodile_Submerged_17
+  - first:
+      213: -1720446658141709268
+    second: Crocodile_Submerged_18
+  - first:
+      213: 7644659895366263631
+    second: Crocodile_Submerged_19
+  - first:
+      213: -2013873989967180739
+    second: Crocodile_Submerged_20
+  - first:
+      213: 4013196917248355628
+    second: Crocodile_Submerged_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 418
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Crocodile_Submerged_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 41
+        width: 1239
+        height: 1161
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07ada13ad9478b4c0800000000000000
+      internalID: -4271536026165781904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_1
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 1024
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38f756a802caaceb0800000000000000
+      internalID: -4698754005446852733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 288
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92250ef437e546930800000000000000
+      internalID: 4135534207187309097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_3
+      rect:
+        serializedVersion: 2
+        x: 1139
+        y: 280
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a4ab7dbe88ee8220800000000000000
+      internalID: 2490183343744459940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_4
+      rect:
+        serializedVersion: 2
+        x: 1131
+        y: 274
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca57f360dec8ce870800000000000000
+      internalID: 8713494328695027116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_5
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 280
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 773890892c5ed4bc0800000000000000
+      internalID: -3797126286866283657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_6
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 266
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebeb1d0c1b21e4940800000000000000
+      internalID: 5282179967605653182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_7
+      rect:
+        serializedVersion: 2
+        x: 1049
+        y: 236
+        width: 29
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92f8eced976387520800000000000000
+      internalID: 2699967873665634089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_8
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 216
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6263581a38403f980800000000000000
+      internalID: -8506450307775646170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_9
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 206
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70315a5e567591af0800000000000000
+      internalID: -425212594653687033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_10
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 206
+        width: 7
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8911ed2aef1cba5a0800000000000000
+      internalID: -6508895537035603560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_11
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 200
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56839cdcac13823d0800000000000000
+      internalID: -3231277985532659611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_12
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 176
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a64fbbb151fb8dc0800000000000000
+      internalID: -3635546940827023704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_13
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 190
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd439d2e294a71ad0800000000000000
+      internalID: -2731533698198850341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_14
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 179
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9827ef79cde0c690800000000000000
+      internalID: -7583800322801850214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_15
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 172
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0386fd3cbf8e7cc50800000000000000
+      internalID: 6685568339875424304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_16
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 164
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9939e4e62b4c757e0800000000000000
+      internalID: -1776735257340505191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_17
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 160
+        width: 7
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c940daa32923b2390800000000000000
+      internalID: -7842118722504555364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_18
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 152
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2c947631eebf18e0800000000000000
+      internalID: -1720446658141709268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_19
+      rect:
+        serializedVersion: 2
+        x: 662
+        y: 148
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f432bf3fba9471a60800000000000000
+      internalID: 7644659895366263631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_20
+      rect:
+        serializedVersion: 2
+        x: 739
+        y: 146
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3c8b9da6484d04e0800000000000000
+      internalID: -2013873989967180739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crocodile_Submerged_21
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 128
+        width: 17
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2de74a555db1b730800000000000000
+      internalID: 4013196917248355628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Crocodile_Submerged_0: -4271536026165781904
+      Crocodile_Submerged_1: -4698754005446852733
+      Crocodile_Submerged_10: -6508895537035603560
+      Crocodile_Submerged_11: -3231277985532659611
+      Crocodile_Submerged_12: -3635546940827023704
+      Crocodile_Submerged_13: -2731533698198850341
+      Crocodile_Submerged_14: -7583800322801850214
+      Crocodile_Submerged_15: 6685568339875424304
+      Crocodile_Submerged_16: -1776735257340505191
+      Crocodile_Submerged_17: -7842118722504555364
+      Crocodile_Submerged_18: -1720446658141709268
+      Crocodile_Submerged_19: 7644659895366263631
+      Crocodile_Submerged_2: 4135534207187309097
+      Crocodile_Submerged_20: -2013873989967180739
+      Crocodile_Submerged_21: 4013196917248355628
+      Crocodile_Submerged_3: 2490183343744459940
+      Crocodile_Submerged_4: 8713494328695027116
+      Crocodile_Submerged_5: -3797126286866283657
+      Crocodile_Submerged_6: 5282179967605653182
+      Crocodile_Submerged_7: 2699967873665634089
+      Crocodile_Submerged_8: -8506450307775646170
+      Crocodile_Submerged_9: -425212594653687033
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

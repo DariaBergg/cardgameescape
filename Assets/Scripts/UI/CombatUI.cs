@@ -118,7 +118,7 @@ public class CombatUI : MonoBehaviour
         intentBadge.gameObject.SetActive(showIntent);
         if (showIntent)
         {
-            intentTooltip.content = move.TooltipText;
+            intentTooltip.content = move.TooltipTextWithBonus(combat.PendingDamageBonus);
             bool hasIcon = move.icon != null;
             intentIcon.gameObject.SetActive(hasIcon);
             intentText.gameObject.SetActive(!hasIcon);
@@ -163,7 +163,7 @@ public class CombatUI : MonoBehaviour
             var card = hand[i];
             float x = (i - (count - 1) / 2f) * spacing;
             var button = CardView.Create(handArea, card, new Vector2(0.5f, 0), new Vector2(x, 0), HandCardSize);
-            CardView.SetInteractable(button, combat.CanPlayCard);
+            CardView.SetInteractable(button, combat.CanPlay(card));
             button.onClick.AddListener(() => combat.PlayCard(card));
             cardButtons.Add(button.gameObject);
         }

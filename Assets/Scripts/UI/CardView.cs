@@ -140,6 +140,8 @@ public static class CardView
         if (name == null || rules == null) return;
         var preview = button.gameObject.AddComponent<UpgradePreview>();
         preview.Init(name, rules, card);
+        var trigger = button.GetComponent<TooltipTrigger>();
+        if (trigger != null) trigger.content = card.UpgradePreviewTooltipText();
     }
 
     class UpgradePreview : MonoBehaviour, UnityEngine.EventSystems.IPointerEnterHandler, UnityEngine.EventSystems.IPointerExitHandler

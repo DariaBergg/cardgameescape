@@ -8,6 +8,16 @@ public class EnemyData : ScriptableObject
     public int maxHP = 20;
     public Color color = Color.magenta;
     public Sprite sprite;
+    [Tooltip("Спрайт в спрятанном состоянии (под водой и т.п.)")]
+    public Sprite hiddenSprite;
+    [Tooltip("Фон боя именно с этим врагом (если пусто — обычный боевой фон)")]
+    public Sprite arena;
+    [Tooltip("Своя позиция героя на этой арене")]
+    public bool overridePlayerPosition;
+    public Vector3 playerPosition = new Vector3(-5.5f, -1.6f, 0);
+    [Tooltip("Своя позиция врага на этой арене")]
+    public bool overrideEnemyPosition;
+    public Vector3 enemyPosition = new Vector3(3.5f, 0.6f, 0);
     [Tooltip("Парит в воздухе: покачивается во время боя")]
     public bool flying;
     public bool randomMoves = true;

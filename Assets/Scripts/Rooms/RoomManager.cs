@@ -13,6 +13,17 @@ public class RoomManager : MonoBehaviour
     public Sprite startBackground;
     public List<Sprite> combatBackgrounds = new List<Sprite>();
     public List<RestRoomVariant> restVariants = new List<RestRoomVariant>();
+    [Tooltip("События за синей дверью (пока используют те же варианты, что и отдых)")]
+    public List<RestRoomVariant> eventVariants = new List<RestRoomVariant>();
+
+    [Header("Сокровищница")]
+    public Sprite treasureBackground;
+    public Sprite chestClosed;
+    public Sprite chestOpen;
+    public Vector3 chestPosition = new Vector3(3f, -1.4f, 0);
+    [Tooltip("Карты, которые можно найти в сундуке")]
+    public List<CardData> treasureCards = new List<CardData>();
+    public int treasureChoices = 3;
 
     [Tooltip("Строгая последовательность первых боёв (мышь, слизень, крыса...)")]
     public List<EnemyData> tutorialSequence = new List<EnemyData>();
@@ -116,7 +127,7 @@ public class RoomManager : MonoBehaviour
                 var enemy = CurrentRoomIndex <= TutorialRooms
                     ? tutorialSequence[CurrentRoomIndex - 1]
                     : Pick(CombatPool());
-                return new RoomPlan { title = "Бой", background = PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
+                return new RoomPlan { title = "Бой", background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
             }
             case DoorType.Danger:
             {
@@ -124,7 +135,7 @@ public class RoomManager : MonoBehaviour
                 return new RoomPlan
                 {
                     title = "Опасная комната",
-                    background = PickOrNull(combatBackgrounds),
+                    background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds),
                     start = () =>
                     {
                         if (isElite) hud.Notify($"{enemy.enemyName} почуял тебя!", 2.5f);
@@ -143,9 +154,21 @@ public class RoomManager : MonoBehaviour
                 };
             }
             case DoorType.Treasure:
-                return new RoomPlan { title = "Сокровище", background = null, start = () => { hud.Notify("Сокровищница (пока пусто)"); OnRoomCleared(); } };
+                return new RoomPlan { title = "Сокровищница", background = treasureBackground, start = StartTreasureRoom };
             default:
-                return new RoomPlan { title = "Событие", background = null, start = () => { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); } };
+            {
+                var variant = PickOrNull(eventVariants);
+                return new RoomPlan
+                {
+                    title = variant != null ? $"Событие — {variant.title}" : "Событие",
+                    background = variant != null ? variant.background : null,
+                    start = () =>
+                    {
+                        if (variant == null) { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); }
+                        else ResolveRest(variant);
+                    }
+                };
+            }
         }
     }
 
@@ -216,6 +239,31 @@ public class RoomManager : MonoBehaviour
         ui.Show(variant.title, variant.description, options);
     }
 
+    TreasureChest chest;
+
+    void StartTreasureRoom()
+    {
+        if (chest != null) Destroy(chest.gameObject);
+        player.enabled = true;
+        chest = TreasureChest.Spawn(chestClosed, chestOpen, chestPosition, OnChestOpened);
+    }
+
+    void OnChestOpened()
+    {
+        var pool = new List<CardData>(treasureCards);
+        Shuffle(pool);
+        if (pool.Count > treasureChoices) pool.RemoveRange(treasureChoices, pool.Count - treasureChoices);
+        CardChoiceUI.Get().Show("Сундук! Выбери карту", pool, card =>
+        {
+            if (card != null)
+            {
+                GameManager.Instance.playerDeck.Add(card);
+                hud.Notify($"«{card.cardName}» добавлена в колоду", 3f);
+            }
+            OnRoomCleared();
+        });
+    }
+
     public void OnRoomCleared()
     {
         player.enabled = true;
@@ -231,6 +279,7 @@ public class RoomManager : MonoBehaviour
         SetBackground(startBackground);
         hud.SetRoom(HubName);
         player.ExitCombatPose(playerSpawn);
+        if (chest != null) Destroy(chest.gameObject);
         SpawnDoors();
         yield return ScreenFader.Get().FadeTo(0f, fadeDuration);
 

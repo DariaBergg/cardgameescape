@@ -8,12 +8,16 @@ public enum CardEffectType
     BurnEnemy,
     PierceDamage,
     Thorns,
-    Cleanse
+    Cleanse,
+    SelfDamage,
+    NoBlockNextTurn
 }
 
 public enum CardCondition
 {
     None,
     EnemyBurning,
-    EnemyNotBurning
+    EnemyNotBurning,
+    EnemyHasBlock,
+    EnemyNoBlock
 }
