@@ -9,12 +9,15 @@ public static class CardView
     public static Button Create(Transform parent, CardData card, Vector2 anchor, Vector2 pos, Vector2 size)
     {
         Button button;
-        if (card.artwork == null)
+        var visuals = CardVisuals.Instance;
+        bool composite = visuals != null && visuals.template != null;
+
+        if (composite)
         {
-            string text = $"{card.cardName}\n\n<size=17>{card.EffectsSummary}</size>";
-            button = UIFactory.CreateButton(parent, "Card_" + card.cardName, text, 20, anchor, pos, size, ColorFor(card));
+            button = UIFactory.CreateButton(parent, "Card_" + card.cardName, "", 18, anchor, pos, size, new Color(0, 0, 0, 0));
+            BuildComposite(button.transform, card, size, visuals);
         }
-        else
+        else if (card.artwork != null)
         {
             button = UIFactory.CreateButton(parent, "Card_" + card.cardName, "", 18, anchor, pos, size, new Color(0, 0, 0, 0));
             var art = UIFactory.CreateRect(button.transform, "Art", new Vector2(0.5f, 0.5f), Vector2.zero, size);
@@ -23,8 +26,13 @@ public static class CardView
             img.preserveAspect = true;
             img.raycastTarget = false;
         }
+        else
+        {
+            string text = $"{card.cardName}\n\n<size=17>{card.EffectsSummary}</size>";
+            button = UIFactory.CreateButton(parent, "Card_" + card.cardName, text, 20, anchor, pos, size, ColorFor(card));
+        }
 
-        if (card.upgraded)
+        if (card.upgraded && !composite)
         {
             var badge = UIFactory.CreateRect(button.transform, "UpgradeBadge", new Vector2(0.5f, 1), new Vector2(0, -4), new Vector2(size.x - 12, 28));
             badge.pivot = new Vector2(0.5f, 1f);
@@ -39,12 +47,17 @@ public static class CardView
 
         if (card.IsMarked)
         {
-            var badge = UIFactory.CreateRect(button.transform, "MarkBadge", new Vector2(0.5f, 0), new Vector2(0, 4), new Vector2(size.x - 12, 30));
+            var badge = composite
+                ? PlaceRect(button.transform, "MarkBadge", new Rect(0.12f, 0.9f, 0.76f, 0.068f), size)
+                : UIFactory.CreateRect(button.transform, "MarkBadge", new Vector2(0.5f, 0), new Vector2(0, 4), new Vector2(size.x - 12, 30));
             var bg = badge.gameObject.AddComponent<Image>();
             bg.color = MarkColor;
             bg.raycastTarget = false;
-            var label = UIFactory.CreateText(badge, "Label", $"{card.eliteMark.enemyName}  +{card.eliteChanceBonus}%", 14, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(size.x - 16, 30));
+            var label = UIFactory.CreateText(badge, "Label", $"{card.eliteMark.enemyName}  +{card.eliteChanceBonus}%", 14, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, badge.sizeDelta);
             label.color = new Color(0.95f, 0.85f, 1f);
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 6;
+            label.resizeTextMaxSize = 14;
             label.raycastTarget = false;
         }
 
@@ -52,11 +65,82 @@ public static class CardView
         return button;
     }
 
+    static void BuildComposite(Transform parent, CardData card, Vector2 size, CardVisuals visuals)
+    {
+        var window = PlaceRect(parent, "ArtWindow", visuals.artWindow, size);
+        window.gameObject.AddComponent<RectMask2D>();
+        if (card.illustration != null)
+        {
+            var art = UIFactory.CreateRect(window, "Art", new Vector2(0.5f, 0.5f), Vector2.zero, CoverSize(window.sizeDelta, card.illustration));
+            var artImg = art.gameObject.AddComponent<Image>();
+            artImg.sprite = card.illustration;
+            artImg.raycastTarget = false;
+        }
+        else
+        {
+            var fill = window.gameObject.AddComponent<Image>();
+            fill.color = ColorFor(card);
+            fill.raycastTarget = false;
+        }
+
+        var frame = UIFactory.CreateRect(parent, "Template", new Vector2(0.5f, 0.5f), Vector2.zero, size);
+        var frameImg = frame.gameObject.AddComponent<Image>();
+        frameImg.sprite = visuals.template;
+        frameImg.preserveAspect = true;
+        frameImg.raycastTarget = false;
+
+        var nameRect = PlaceRect(parent, "Name", visuals.nameArea, size);
+        var name = nameRect.gameObject.AddComponent<Text>();
+        name.font = UIFactory.Font;
+        name.fontStyle = FontStyle.Bold;
+        name.alignment = TextAnchor.MiddleCenter;
+        name.color = visuals.nameColor;
+        name.resizeTextForBestFit = true;
+        name.resizeTextMinSize = 6;
+        name.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.085f);
+        name.horizontalOverflow = HorizontalWrapMode.Wrap;
+        name.verticalOverflow = VerticalWrapMode.Truncate;
+        name.text = card.cardName;
+        name.raycastTarget = false;
+
+        var textRect = PlaceRect(parent, "Rules", visuals.textArea, size);
+        var rules = textRect.gameObject.AddComponent<Text>();
+        rules.font = UIFactory.Font;
+        rules.alignment = TextAnchor.MiddleCenter;
+        rules.color = visuals.textColor;
+        rules.resizeTextForBestFit = true;
+        rules.resizeTextMinSize = 6;
+        rules.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.08f);
+        rules.horizontalOverflow = HorizontalWrapMode.Wrap;
+        rules.verticalOverflow = VerticalWrapMode.Truncate;
+        rules.text = card.RulesText;
+        rules.raycastTarget = false;
+    }
+
+    static RectTransform PlaceRect(Transform parent, string name, Rect fraction, Vector2 size)
+    {
+        var rect = UIFactory.CreateRect(parent, name, new Vector2(0, 1), new Vector2(fraction.x * size.x, -fraction.y * size.y), new Vector2(fraction.width * size.x, fraction.height * size.y));
+        rect.pivot = new Vector2(0, 1);
+        return rect;
+    }
+
+    static Vector2 CoverSize(Vector2 window, Sprite sprite)
+    {
+        float aspect = sprite.rect.width / sprite.rect.height;
+        return window.x / window.y > aspect
+            ? new Vector2(window.x, window.x / aspect)
+            : new Vector2(window.y * aspect, window.y);
+    }
+
     public static void SetInteractable(Button button, bool interactable)
     {
         button.interactable = interactable;
-        var art = button.transform.Find("Art");
-        if (art != null) art.GetComponent<Image>().color = interactable ? Color.white : new Color(0.45f, 0.45f, 0.45f);
+        var tint = interactable ? Color.white : new Color(0.45f, 0.45f, 0.45f);
+        foreach (var name in new[] { "Art", "Template", "ArtWindow/Art" })
+        {
+            var t = button.transform.Find(name);
+            if (t != null) t.GetComponent<Image>().color = tint;
+        }
     }
 
     static Color ColorFor(CardData card)

@@ -25,8 +25,8 @@ public class CombatUI : MonoBehaviour
 
     static readonly Vector2 IntentIconSize = new Vector2(96, 96);
     static readonly Vector2 IntentWordSize = new Vector2(200, 44);
-    static readonly Vector2 HandCardSize = new Vector2(160, 240);
-    static readonly Vector2 RewardCardSize = new Vector2(200, 300);
+    static readonly Vector2 HandCardSize = new Vector2(163, 240);
+    static readonly Vector2 RewardCardSize = new Vector2(203, 300);
     static readonly Color PillColor = new Color(0.05f, 0.05f, 0.08f, 0.7f);
 
     public static CombatUI Create(CombatManager combat)

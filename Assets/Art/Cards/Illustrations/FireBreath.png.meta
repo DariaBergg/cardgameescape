@@ -1,18 +1,21 @@
 fileFormatVersion: 2
-guid: 0b2e1e5c8feda4a85b82a93fabb5aa74
+guid: 1790dd8113be44d6681c22bed7407adc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5113502642456025693
-    second: Draconicscales_0
+      213: 6495046168732721388
+    second: FireBreath_0
   - first:
-      213: 8065635526739941525
-    second: Draconicscales_1
+      213: 1350565936704703163
+    second: FireBreath_1
+  - first:
+      213: 970214091315119176
+    second: FireBreath_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -75,7 +78,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -103,13 +106,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Draconicscales_0
+      name: FireBreath_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 15
-        width: 984
-        height: 1506
+        y: 0
+        width: 1254
+        height: 1204
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,19 +121,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3a5236e60703909b0800000000000000
-      internalID: -5113502642456025693
+      spriteID: ce06317041a032a50800000000000000
+      internalID: 6495046168732721388
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Draconicscales_1
+      name: FireBreath_1
       rect:
         serializedVersion: 2
-        x: 976
-        y: 1519
-        width: 9
+        x: 667
+        y: 1197
+        width: 13
         height: 10
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -140,8 +143,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 598da1b27c4eeef60800000000000000
-      internalID: 8065635526739941525
+      spriteID: bbac607509c2eb210800000000000000
+      internalID: 1350565936704703163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBreath_2
+      rect:
+        serializedVersion: 2
+        x: 1158
+        y: 1106
+        width: 66
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8448aec5394e67d00800000000000000
+      internalID: 970214091315119176
       vertices: []
       indices: 
       edges: []
@@ -160,8 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Draconicscales_0: -5113502642456025693
-      Draconicscales_1: 8065635526739941525
+      FireBreath_0: 6495046168732721388
+      FireBreath_1: 1350565936704703163
+      FireBreath_2: 970214091315119176
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

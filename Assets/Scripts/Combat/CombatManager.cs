@@ -457,9 +457,13 @@ public class CombatManager : MonoBehaviour
     List<CardData> PickRewards()
     {
         var rewards = new List<CardData>();
-        var basePool = GameManager.Instance.selectedCharacter.rewardCards;
-        if (basePool.Count > 0) rewards.Add(basePool[Random.Range(0, basePool.Count)]);
-        if (enemy.rewardCards.Count > 0) rewards.Add(enemy.rewardCards[Random.Range(0, enemy.rewardCards.Count)]);
+        var basePool = new List<CardData>(GameManager.Instance.selectedCharacter.rewardCards);
+        Shuffle(basePool);
+        bool marked = RoomManager.Instance != null && RoomManager.Instance.MarkedRewardsUnlocked && enemy.rewardCards.Count > 0;
+
+        if (basePool.Count > 0) rewards.Add(basePool[0]);
+        if (marked) rewards.Add(enemy.rewardCards[Random.Range(0, enemy.rewardCards.Count)]);
+        else if (basePool.Count > 1) rewards.Add(basePool[1]);
         return rewards;
     }
 

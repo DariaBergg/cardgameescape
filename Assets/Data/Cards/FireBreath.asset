@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: FireBreath
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: "\u0414\u044B\u0445\u0430\u043D\u0438\u0435 \u043E\u0433\u043D\u0451\u043C"
-  description: "\u041D\u0430\u043D\u0435\u0441\u0442\u0438 6 \u0443\u0440\u043E\u043D\u0430."
-  artwork: {fileID: 21300000, guid: 5fac6602a72e041459cc824370f0b797, type: 3}
+  description: "\u0414\u0440\u0430\u043A\u043E\u043D\u044C\u044F \u043A\u0440\u043E\u0432\u044C
+    \u0433\u043E\u0440\u0438\u0442 \u0432 \u0436\u0438\u043B\u0430\u0445."
+  illustration: {fileID: 21300000, guid: 1790dd8113be44d6681c22bed7407adc, type: 3}
+  artwork: {fileID: 0}
   effects:
   - type: 0
     value: 6

@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public CharacterData selectedCharacter;
+    public CardVisuals cardVisuals;
     public List<CardData> playerDeck = new List<CardData>();
     public int currentHP;
     public int maxCardsPerTurn = 1;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        CardVisuals.Instance = cardVisuals;
         ResetRun();
     }
 

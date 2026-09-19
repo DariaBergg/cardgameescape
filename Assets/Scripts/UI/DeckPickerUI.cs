@@ -14,7 +14,7 @@ public class DeckPickerUI : MonoBehaviour
     Action<CardData> onPicked;
     Action onCancel;
 
-    static readonly Vector2 CardSize = new Vector2(150, 225);
+    static readonly Vector2 CardSize = new Vector2(153, 225);
 
     public static DeckPickerUI Get()
     {

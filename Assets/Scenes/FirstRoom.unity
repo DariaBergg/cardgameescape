@@ -290,6 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   selectedCharacter: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
+  cardVisuals: {fileID: 11400000, guid: 8d96f678f731b452c89ff7e925f8d313, type: 2}
   playerDeck: []
   currentHP: 0
   maxCardsPerTurn: 1
@@ -920,15 +921,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 52b59945d5b904c4f8b001e2cf249260, type: 3}
   restVariants:
   - {fileID: 11400000, guid: 0daeebb012d4e41ceb13c86a8ff8c264, type: 2}
+  easyEnemies:
+  - {fileID: 11400000, guid: a12de2a92c9124dc6bca29c7f6a4267b, type: 2}
+  - {fileID: 11400000, guid: 724460c7606e246d285a997477440a49, type: 2}
   enemies:
   - {fileID: 11400000, guid: f7259fd198f924923805ecb51ec964b6, type: 2}
   dangerEnemies: []
   elites:
   - {fileID: 11400000, guid: a8871c368cbc548f9bc1119a95857ea6, type: 2}
   eliteBaseChance: 25
+  tutorialRooms: 2
+  earlyRooms: 4
+  doorsPerChoice: 2
   playerSpawn: {x: 0, y: -3, z: 0}
   doorsY: 3.2
   doorSpacing: 6.5
+  fadeDuration: 0.3
 --- !u!4 &2043284902
 Transform:
   m_ObjectHideFlags: 0

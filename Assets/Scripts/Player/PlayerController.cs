@@ -8,14 +8,11 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 4f;
 
     Rigidbody2D rb;
-    Collider2D ownCollider;
     Vector2? target;
-    Door hoveredDoor;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        ownCollider = GetComponent<Collider2D>();
     }
 
     void Start()
@@ -58,7 +55,6 @@ public class PlayerController : MonoBehaviour
     void OnDisable()
     {
         target = null;
-        SetHovered(null);
     }
 
     public void EnterCombatPose(Vector3 position, float scale)
@@ -81,41 +77,28 @@ public class PlayerController : MonoBehaviour
     {
         var mouse = Mouse.current;
         if (mouse == null || Camera.main == null) return;
+        if (!mouse.leftButton.wasPressedThisFrame) return;
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
         Vector2 world = Camera.main.ScreenToWorldPoint(mouse.position.ReadValue());
-        bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        SetHovered(overUI ? null : DoorAt(world));
-
-        if (mouse.leftButton.wasPressedThisFrame && !overUI)
-            target = hoveredDoor != null ? hoveredDoor.EntryPoint - FeetOffset : world - FeetOffset;
+        var door = DoorAt(world);
+        if (door != null) target = door.EntryPoint - FeetOffset;
     }
 
-    Door DoorAt(Vector2 point)
+    static Door DoorAt(Vector2 point)
     {
-        foreach (var hit in Physics2D.OverlapPointAll(point))
+        foreach (var door in FindObjectsByType<Door>(FindObjectsSortMode.None))
         {
-            if (hit == ownCollider) continue;
-            var door = hit.GetComponent<Door>();
-            if (door != null) return door;
+            var sr = door.GetComponent<SpriteRenderer>();
+            if (sr == null || sr.sprite == null) continue;
+            var b = sr.bounds;
+            if (point.x >= b.min.x && point.x <= b.max.x && point.y >= b.min.y && point.y <= b.max.y) return door;
         }
         return null;
     }
 
-    void SetHovered(Door door)
-    {
-        hoveredDoor = door;
-    }
-
     void FixedUpdate()
     {
-        Vector2 dir = KeyboardDirection();
-        if (dir != Vector2.zero)
-        {
-            target = null;
-            rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
-            return;
-        }
-
         if (target == null) return;
         Vector2 to = target.Value - rb.position;
         float step = moveSpeed * Time.fixedDeltaTime;
@@ -128,17 +111,5 @@ public class PlayerController : MonoBehaviour
         {
             rb.MovePosition(rb.position + to.normalized * step);
         }
-    }
-
-    static Vector2 KeyboardDirection()
-    {
-        var kb = Keyboard.current;
-        if (kb == null) return Vector2.zero;
-        Vector2 dir = Vector2.zero;
-        if (kb.wKey.isPressed || kb.upArrowKey.isPressed) dir.y += 1;
-        if (kb.sKey.isPressed || kb.downArrowKey.isPressed) dir.y -= 1;
-        if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) dir.x -= 1;
-        if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) dir.x += 1;
-        return dir.normalized;
     }
 }

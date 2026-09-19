@@ -1,15 +1,18 @@
 fileFormatVersion: 2
-guid: aade3b718732949b694784272eaa7865
+guid: 9603aa29520da43818301f9b94e2545d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1038133095558909081
-    second: Draconic_Scales_0
+      213: -7979586453229612309
+    second: CardTemplate_0
+  - first:
+      213: 6912371370750322128
+    second: CardTemplate_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -46,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -72,7 +75,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -100,13 +103,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Draconic_Scales_0
+      name: CardTemplate_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1254
-        height: 1254
+        x: 10
+        y: 17
+        width: 1000
+        height: 1510
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +118,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 99c8d56dc80386e00800000000000000
-      internalID: 1038133095558909081
+      spriteID: be2dab00660d24190800000000000000
+      internalID: -7979586453229612309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardTemplate_1
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 17
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d5272d632dadef50800000000000000
+      internalID: 6912371370750322128
       vertices: []
       indices: 
       edges: []
@@ -125,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Draconic_Scales_0: 1038133095558909081
+      CardTemplate_0: -7979586453229612309
+      CardTemplate_1: 6912371370750322128
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -7,6 +7,9 @@ public class CardData : ScriptableObject
 {
     public string cardName;
     [TextArea] public string description;
+    [Tooltip("Квадратная иллюстрация: вставляется в окно шаблона")]
+    public Sprite illustration;
+    [Tooltip("Готовая картинка всей карты (старый вариант, используется если нет иллюстрации)")]
     public Sprite artwork;
     public List<CardEffect> effects = new List<CardEffect>();
 
@@ -42,6 +45,8 @@ public class CardData : ScriptableObject
     }
 
     public string EffectsSummary => string.Join(", ", effects.Select(e => e.Summary));
+
+    public string RulesText => string.Join("\n", effects.Select(e => e.RulesText));
 
     public string MarkSummary => IsMarked ? $"Метка: {eliteMark.enemyName} (+{eliteChanceBonus}% к шансу встречи)" : "";
 
