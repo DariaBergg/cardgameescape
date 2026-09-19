@@ -112,7 +112,7 @@ public class CollectorVisit : MerchantVisit
             {
                 gm.ReplaceCard(given, chosen);
                 FinishQuest("Completed");
-                Say("«Теперь мы в расчёте. Почти.»", ShopOptions());
+                Done("«Теперь мы в расчёте. Почти.»");
             }, allowSkip: false);
         }, () =>
         {
@@ -169,8 +169,9 @@ public class CollectorVisit : MerchantVisit
             if (pool.Count == 0) { Shop(); return; }
             CardChoiceUI.Get().Show("Выбери карту взамен", pool, chosen =>
             {
-                if (chosen != null) gm.ReplaceCard(given, chosen);
-                Say(chosen != null ? $"«{chosen.cardName}. Хороший выбор. Или нет — время покажет.»" : "«Передумал? Бывает.»", ShopOptions());
+                if (chosen == null) { Shop(); return; }
+                gm.ReplaceCard(given, chosen);
+                Done($"«{chosen.cardName}. Хороший выбор. Или нет — время покажет.»");
             });
         }, Shop);
     }
@@ -186,7 +187,7 @@ public class CollectorVisit : MerchantVisit
             {
                 gm.playerDeck.Add(rare);
                 gm.playerDeck.Add(wound);
-                Say("«Приятно иметь дело с решительными.»", ShopOptions());
+                Done("«Приятно иметь дело с решительными.»");
             }),
             Opt("Отказаться", "", Shop));
     }
@@ -199,7 +200,7 @@ public class CollectorVisit : MerchantVisit
             var card = CardPools.Instance.RandomAny();
             gm.ReplaceCard(given, card);
             string rarity = card.rarity == CardRarity.Rare ? "Редкая. Повезло." : "Обычная. Удача любит настойчивых.";
-            Say($"Свиток рассыпается в руках. Внутри — «{card.cardName}».\n«{rarity}»", ShopOptions());
+            Done($"Свиток рассыпается в руках. Внутри — «{card.cardName}».\n«{rarity}»");
         }, Shop);
     }
 }

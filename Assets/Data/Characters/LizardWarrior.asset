@@ -25,9 +25,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b0cfe685e4a23410e94b11858136d49a, type: 2}
   - {fileID: 11400000, guid: a79717600600a439c81555561f0d4dae, type: 2}
   rewardCards:
-  - {fileID: 11400000, guid: 5651df672bcb94284943d21c41af89af, type: 2}
   - {fileID: 11400000, guid: e819efead0c8c41b0bba0a259a6e32c1, type: 2}
-  - {fileID: 11400000, guid: 1b7289c0465584082ba6bb04778bb1f2, type: 2}
   - {fileID: 11400000, guid: 6877a71130eca4168a4f00579bea0bdf, type: 2}
   - {fileID: 11400000, guid: cce22c71730b0429da56c35f4dcc00ff, type: 2}
   - {fileID: 11400000, guid: af2cfb36b835e47ec924621474cfc7a6, type: 2}

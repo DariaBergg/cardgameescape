@@ -33,6 +33,11 @@ public abstract class MerchantVisit
         ui.Show(data.displayName, speech, list);
     }
 
+    protected void Done(string speech)
+    {
+        Say(speech, Leave());
+    }
+
     protected MerchantUI.Option Leave(string label = "Уйти")
     {
         return new MerchantUI.Option { label = label, action = () => { ui.Hide(); onLeave?.Invoke(); } };

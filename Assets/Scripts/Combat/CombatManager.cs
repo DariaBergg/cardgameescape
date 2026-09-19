@@ -224,29 +224,15 @@ public class CombatManager : MonoBehaviour
             }
         }
 
-        if (nextHandPenalty > 0 && hand.Count > 1)
-        {
-            int lost = Mathf.Min(nextHandPenalty, hand.Count - 1);
-            for (int i = 0; i < lost; i++)
-            {
-                int index = Random.Range(0, hand.Count);
-                discardPile.Add(hand[index]);
-                hand.RemoveAt(index);
-            }
-            nextHandPenalty = 0;
-            fx.FloatingText(PlayerHead, $"-{lost} карта", DebuffColor);
-        }
-
-        if (hand.Count == 0)
-        {
-            int totalCards = drawPile.Count + discardPile.Count;
-            int normalDraws = Mathf.Min(handSize, totalCards);
-            int draws = Mathf.Max(1, normalDraws - nextHandPenalty);
-            if (nextHandPenalty > 0 && draws < normalDraws)
-                fx.FloatingText(PlayerHead, $"-{normalDraws - draws} карта", DebuffColor);
-            nextHandPenalty = 0;
-            for (int i = 0; i < draws; i++) DrawCard();
-        }
+        discardPile.AddRange(hand);
+        hand.Clear();
+        int totalCards = drawPile.Count + discardPile.Count;
+        int normalDraws = Mathf.Min(handSize, totalCards);
+        int draws = Mathf.Max(1, normalDraws - nextHandPenalty);
+        if (nextHandPenalty > 0 && draws < normalDraws)
+            fx.FloatingText(PlayerHead, $"-{normalDraws - draws} карта", DebuffColor);
+        nextHandPenalty = 0;
+        for (int i = 0; i < draws; i++) DrawCard();
         ui.Refresh();
     }
 

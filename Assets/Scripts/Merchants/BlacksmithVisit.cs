@@ -38,7 +38,7 @@ public class BlacksmithVisit : MerchantVisit
         DeckPickerUI.Get().Show("Перековка: какую карту улучшить?", gm.playerDeck, c => !c.unplayable, card =>
         {
             var upgraded = gm.UpgradeCard(card);
-            Say($"{afterText}\n«{upgraded.cardName}»: {upgraded.EffectsSummary}", ShopOptions());
+            Done($"{afterText}\n«{upgraded.cardName}»: {upgraded.EffectsSummary}");
         }, Shop, upgradePreview: true);
     }
 
@@ -60,7 +60,7 @@ public class BlacksmithVisit : MerchantVisit
                 fightsRequired = PledgeFights,
                 card = chosen
             });
-            Say($"«{chosen.cardName} твоя. Пока. Три победы — и забудем про залог.»", ShopOptions());
+            Done($"«{chosen.cardName} твоя. Пока. Три победы — и забудем про залог.»");
         });
     }
 

@@ -84,9 +84,6 @@ MonoBehaviour:
     forceNextMove: -1
     nextDamageBonus: 0
   rewardCards:
-  - {fileID: 11400000, guid: 25ceeb147c5b0456fa7548a16299b506, type: 2}
-  - {fileID: 11400000, guid: dfed220ed5f5043c9bf8ebbe0ba816de, type: 2}
-  - {fileID: 11400000, guid: a246e54677f5a4b90a46a7c385e74c4d, type: 2}
   - {fileID: 11400000, guid: 220e7308ca9f541198649c1efd5e55cb, type: 2}
   - {fileID: 11400000, guid: db8f21783efe4489bbc2dbbf6577c964, type: 2}
   - {fileID: 11400000, guid: 05109c9c09872494ca310a3fedcbd957, type: 2}

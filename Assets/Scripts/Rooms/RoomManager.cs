@@ -31,7 +31,8 @@ public class RoomManager : MonoBehaviour
     public int chestChance = 50;
     [Tooltip("Окно (в жёлтых комнатах), в котором гарантированно появится заказанный купец")]
     public int forcedMerchantWindow = 5;
-    public Vector3 merchantPlayerPosition = new Vector3(-3f, -3f, 0);
+    public Vector3 merchantPlayerPosition = new Vector3(-3.5f, -2.4f, 0);
+    public float merchantPlayerScale = 1.3f;
 
     [Tooltip("Строгая последовательность первых боёв (мышь, слизень, крыса...)")]
     public List<EnemyData> tutorialSequence = new List<EnemyData>();
@@ -59,7 +60,7 @@ public class RoomManager : MonoBehaviour
     const string HubName = "Перекрёсток";
 
     static readonly DoorType[] tutorialDoors = { DoorType.Combat };
-    static readonly DoorType[] earlyDoors = { DoorType.Combat, DoorType.Combat, DoorType.Rest, DoorType.Treasure, DoorType.Event };
+    static readonly DoorType[] earlyDoors = { DoorType.Combat, DoorType.Combat, DoorType.Combat, DoorType.Rest, DoorType.Treasure, DoorType.Event };
     static readonly DoorType[] fullDoors =
     {
         DoorType.Combat, DoorType.Combat, DoorType.Combat,
@@ -79,6 +80,7 @@ public class RoomManager : MonoBehaviour
     }
 
     readonly List<GameObject> doors = new List<GameObject>();
+    DoorType lastRoomType = DoorType.Combat;
     PlayerController player;
     Rigidbody2D playerBody;
     GameHUD hud;
@@ -111,13 +113,13 @@ public class RoomManager : MonoBehaviour
         switch (o.type)
         {
             case ObligationType.Credit:
-                hud.Notify($"Пришло время расплаты: −{o.hpCost} HP ({o.source})", 4f);
+                hud.Announce($"Пришло время расплаты.\n{o.source} забирает {o.hpCost} HP.", true);
                 break;
             case ObligationType.PledgeFights:
-                hud.Notify(success ? $"Залог выполнен: карта остаётся у тебя ({o.source})" : $"Залог провален: карта ослабла ({o.source})", 4f);
+                hud.Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог провален.\nКарта ослабла ({o.source}).", !success);
                 break;
             case ObligationType.PledgeNoHeal:
-                hud.Notify(success ? $"Залог выполнен: карта остаётся у тебя ({o.source})" : $"Залог нарушен лечением: карта ослабла ({o.source})", 4f);
+                hud.Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог нарушен лечением.\nКарта ослабла ({o.source}).", !success);
                 break;
         }
     }
@@ -135,6 +137,7 @@ public class RoomManager : MonoBehaviour
         ClearDoors();
 
         if (type == DoorType.Random) type = (DoorType)Random.Range(0, 5);
+        lastRoomType = type;
         GameManager.Instance.roomsVisited++;
         GameManager.Instance.OnRoomEntered();
         var plan = PlanRoom(type);
@@ -331,7 +334,7 @@ public class RoomManager : MonoBehaviour
         }
         merchantVisual.transform.position = merchant.position;
 
-        PlacePlayer(merchantPlayerPosition);
+        player.EnterCombatPose(merchantPlayerPosition, merchantPlayerScale);
         player.enabled = false;
         MerchantVisit.Start(merchant, OnRoomCleared);
     }
@@ -415,6 +418,7 @@ public class RoomManager : MonoBehaviour
         var pool = DoorPool();
         int count = doorsPerChoice;
         int restSlot = NextRoomIndex == guaranteedRestRoom ? Random.Range(0, count) : -1;
+        bool treasureSpawned = false;
         int combatSlot = -1;
         if (NeedsCombatDoor())
         {
@@ -426,6 +430,8 @@ public class RoomManager : MonoBehaviour
             float x = (i - (count - 1) / 2f) * doorSpacing;
             var type = i == restSlot ? DoorType.Rest : i == combatSlot ? DoorType.Combat : pool[Random.Range(0, pool.Length)];
             if (restSlot >= 0 && i != restSlot && type == DoorType.Rest) type = DoorType.Combat;
+            if (type == DoorType.Treasure && (lastRoomType == DoorType.Treasure || treasureSpawned)) type = DoorType.Combat;
+            if (type == DoorType.Treasure) treasureSpawned = true;
             doors.Add(Door.Create(type, new Vector3(x, doorsY, 0)).gameObject);
         }
     }

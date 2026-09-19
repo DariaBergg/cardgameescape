@@ -51,7 +51,7 @@ public class UsurerVisit : MerchantVisit
             if (FirstCreditFree)
             {
                 gm.SetFlag("Usurer_SealCreditUsed", "1");
-                Say("Ростовщик косится на печать у тебя на поясе.\n«Считай, что эта — за старый долг. Следующая будет дороже.»", ShopOptions());
+                Done("Ростовщик косится на печать у тебя на поясе.\n«Считай, что эта — за старый долг. Следующая будет дороже.»");
                 return;
             }
             gm.AddObligation(new Obligation
@@ -62,7 +62,7 @@ public class UsurerVisit : MerchantVisit
                 hpCost = CreditCost
             });
             gm.SetFlag(PaidFlag, "1");
-            Say("«Возьми. Вернёшь, когда придёт срок. Я всегда получаю своё.»", ShopOptions());
+            Done("«Возьми. Вернёшь, когда придёт срок. Я всегда получаю своё.»");
         });
     }
 
@@ -83,7 +83,7 @@ public class UsurerVisit : MerchantVisit
                 roomsRemaining = PledgeRooms,
                 card = chosen
             });
-            Say("«Береги мою вещь. И не пытайся залечить то, что должно болеть.»", ShopOptions());
+            Done("«Береги мою вещь. И не пытайся залечить то, что должно болеть.»");
         });
     }
 
@@ -91,7 +91,7 @@ public class UsurerVisit : MerchantVisit
     {
         gm.AddMaxHP(5);
         gm.playerDeck.Add(CardPools.Instance.debt);
-        Say("Ростовщик делает пометку в книге.\n«Теперь ты можешь выдержать больше. Когда-нибудь и я попрошу кое-что взамен.»", ShopOptions());
+        Done("Ростовщик делает пометку в книге.\n«Теперь ты можешь выдержать больше. Когда-нибудь и я попрошу кое-что взамен.»");
     }
 
     void SealDialogue()

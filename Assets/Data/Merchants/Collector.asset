@@ -16,6 +16,6 @@ MonoBehaviour:
   displayName: "\u0421\u043E\u0431\u0438\u0440\u0430\u0442\u0435\u043B\u044C"
   sprite: {fileID: 21300000, guid: d92a965c6c9e04f808f1e1fb7e725db6, type: 3}
   background: {fileID: 21300000, guid: c9a7069c3ed324ede9040cd5a0262697, type: 3}
-  position: {x: 4.4, y: -3.8, z: 0}
+  position: {x: 4.2, y: -4.9, z: 0}
   spriteHeight: 3.2
   placeholderColor: {r: 0.5, g: 0.3, b: 0.6, a: 1}

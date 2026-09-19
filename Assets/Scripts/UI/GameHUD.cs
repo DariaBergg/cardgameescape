@@ -9,6 +9,9 @@ public class GameHUD : MonoBehaviour
     Text goldText;
     Text itemsText;
     Text notifyText;
+    RectTransform announcePanel;
+    Text announceText;
+    float announceUntil;
     UnitFrame playerFrame;
     SpriteRenderer playerRenderer;
     float notifyUntil;
@@ -35,6 +38,15 @@ public class GameHUD : MonoBehaviour
         itemsText.raycastTarget = false;
         notifyText = UIFactory.CreateText(canvas, "NotifyText", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 200), new Vector2(900, 60));
         notifyText.color = new Color(1f, 0.9f, 0.5f);
+
+        announcePanel = UIFactory.CreateRect(canvas, "Announce", new Vector2(0.5f, 0.5f), new Vector2(0, 110), new Vector2(760, 110));
+        var announceBg = announcePanel.gameObject.AddComponent<Image>();
+        announceBg.color = new Color(0.08f, 0.02f, 0.02f, 0.92f);
+        announceBg.raycastTarget = false;
+        announceText = UIFactory.CreateText(announcePanel, "Text", "", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(720, 100));
+        announceText.color = new Color(1f, 0.55f, 0.5f);
+        announceText.raycastTarget = false;
+        announcePanel.gameObject.SetActive(false);
         roomText.raycastTarget = false;
         eliteText.raycastTarget = false;
         notifyText.raycastTarget = false;
@@ -111,6 +123,19 @@ public class GameHUD : MonoBehaviour
         roomText.text = roomName;
     }
 
+    public void Announce(string message, bool bad, float seconds = 4.5f)
+    {
+        announceText.text = message;
+        announceText.color = bad ? new Color(1f, 0.55f, 0.5f) : new Color(0.7f, 1f, 0.7f);
+        announcePanel.gameObject.SetActive(true);
+        announceUntil = Time.time + seconds;
+        if (bad && playerRenderer != null)
+        {
+            var fx = FindFirstObjectByType<CombatFX>();
+            if (fx != null) fx.Flash(playerRenderer, new Color(1f, 0.35f, 0.3f), 0.4f);
+        }
+    }
+
     public void Notify(string message, float seconds = 3f)
     {
         notifyText.text = message;
@@ -143,5 +168,6 @@ public class GameHUD : MonoBehaviour
             deckButton.gameObject.SetActive(gm.combatsWon >= deckUnlockCombats && !inCombat);
         }
         if (Time.time > notifyUntil) notifyText.text = "";
+        if (announcePanel.gameObject.activeSelf && Time.time > announceUntil) announcePanel.gameObject.SetActive(false);
     }
 }
