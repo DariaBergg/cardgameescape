@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: e1ee471552732466e9c99c9303a4738c
+guid: 0a010231f077a46358c8fdd530919aba
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7382907729831147471
-    second: Dragonborn_0
+      213: -7758562372811409
+    second: firebreathattack_0
   - first:
-      213: -7354330654237213695
-    second: Dragonborn_1
+      213: -6581440064968391780
+    second: firebreathattack_1
   - first:
-      213: -5137917491175069661
-    second: Dragonborn_2
+      213: 3429713586668274281
+    second: firebreathattack_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,12 +52,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 548.5714
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -106,13 +106,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Dragonborn_0
+      name: firebreathattack_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 19
-        width: 1007
-        height: 1507
+        y: 0
+        width: 1254
+        height: 1204
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -121,20 +121,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 138cde93984aa8990800000000000000
-      internalID: -7382907729831147471
+      spriteID: f650dcde0af64eff0800000000000000
+      internalID: -7758562372811409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Dragonborn_1
+      name: firebreathattack_1
       rect:
         serializedVersion: 2
-        x: 654
-        y: 19
-        width: 11
-        height: 15
+        x: 667
+        y: 1197
+        width: 13
+        height: 10
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,20 +143,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 10cbc612c3b20f990800000000000000
-      internalID: -7354330654237213695
+      spriteID: c93090181270aa4a0800000000000000
+      internalID: -6581440064968391780
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Dragonborn_2
+      name: firebreathattack_2
       rect:
         serializedVersion: 2
-        x: 686
-        y: 15
-        width: 11
-        height: 14
+        x: 1158
+        y: 1106
+        width: 66
+        height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -165,8 +165,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3286e3d734372b8b0800000000000000
-      internalID: -5137917491175069661
+      spriteID: 96281bee55ac89f20800000000000000
+      internalID: 3429713586668274281
       vertices: []
       indices: 
       edges: []
@@ -175,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -185,9 +185,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Dragonborn_0: -7382907729831147471
-      Dragonborn_1: -7354330654237213695
-      Dragonborn_2: -5137917491175069661
+      firebreathattack_0: -7758562372811409
+      firebreathattack_1: -6581440064968391780
+      firebreathattack_2: 3429713586668274281
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

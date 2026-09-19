@@ -36,6 +36,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public CardData UpgradeCard(CardData card)
+    {
+        int index = playerDeck.IndexOf(card);
+        if (index < 0 || card.upgraded) return card;
+        var upgraded = card.CreateUpgradedCopy();
+        playerDeck[index] = upgraded;
+        return upgraded;
+    }
+
     public int EliteChance(EnemyData elite)
     {
         if (elite == null) return 0;

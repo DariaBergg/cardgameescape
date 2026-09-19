@@ -1,12 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RoomManager : MonoBehaviour
 {
     public static RoomManager Instance { get; private set; }
 
     public DoorVisuals doorVisuals;
+    public SpriteRenderer background;
+    public Sprite startBackground;
+    public List<Sprite> combatBackgrounds = new List<Sprite>();
+    public List<RestRoomVariant> restVariants = new List<RestRoomVariant>();
 
     [Tooltip("Обычные враги за красной дверью")]
     public List<EnemyData> enemies = new List<EnemyData>();
@@ -15,15 +21,26 @@ public class RoomManager : MonoBehaviour
     [Tooltip("Элиты: могут выйти за фиолетовой дверью, метки на картах повышают их шанс")]
     public List<EnemyData> elites = new List<EnemyData>();
     [Range(0, 100)] public int eliteBaseChance = 25;
+    public int doorsPerChoice = 2;
     public Vector3 playerSpawn = new Vector3(0, -3f, 0);
     public float doorsY = 3.5f;
     public float doorSpacing = 3f;
+    public float fadeDuration = 0.3f;
+
+    const string HubName = "Перекрёсток";
 
     static readonly DoorType[] doorWeights =
     {
         DoorType.Combat, DoorType.Combat, DoorType.Combat,
         DoorType.Danger, DoorType.Rest, DoorType.Treasure, DoorType.Event, DoorType.Random
     };
+
+    class RoomPlan
+    {
+        public string title;
+        public Sprite background;
+        public Action start;
+    }
 
     readonly List<GameObject> doors = new List<GameObject>();
     PlayerController player;
@@ -41,7 +58,8 @@ public class RoomManager : MonoBehaviour
         player = FindFirstObjectByType<PlayerController>();
         playerBody = player.GetComponent<Rigidbody2D>();
         hud = GameHUD.Create();
-        hud.SetRoom("Стартовая комната");
+        hud.SetRoom(HubName);
+        SetBackground(startBackground);
 
         foreach (var door in FindObjectsByType<Door>(FindObjectsSortMode.None))
             doors.Add(door.gameObject);
@@ -50,10 +68,10 @@ public class RoomManager : MonoBehaviour
     public void EnterDoor(DoorType type)
     {
         if (transitioning) return;
-        StartCoroutine(Transition(type));
+        StartCoroutine(EnterRoom(type));
     }
 
-    IEnumerator Transition(DoorType type)
+    IEnumerator EnterRoom(DoorType type)
     {
         transitioning = true;
         player.enabled = false;
@@ -61,51 +79,156 @@ public class RoomManager : MonoBehaviour
 
         if (type == DoorType.Random) type = (DoorType)Random.Range(0, 5);
         GameManager.Instance.roomsVisited++;
-        hud.SetRoom($"Комната {GameManager.Instance.roomsVisited}: {RoomName(type)}");
+        var plan = PlanRoom(type);
 
-        playerBody.position = playerSpawn;
-        player.transform.position = playerSpawn;
-
-        yield return new WaitForSeconds(0.4f);
+        yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
+        SetBackground(plan.background);
+        hud.SetRoom($"Комната {GameManager.Instance.roomsVisited}: {plan.title}");
+        PlacePlayer(playerSpawn);
         transitioning = false;
-        ResolveRoom(type);
+        plan.start();
+        yield return null;
+        yield return ScreenFader.Get().FadeTo(0f, fadeDuration);
     }
 
-    void ResolveRoom(DoorType type)
+    RoomPlan PlanRoom(DoorType type)
     {
         switch (type)
         {
             case DoorType.Combat:
-                CombatManager.Instance.StartCombat(Pick(enemies));
-                break;
+            {
+                var enemy = Pick(enemies);
+                return new RoomPlan { title = "Бой", background = PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
+            }
             case DoorType.Danger:
-                CombatManager.Instance.StartCombat(RollDangerEncounter());
-                break;
+            {
+                var enemy = RollDangerEncounter(out bool isElite);
+                return new RoomPlan
+                {
+                    title = "Опасная комната",
+                    background = PickOrNull(combatBackgrounds),
+                    start = () =>
+                    {
+                        if (isElite) hud.Notify($"{enemy.enemyName} почуял тебя!", 2.5f);
+                        CombatManager.Instance.StartCombat(enemy);
+                    }
+                };
+            }
             case DoorType.Rest:
-                GameManager.Instance.Heal(15);
-                hud.Notify("Ты отдохнул: +15 HP");
-                OnRoomCleared();
-                break;
+            {
+                var variant = PickOrNull(restVariants);
+                return new RoomPlan
+                {
+                    title = variant != null ? variant.title : "Отдых",
+                    background = variant != null ? variant.background : null,
+                    start = () => ResolveRest(variant)
+                };
+            }
             case DoorType.Treasure:
-                hud.Notify("Сокровищница (пока пусто)");
-                OnRoomCleared();
+                return new RoomPlan { title = "Сокровище", background = null, start = () => { hud.Notify("Сокровищница (пока пусто)"); OnRoomCleared(); } };
+            default:
+                return new RoomPlan { title = "Событие", background = null, start = () => { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); } };
+        }
+    }
+
+    void ResolveRest(RestRoomVariant variant)
+    {
+        var gm = GameManager.Instance;
+        if (variant == null)
+        {
+            gm.Heal(10);
+            hud.Notify("Ты отдохнул: +10 HP");
+            OnRoomCleared();
+            return;
+        }
+
+        switch (variant.kind)
+        {
+            case RestRoomKind.Campfire:
+                ShowCampfire(variant);
                 break;
-            case DoorType.Event:
-                hud.Notify("Случайное событие (пока пусто)");
+            default:
+                gm.Heal(variant.healAmount);
+                hud.Notify($"{variant.description}  +{variant.healAmount} HP", 4f);
                 OnRoomCleared();
                 break;
         }
     }
 
+    void ShowCampfire(RestRoomVariant variant)
+    {
+        var gm = GameManager.Instance;
+        var ui = RestRoomUI.Get();
+        var options = new List<RestRoomUI.Option>
+        {
+            new RestRoomUI.Option
+            {
+                label = "Отдохнуть",
+                description = $"Восстановить {variant.healAmount} HP",
+                action = () =>
+                {
+                    ui.Hide();
+                    gm.Heal(variant.healAmount);
+                    hud.Notify($"Ты отдохнул у костра: +{variant.healAmount} HP");
+                    OnRoomCleared();
+                }
+            },
+            new RestRoomUI.Option
+            {
+                label = "Точить когти",
+                description = "Улучшить одну карту из колоды",
+                action = () =>
+                {
+                    ui.Hide();
+                    DeckPickerUI.Get().Show(
+                        "Выбери карту для улучшения",
+                        gm.playerDeck,
+                        card => !card.upgraded,
+                        card =>
+                        {
+                            var upgraded = gm.UpgradeCard(card);
+                            hud.Notify($"«{upgraded.cardName}»: {upgraded.EffectsSummary}", 4f);
+                            OnRoomCleared();
+                        },
+                        () => ShowCampfire(variant));
+                }
+            }
+        };
+        ui.Show(variant.title, variant.description, options);
+    }
+
     public void OnRoomCleared()
     {
         player.enabled = true;
+        hud.ShowExitButton(() => StartCoroutine(ReturnToHub()));
+    }
+
+    IEnumerator ReturnToHub()
+    {
+        transitioning = true;
+        player.enabled = false;
+
+        yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
+        SetBackground(startBackground);
+        hud.SetRoom(HubName);
+        player.ExitCombatPose(playerSpawn);
         SpawnDoors();
+        yield return ScreenFader.Get().FadeTo(0f, fadeDuration);
+
+        transitioning = false;
+        player.enabled = true;
+    }
+
+    void PlacePlayer(Vector3 position)
+    {
+        playerBody.position = position;
+        player.transform.position = position;
     }
 
     void SpawnDoors()
     {
-        int count = Random.Range(2, 4);
+        ClearDoors();
+        int count = doorsPerChoice;
         for (int i = 0; i < count; i++)
         {
             float x = (i - (count - 1) / 2f) * doorSpacing;
@@ -120,7 +243,14 @@ public class RoomManager : MonoBehaviour
         doors.Clear();
     }
 
-    EnemyData RollDangerEncounter()
+    void SetBackground(Sprite sprite)
+    {
+        if (background == null) return;
+        background.sprite = sprite;
+        background.enabled = sprite != null;
+    }
+
+    EnemyData RollDangerEncounter(out bool isElite)
     {
         var candidates = new List<EnemyData>(elites);
         Shuffle(candidates);
@@ -129,10 +259,11 @@ public class RoomManager : MonoBehaviour
             int chance = Mathf.Min(100, eliteBaseChance + GameManager.Instance.EliteChance(elite));
             if (Random.Range(0, 100) < chance)
             {
-                hud.Notify($"{elite.enemyName} почуял тебя!", 2.5f);
+                isElite = true;
                 return elite;
             }
         }
+        isElite = false;
         return Pick(dangerEnemies.Count > 0 ? dangerEnemies : enemies);
     }
 
@@ -145,18 +276,6 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    static EnemyData Pick(List<EnemyData> list) => list[Random.Range(0, list.Count)];
-
-    static string RoomName(DoorType type)
-    {
-        switch (type)
-        {
-            case DoorType.Combat: return "Бой";
-            case DoorType.Danger: return "Опасная комната";
-            case DoorType.Rest: return "Отдых";
-            case DoorType.Treasure: return "Сокровище";
-            case DoorType.Event: return "Событие";
-            default: return type.ToString();
-        }
-    }
+    static T Pick<T>(List<T> list) => list[Random.Range(0, list.Count)];
+    static T PickOrNull<T>(List<T> list) where T : class => list.Count > 0 ? list[Random.Range(0, list.Count)] : null;
 }

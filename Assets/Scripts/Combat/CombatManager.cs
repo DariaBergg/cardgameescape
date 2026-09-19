@@ -8,6 +8,10 @@ public class CombatManager : MonoBehaviour
     public static CombatManager Instance { get; private set; }
 
     public int handSize = 3;
+    public Vector3 combatPlayerPosition = new Vector3(-5.5f, -1.6f, 0);
+    public float combatPlayerScale = 1.3f;
+    public Vector3 combatEnemyPosition = new Vector3(3.5f, 0.6f, 0);
+    public float combatEnemyScale = 1.15f;
 
     EnemyData enemy;
     EnemyMove currentMove;
@@ -119,19 +123,21 @@ public class CombatManager : MonoBehaviour
 
         var player = FindFirstObjectByType<PlayerController>();
         playerRenderer = player != null ? player.GetComponent<SpriteRenderer>() : null;
+        if (player != null) player.EnterCombatPose(combatPlayerPosition, combatPlayerScale);
 
         enemyVisual = new GameObject("Enemy_" + data.enemyName);
         enemyRenderer = enemyVisual.AddComponent<SpriteRenderer>();
         enemyRenderer.sortingOrder = 2;
-        enemyVisual.transform.position = new Vector3(0, 1.5f, 0);
+        enemyVisual.transform.position = combatEnemyPosition;
         if (data.sprite != null)
         {
             enemyRenderer.sprite = data.sprite;
+            enemyVisual.transform.localScale = Vector3.one * combatEnemyScale;
         }
         else
         {
             enemyRenderer.sprite = PlaceholderSprites.Square(data.color);
-            enemyVisual.transform.localScale = Vector3.one * 1.6f;
+            enemyVisual.transform.localScale = Vector3.one * 2f;
         }
 
         if (ui == null) ui = CombatUI.Create(this);
@@ -173,7 +179,7 @@ public class CombatManager : MonoBehaviour
             poisonTurns--;
             LastEvent += $"  Яд: −{poisonDamage} HP.";
             fx.Flash(playerRenderer, PoisonColor);
-            fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"-{poisonDamage} яд", PoisonColor);
+            fx.FloatingText(PlayerHead, $"-{poisonDamage} яд", PoisonColor);
             if (GameManager.Instance.currentHP <= 0)
             {
                 Lose();
@@ -181,24 +187,30 @@ public class CombatManager : MonoBehaviour
             }
         }
 
-        DiscardHand();
-        int totalCards = drawPile.Count + discardPile.Count;
-        int normalDraws = Mathf.Min(handSize, totalCards);
-        int draws = Mathf.Max(1, normalDraws - nextHandPenalty);
-        if (nextHandPenalty > 0)
+        if (nextHandPenalty > 0 && hand.Count > 1)
         {
-            LastEvent += $"  Припасы испорчены: в этом ходу у тебя {draws} карт(а) вместо {normalDraws}.";
-            fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"-{normalDraws - draws} карта", DebuffColor);
+            int lost = Mathf.Min(nextHandPenalty, hand.Count - 1);
+            for (int i = 0; i < lost; i++)
+            {
+                int index = Random.Range(0, hand.Count);
+                discardPile.Add(hand[index]);
+                hand.RemoveAt(index);
+            }
+            nextHandPenalty = 0;
+            fx.FloatingText(PlayerHead, $"-{lost} карта", DebuffColor);
         }
-        nextHandPenalty = 0;
-        for (int i = 0; i < draws; i++) DrawCard();
-        ui.Refresh();
-    }
 
-    void DiscardHand()
-    {
-        discardPile.AddRange(hand);
-        hand.Clear();
+        if (hand.Count == 0)
+        {
+            int totalCards = drawPile.Count + discardPile.Count;
+            int normalDraws = Mathf.Min(handSize, totalCards);
+            int draws = Mathf.Max(1, normalDraws - nextHandPenalty);
+            if (nextHandPenalty > 0 && draws < normalDraws)
+                fx.FloatingText(PlayerHead, $"-{normalDraws - draws} карта", DebuffColor);
+            nextHandPenalty = 0;
+            for (int i = 0; i < draws; i++) DrawCard();
+        }
+        ui.Refresh();
     }
 
     void DrawCard()
@@ -244,6 +256,8 @@ public class CombatManager : MonoBehaviour
     }
 
     Vector3 PlayerPos => playerRenderer != null ? playerRenderer.transform.position : Vector3.down * 3f;
+    Vector3 PlayerHead => playerRenderer != null ? playerRenderer.bounds.center + Vector3.up * 0.4f : PlayerPos + Vector3.up;
+    Vector3 EnemyCenter => enemyRenderer != null ? enemyRenderer.bounds.center + Vector3.up * 0.3f : new Vector3(0, 1.5f, 0);
 
     void ApplyCardEffect(CardData card)
     {
@@ -270,34 +284,34 @@ public class CombatManager : MonoBehaviour
                     fx.Flash(enemyRenderer, DamageColor);
                     fx.Shake(enemyVisual.transform);
                     string popup = totalDamage > 0 ? (effect.hits > 1 ? $"-{totalDamage} (×{effect.hits})" : $"-{totalDamage}") : "Блок!";
-                    fx.FloatingText(EnemyTop + Vector3.up * 0.3f, popup, totalDamage > 0 ? DamageColor : BlockColor);
+                    fx.FloatingText(EnemyCenter, popup, totalDamage > 0 ? DamageColor : BlockColor);
                     break;
                 }
                 case CardEffectType.Block:
                     playerBlock += effect.value;
                     log.Add($"+{effect.value} блока");
                     fx.Flash(playerRenderer, BlockColor);
-                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"+{effect.value} блок", BlockColor);
+                    fx.FloatingText(PlayerHead, $"+{effect.value} блок", BlockColor);
                     break;
                 case CardEffectType.Heal:
                     GameManager.Instance.Heal(effect.value);
                     log.Add($"+{effect.value} HP");
                     fx.Flash(playerRenderer, HealColor);
-                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"+{effect.value} HP", HealColor);
+                    fx.FloatingText(PlayerHead, $"+{effect.value} HP", HealColor);
                     break;
                 case CardEffectType.PoisonEnemy:
                     enemyPoisonDamage = Mathf.Max(enemyPoisonDamage, effect.value);
                     enemyPoisonTurns += effect.turns;
                     log.Add($"яд {effect.value}×{effect.turns}");
                     fx.Flash(enemyRenderer, PoisonColor);
-                    fx.FloatingText(EnemyTop + Vector3.up * 0.6f, "Яд!", PoisonColor);
+                    fx.FloatingText(EnemyCenter, "Яд!", PoisonColor);
                     break;
                 case CardEffectType.WeakenEnemy:
                     enemyWeakAmount = Mathf.Max(enemyWeakAmount, effect.value);
                     enemyWeakTurns += effect.turns;
                     log.Add($"враг ослаблен −{effect.value} ({effect.turns} х.)");
                     fx.Flash(enemyRenderer, DebuffColor);
-                    fx.FloatingText(EnemyTop + Vector3.up * 0.6f, "Ослаблен!", DebuffColor);
+                    fx.FloatingText(EnemyCenter, "Ослаблен!", DebuffColor);
                     break;
             }
         }
@@ -322,7 +336,7 @@ public class CombatManager : MonoBehaviour
             enemyPoisonTurns--;
             LastEvent = $"Яд: {enemy.enemyName} теряет {enemyPoisonDamage} HP.";
             fx.Flash(enemyRenderer, PoisonColor);
-            fx.FloatingText(EnemyTop + Vector3.up * 0.3f, $"-{enemyPoisonDamage} яд", PoisonColor);
+            fx.FloatingText(EnemyCenter, $"-{enemyPoisonDamage} яд", PoisonColor);
             ui.Refresh();
             yield return new WaitForSeconds(0.6f);
             if (enemyHP <= 0)
@@ -366,12 +380,12 @@ public class CombatManager : MonoBehaviour
                 {
                     fx.Flash(playerRenderer, DamageColor);
                     if (playerRenderer != null) fx.Shake(playerRenderer.transform);
-                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, $"-{damage}", DamageColor);
+                    fx.FloatingText(PlayerHead, $"-{damage}", DamageColor);
                 }
                 else
                 {
                     fx.Flash(playerRenderer, BlockColor);
-                    fx.FloatingText(PlayerPos + Vector3.up * 0.8f, "Блок!", BlockColor);
+                    fx.FloatingText(PlayerHead, "Блок!", BlockColor);
                 }
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
@@ -382,7 +396,7 @@ public class CombatManager : MonoBehaviour
                 enemyBlock += move.block;
                 LastEvent = $"{enemy.enemyName} получает {move.block} блока.";
                 fx.Flash(enemyRenderer, BlockColor);
-                fx.FloatingText(EnemyTop + Vector3.up * 0.3f, $"+{move.block} блок", BlockColor);
+                fx.FloatingText(EnemyCenter, $"+{move.block} блок", BlockColor);
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -393,7 +407,7 @@ public class CombatManager : MonoBehaviour
                 poisonTurns += move.poisonTurns;
                 LastEvent = $"Ты отравлен: {move.poisonDamage} урона в начале хода, {move.poisonTurns} х.";
                 fx.Flash(playerRenderer, PoisonColor);
-                fx.FloatingText(PlayerPos + Vector3.up * 0.8f, "Яд!", PoisonColor);
+                fx.FloatingText(PlayerHead, "Яд!", PoisonColor);
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -403,7 +417,7 @@ public class CombatManager : MonoBehaviour
                 nextHandPenalty += move.handReduce;
                 LastEvent = $"Ты ослаблен: в следующий ход на {move.handReduce} карту меньше.";
                 fx.Flash(playerRenderer, DebuffColor);
-                fx.FloatingText(PlayerPos + Vector3.up * 0.8f, "Ослаблен!", DebuffColor);
+                fx.FloatingText(PlayerHead, "Ослаблен!", DebuffColor);
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -424,8 +438,19 @@ public class CombatManager : MonoBehaviour
     void Win()
     {
         combatActive = false;
+        enemyActing = true;
         LastEvent = $"{enemy.enemyName} повержен!";
         ui.Refresh();
+        StartCoroutine(WinRoutine());
+    }
+
+    IEnumerator WinRoutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        fx.Shake(enemyVisual.transform, 0.2f, 0.4f);
+        yield return fx.FadeOut(enemyRenderer, 0.7f);
+        yield return new WaitForSeconds(0.5f);
+        enemyActing = false;
         ui.ShowRewards(PickRewards(), OnRewardChosen);
     }
 

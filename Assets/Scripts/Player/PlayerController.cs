@@ -61,6 +61,22 @@ public class PlayerController : MonoBehaviour
         SetHovered(null);
     }
 
+    public void EnterCombatPose(Vector3 position, float scale)
+    {
+        target = null;
+        rb.position = position;
+        transform.position = position;
+        transform.localScale = Vector3.one * scale;
+    }
+
+    public void ExitCombatPose(Vector3 position)
+    {
+        target = null;
+        rb.position = position;
+        transform.position = position;
+        transform.localScale = Vector3.one;
+    }
+
     void Update()
     {
         var mouse = Mouse.current;

@@ -14,7 +14,32 @@ public class CardData : ScriptableObject
     public EnemyData eliteMark;
     [Range(0, 100)] public int eliteChanceBonus;
 
+    [System.NonSerialized] public bool upgraded;
+
     public bool IsMarked => eliteMark != null;
+
+    public CardData CreateUpgradedCopy()
+    {
+        var copy = Instantiate(this);
+        copy.name = name + "+";
+        copy.cardName = cardName + "+";
+        copy.upgraded = true;
+        copy.effects = new List<CardEffect>();
+        foreach (var e in effects)
+        {
+            var u = new CardEffect { type = e.type, value = e.value, hits = e.hits, turns = e.turns };
+            switch (e.type)
+            {
+                case CardEffectType.Damage: u.value += 2; break;
+                case CardEffectType.Block: u.value += 2; break;
+                case CardEffectType.Heal: u.value += 3; break;
+                case CardEffectType.PoisonEnemy: u.value += 1; break;
+                case CardEffectType.WeakenEnemy: u.turns += 1; break;
+            }
+            copy.effects.Add(u);
+        }
+        return copy;
+    }
 
     public string EffectsSummary => string.Join(", ", effects.Select(e => e.Summary));
 

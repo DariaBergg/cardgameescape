@@ -1,16 +1,13 @@
 fileFormatVersion: 2
-guid: e1ee471552732466e9c99c9303a4738c
+guid: 83df246f550244c95bb4b0f8b9524516
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7382907729831147471
-    second: Dragonborn_0
+      213: -4690656104529194450
+    second: card-template_0
   - first:
-      213: -7354330654237213695
-    second: Dragonborn_1
-  - first:
-      213: -5137917491175069661
-    second: Dragonborn_2
+      213: 4347931695585553415
+    second: card-template_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,12 +49,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 548.5714
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -106,13 +103,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Dragonborn_0
+      name: card-template_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 19
-        width: 1007
-        height: 1507
+        x: 10
+        y: 17
+        width: 1000
+        height: 1510
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -121,20 +118,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 138cde93984aa8990800000000000000
-      internalID: -7382907729831147471
+      spriteID: e221506002177eeb0800000000000000
+      internalID: -4690656104529194450
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Dragonborn_1
+      name: card-template_1
       rect:
         serializedVersion: 2
-        x: 654
-        y: 19
-        width: 11
-        height: 15
+        x: 612
+        y: 17
+        width: 17
+        height: 17
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,30 +140,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 10cbc612c3b20f990800000000000000
-      internalID: -7354330654237213695
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Dragonborn_2
-      rect:
-        serializedVersion: 2
-        x: 686
-        y: 15
-        width: 11
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3286e3d734372b8b0800000000000000
-      internalID: -5137917491175069661
+      spriteID: 70ce90f37d4f65c30800000000000000
+      internalID: 4347931695585553415
       vertices: []
       indices: 
       edges: []
@@ -175,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -185,9 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Dragonborn_0: -7382907729831147471
-      Dragonborn_1: -7354330654237213695
-      Dragonborn_2: -5137917491175069661
+      card-template_0: -4690656104529194450
+      card-template_1: 4347931695585553415
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

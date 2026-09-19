@@ -60,6 +60,19 @@ public class CombatFX : MonoBehaviour
         if (target != null) target.position = origin;
     }
 
+    public IEnumerator FadeOut(SpriteRenderer sr, float duration)
+    {
+        if (sr == null) yield break;
+        Color start = sr.color;
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            if (sr == null) yield break;
+            sr.color = new Color(start.r, start.g, start.b, Mathf.Lerp(start.a, 0f, t / duration));
+            yield return null;
+        }
+        if (sr != null) sr.color = new Color(start.r, start.g, start.b, 0f);
+    }
+
     public void FloatingText(Vector3 worldPos, string text, Color color)
     {
         StartCoroutine(FloatingTextRoutine(worldPos, text, color));

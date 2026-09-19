@@ -5,8 +5,10 @@ using UnityEngine.UI;
 public class GameHUD : MonoBehaviour
 {
     Text roomText;
-    Text statsText;
+    Text eliteText;
     Text notifyText;
+    UnitFrame playerFrame;
+    SpriteRenderer playerRenderer;
     float notifyUntil;
 
     public static GameHUD Create()
@@ -19,13 +21,49 @@ public class GameHUD : MonoBehaviour
 
     void Build(Transform canvas)
     {
-        roomText = UIFactory.CreateText(canvas, "RoomText", "", 26, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -16), new Vector2(500, 36));
-        statsText = UIFactory.CreateText(canvas, "StatsText", "", 22, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -52), new Vector2(600, 90));
+        roomText = UIFactory.CreateText(canvas, "RoomText", "", 20, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -14), new Vector2(500, 28));
+        roomText.color = new Color(1f, 1f, 1f, 0.75f);
+        eliteText = UIFactory.CreateText(canvas, "EliteText", "", 16, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -42), new Vector2(500, 60));
+        eliteText.color = new Color(0.85f, 0.65f, 1f);
         notifyText = UIFactory.CreateText(canvas, "NotifyText", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 200), new Vector2(900, 60));
         notifyText.color = new Color(1f, 0.9f, 0.5f);
         roomText.raycastTarget = false;
-        statsText.raycastTarget = false;
+        eliteText.raycastTarget = false;
         notifyText.raycastTarget = false;
+
+        playerFrame = UnitFrame.Create(canvas, "PlayerFrame", new Color(0.3f, 0.8f, 0.35f));
+        playerFrame.SetAnchor(PlayerTop);
+
+        exitButton = UIFactory.CreateButton(canvas, "ExitButton", "Выйти", 22, new Vector2(0.5f, 0), new Vector2(0, 40), new Vector2(220, 56), new Color(0.3f, 0.3f, 0.4f, 0.95f));
+        exitButton.onClick.AddListener(() => { var cb = onExit; HideExitButton(); cb?.Invoke(); });
+        exitButton.gameObject.SetActive(false);
+    }
+
+    Button exitButton;
+    System.Action onExit;
+
+    public void ShowExitButton(System.Action callback)
+    {
+        onExit = callback;
+        exitButton.gameObject.SetActive(true);
+    }
+
+    public void HideExitButton()
+    {
+        onExit = null;
+        exitButton.gameObject.SetActive(false);
+    }
+
+    Vector3 PlayerTop()
+    {
+        if (playerRenderer == null)
+        {
+            var player = FindFirstObjectByType<PlayerController>();
+            playerRenderer = player != null ? player.GetComponent<SpriteRenderer>() : null;
+        }
+        if (playerRenderer == null) return Vector3.zero;
+        var b = playerRenderer.bounds;
+        return new Vector3(b.center.x, b.max.y + 0.05f, 0);
     }
 
     static IEnumerable<EnemyData> MarkedElites(GameManager gm)
@@ -52,10 +90,15 @@ public class GameHUD : MonoBehaviour
         var gm = GameManager.Instance;
         if (gm != null)
         {
-            string stats = $"HP {gm.currentHP}/{gm.MaxHP}   Колода: {gm.playerDeck.Count}   Комнат: {gm.roomsVisited}";
+            var combat = CombatManager.Instance;
+            bool inCombat = combat != null && combat.CombatActive;
+            string name = gm.selectedCharacter != null ? gm.selectedCharacter.characterName : "";
+            playerFrame.Set(name, gm.currentHP, gm.MaxHP, inCombat ? combat.PlayerBlock : 0, inCombat ? combat.PlayerStatusText : "");
+
+            string elites = "";
             foreach (var elite in MarkedElites(gm))
-                stats += $"\n<color=#d9a6ff>{elite.enemyName}: +{gm.EliteChance(elite)}% за фиолетовой дверью</color>";
-            statsText.text = stats;
+                elites += $"{elite.enemyName}: +{gm.EliteChance(elite)}% за фиолетовой дверью\n";
+            eliteText.text = elites;
         }
         if (Time.time > notifyUntil) notifyText.text = "";
     }
