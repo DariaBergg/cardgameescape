@@ -10,7 +10,9 @@ public enum CardEffectType
     Thorns,
     Cleanse,
     SelfDamage,
-    NoBlockNextTurn
+    NoBlockNextTurn,
+    NoAttackNextTurn,
+    MoltenGuard
 }
 
 public enum CardCondition

@@ -32,6 +32,8 @@ public class CardData : ScriptableObject
     public bool upgraded => upgradeLevel > 0;
     public CardData BaseCard => baseCard != null ? baseCard : this;
     public bool IsBad => unplayable;
+    public bool IsAttack => HasEffect(CardEffectType.Damage) || HasEffect(CardEffectType.PierceDamage);
+    public bool IsDefense => HasEffect(CardEffectType.Block);
 
     public bool IsMarked => eliteMark != null;
 
@@ -63,6 +65,7 @@ public class CardData : ScriptableObject
                 case CardEffectType.PierceDamage: u.value += 2; break;
                 case CardEffectType.Thorns: u.value += 2; break;
                 case CardEffectType.SelfDamage: u.value = Mathf.Max(0, u.value - 1); break;
+                case CardEffectType.MoltenGuard: u.value += 1; break;
             }
             copy.effects.Add(u);
         }

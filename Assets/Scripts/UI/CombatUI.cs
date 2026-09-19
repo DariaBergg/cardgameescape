@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +22,6 @@ public class CombatUI : MonoBehaviour
     RectTransform rewardPanel;
     RectTransform rewardCardsArea;
     RectTransform defeatPanel;
-    readonly List<GameObject> cardButtons = new List<GameObject>();
 
     static readonly Vector2 IntentIconSize = new Vector2(96, 96);
     static readonly Vector2 IntentWordSize = new Vector2(200, 44);
@@ -150,23 +150,127 @@ public class CombatUI : MonoBehaviour
         intentBadge.anchoredPosition = local;
     }
 
+    class HandCardView
+    {
+        public CardData card;
+        public Button button;
+        public RectTransform rect;
+        public CanvasGroup group;
+        public bool swept;
+        public Coroutine motion;
+    }
+
+    readonly List<HandCardView> handViews = new List<HandCardView>();
+    CardData lastPlayedCard;
+    static readonly Vector2 DealOrigin = new Vector2(-620f, -80f);
+    static readonly Vector2 DiscardTarget = new Vector2(620f, -80f);
+    const float HandSpacing = 180f;
+    const float DealDuration = 0.28f;
+    const float DealStagger = 0.09f;
+
+    public void NotifyCardPlayed(CardData card) => lastPlayedCard = card;
+
+    public void SweepHand()
+    {
+        foreach (var view in handViews)
+        {
+            if (view.swept) continue;
+            view.swept = true;
+            view.button.interactable = false;
+            StartMotion(view, view.rect.anchoredPosition, DiscardTarget, 0.3f, 0f, fadeOut: true, destroy: false);
+        }
+    }
+
     void RebuildHand()
     {
-        foreach (var go in cardButtons) Destroy(go);
-        cardButtons.Clear();
-
         var hand = combat.Hand;
         int count = hand.Count;
-        const float spacing = 180f;
+        var remaining = new List<HandCardView>(handViews);
+        var ordered = new List<HandCardView>();
+        int newCount = 0;
+
         for (int i = 0; i < count; i++)
         {
             var card = hand[i];
-            float x = (i - (count - 1) / 2f) * spacing;
-            var button = CardView.Create(handArea, card, new Vector2(0.5f, 0), new Vector2(x, 0), HandCardSize);
-            CardView.SetInteractable(button, combat.CanPlay(card));
-            button.onClick.AddListener(() => combat.PlayCard(card));
-            cardButtons.Add(button.gameObject);
+            var existing = remaining.Find(v => v.card == card && !v.swept);
+            if (existing != null)
+            {
+                remaining.Remove(existing);
+                ordered.Add(existing);
+                continue;
+            }
+            var button = CardView.Create(handArea, card, new Vector2(0.5f, 0), DealOrigin, HandCardSize);
+            var captured = card;
+            button.onClick.AddListener(() => combat.PlayCard(captured));
+            var view = new HandCardView
+            {
+                card = card,
+                button = button,
+                rect = button.GetComponent<RectTransform>(),
+                group = button.gameObject.AddComponent<CanvasGroup>()
+            };
+            view.group.alpha = 0f;
+            view.button.interactable = false;
+            ordered.Add(view);
+            StartMotion(view, DealOrigin, SlotPosition(i, count), DealDuration, newCount * DealStagger, fadeOut: false, destroy: false,
+                onDone: () => CardView.SetInteractable(view.button, combat.CanPlay(view.card)));
+            newCount++;
         }
+
+        foreach (var gone in remaining)
+        {
+            if (gone.swept) { Destroy(gone.button.gameObject); continue; }
+            bool played = gone.card == lastPlayedCard;
+            var target = played ? gone.rect.anchoredPosition + new Vector2(0, 260f) : DiscardTarget;
+            gone.button.interactable = false;
+            StartMotion(gone, gone.rect.anchoredPosition, target, played ? 0.25f : 0.3f, 0f, fadeOut: true, destroy: true);
+        }
+        lastPlayedCard = null;
+
+        handViews.Clear();
+        handViews.AddRange(ordered);
+        for (int i = 0; i < ordered.Count; i++)
+        {
+            var view = ordered[i];
+            if (view.swept) continue;
+            var slot = SlotPosition(i, count);
+            bool arriving = view.group.alpha < 1f;
+            if (!arriving)
+            {
+                if ((view.rect.anchoredPosition - slot).sqrMagnitude > 1f)
+                    StartMotion(view, view.rect.anchoredPosition, slot, 0.2f, 0f, fadeOut: false, destroy: false);
+                CardView.SetInteractable(view.button, combat.CanPlay(view.card));
+            }
+        }
+    }
+
+    static Vector2 SlotPosition(int index, int count) => new Vector2((index - (count - 1) / 2f) * HandSpacing, 0f);
+
+    void StartMotion(HandCardView view, Vector2 from, Vector2 to, float duration, float delay, bool fadeOut, bool destroy, Action onDone = null)
+    {
+        if (view.motion != null) StopCoroutine(view.motion);
+        view.motion = StartCoroutine(Motion(view, from, to, duration, delay, fadeOut, destroy, onDone));
+    }
+
+    IEnumerator Motion(HandCardView view, Vector2 from, Vector2 to, float duration, float delay, bool fadeOut, bool destroy, Action onDone)
+    {
+        if (delay > 0) yield return new WaitForSeconds(delay);
+        if (view.button == null) yield break;
+        float startAlpha = fadeOut ? view.group.alpha : 0f;
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            if (view.button == null) yield break;
+            float k = 1f - Mathf.Pow(1f - t / duration, 3f);
+            view.rect.anchoredPosition = Vector2.LerpUnclamped(from, to, k);
+            view.group.alpha = fadeOut ? Mathf.Lerp(startAlpha, 0f, k) : Mathf.Min(1f, k * 2f);
+            yield return null;
+        }
+        if (view.button == null) yield break;
+        view.rect.anchoredPosition = to;
+        view.group.alpha = fadeOut ? 0f : 1f;
+        view.motion = null;
+        if (destroy) Destroy(view.button.gameObject);
+        else onDone?.Invoke();
     }
 
     Action<CardData> rewardCallback;

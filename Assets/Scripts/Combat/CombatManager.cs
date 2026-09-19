@@ -32,6 +32,10 @@ public class CombatManager : MonoBehaviour
     int playerThorns;
     bool blockLockedNextTurn;
     bool blockLocked;
+    bool attackLockedNextTurn;
+    bool attackLocked;
+    int moltenBurnDamage;
+    int moltenBurnTurns;
     int poisonDamage;
     int poisonTurns;
     int nextHandPenalty;
@@ -74,7 +78,7 @@ public class CombatManager : MonoBehaviour
     public int DiscardPileCount => discardPile.Count;
     public int CardsLeftThisTurn => Mathf.Max(0, GameManager.Instance.maxCardsPerTurn - cardsPlayedThisTurn);
     public bool CanPlayCard => combatActive && !enemyActing && CardsLeftThisTurn > 0;
-    public bool CanPlay(CardData card) => CanPlayCard && !card.unplayable && !(blockLocked && card.HasEffect(CardEffectType.Block));
+    public bool CanPlay(CardData card) => CanPlayCard && !card.unplayable && !(blockLocked && card.IsDefense) && !(attackLocked && card.IsAttack);
     public bool CanEndTurn => combatActive && !enemyActing;
 
     public int EnemyWeakAmount => enemyWeakTurns > 0 ? enemyWeakAmount : 0;
@@ -100,6 +104,9 @@ public class CombatManager : MonoBehaviour
             if (playerThorns > 0) parts.Add($"Шипы {playerThorns}");
             if (blockLocked) parts.Add("Нельзя защищаться в этот ход");
             else if (blockLockedNextTurn) parts.Add("В следующий ход нельзя защищаться");
+            if (attackLocked) parts.Add("Нельзя атаковать в этот ход");
+            else if (attackLockedNextTurn) parts.Add("В следующий ход нельзя атаковать");
+            if (moltenBurnTurns > 0) parts.Add($"Раскалённая броня: пробьёт блок — загорится {moltenBurnDamage}×{moltenBurnTurns}");
             if (poisonTurns > 0) parts.Add($"Яд: {poisonDamage} урона в начале хода, ещё {poisonTurns} х.");
             if (nextHandPenalty > 0) parts.Add($"Ослаблен: −{nextHandPenalty} карта в следующий ход");
             return string.Join("   ", parts);
@@ -132,6 +139,10 @@ public class CombatManager : MonoBehaviour
         playerThorns = 0;
         blockLocked = false;
         blockLockedNextTurn = false;
+        attackLocked = false;
+        attackLockedNextTurn = false;
+        moltenBurnDamage = 0;
+        moltenBurnTurns = 0;
         poisonDamage = 0;
         poisonTurns = 0;
         nextHandPenalty = 0;
@@ -208,7 +219,12 @@ public class CombatManager : MonoBehaviour
         playerThorns = 0;
         blockLocked = blockLockedNextTurn;
         blockLockedNextTurn = false;
+        attackLocked = attackLockedNextTurn;
+        attackLockedNextTurn = false;
+        moltenBurnDamage = 0;
+        moltenBurnTurns = 0;
         if (blockLocked) fx.FloatingText(PlayerHead, "Без защиты!", DebuffColor);
+        if (attackLocked) fx.FloatingText(PlayerHead, "Без атаки!", DebuffColor);
 
         if (poisonTurns > 0)
         {
@@ -257,6 +273,7 @@ public class CombatManager : MonoBehaviour
         hand.Remove(card);
         discardPile.Add(card);
         cardsPlayedThisTurn++;
+        ui.NotifyCardPlayed(card);
         ApplyCardEffect(card);
 
         if (enemyHP <= 0)
@@ -376,6 +393,17 @@ public class CombatManager : MonoBehaviour
                     blockLockedNextTurn = true;
                     log.Add("без защиты в след. ход");
                     break;
+                case CardEffectType.NoAttackNextTurn:
+                    attackLockedNextTurn = true;
+                    log.Add("без атаки в след. ход");
+                    break;
+                case CardEffectType.MoltenGuard:
+                    moltenBurnDamage = Mathf.Max(moltenBurnDamage, effect.value);
+                    moltenBurnTurns = Mathf.Max(moltenBurnTurns, effect.turns);
+                    log.Add("раскалённая броня");
+                    fx.Flash(playerRenderer, BurnColor);
+                    fx.FloatingText(PlayerHead, "Раскалена!", BurnColor);
+                    break;
                 case CardEffectType.Cleanse:
                     if (poisonTurns > 0) { poisonTurns = 0; poisonDamage = 0; log.Add("яд снят"); }
                     else if (nextHandPenalty > 0) { nextHandPenalty = 0; log.Add("ослабление снято"); }
@@ -398,6 +426,7 @@ public class CombatManager : MonoBehaviour
     {
         enemyActing = true;
         enemyBlock = 0;
+        ui.SweepHand();
         for (int i = hand.Count - 1; i >= 0; i--)
         {
             if (!hand[i].unplayable) continue;
@@ -495,6 +524,13 @@ public class CombatManager : MonoBehaviour
                         fx.Flash(playerRenderer, DamageColor);
                         if (playerRenderer != null) fx.Shake(playerRenderer.transform);
                         fx.FloatingText(PlayerHead, $"-{damage}", DamageColor);
+                        if (moltenBurnTurns > 0)
+                        {
+                            enemyBurnDamage = Mathf.Max(enemyBurnDamage, moltenBurnDamage);
+                            enemyBurnTurns = Mathf.Max(enemyBurnTurns, moltenBurnTurns);
+                            fx.Flash(enemyRenderer, BurnColor);
+                            fx.FloatingText(EnemyCenter, "Горит!", BurnColor);
+                        }
                     }
                     else
                     {
