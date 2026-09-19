@@ -35,7 +35,7 @@ public class DeckPickerUI : MonoBehaviour
         panel.gameObject.SetActive(false);
     }
 
-    public void Show(string title, IList<CardData> cards, Func<CardData, bool> selectable, Action<CardData> picked, Action cancelled)
+    public void Show(string title, IList<CardData> cards, Func<CardData, bool> selectable, Action<CardData> picked, Action cancelled, bool upgradePreview = false)
     {
         onPicked = picked;
         onCancel = cancelled;
@@ -57,6 +57,7 @@ public class DeckPickerUI : MonoBehaviour
             var button = CardView.Create(cardsArea, card, new Vector2(0.5f, 0.5f), new Vector2(x, y), CardSize);
             bool ok = selectable == null || selectable(card);
             CardView.SetInteractable(button, ok);
+            if (upgradePreview && ok) CardView.AddUpgradePreview(button, card);
             if (ok) button.onClick.AddListener(() => { Hide(); onPicked?.Invoke(card); });
         }
         panel.gameObject.SetActive(true);

@@ -132,6 +132,47 @@ public static class CardView
             : new Vector2(window.y * aspect, window.y);
     }
 
+    public static void AddUpgradePreview(Button button, CardData card)
+    {
+        var name = button.transform.Find("Name")?.GetComponent<Text>();
+        var rules = button.transform.Find("Rules")?.GetComponent<Text>();
+        if (name == null || rules == null) return;
+        var preview = button.gameObject.AddComponent<UpgradePreview>();
+        preview.Init(name, rules, card);
+    }
+
+    class UpgradePreview : MonoBehaviour, UnityEngine.EventSystems.IPointerEnterHandler, UnityEngine.EventSystems.IPointerExitHandler
+    {
+        Text nameText;
+        Text rulesText;
+        string originalName;
+        string originalRules;
+        string previewName;
+        string previewRules;
+
+        public void Init(Text name, Text rules, CardData card)
+        {
+            nameText = name;
+            rulesText = rules;
+            originalName = card.cardName;
+            originalRules = card.RulesText;
+            previewName = card.cardName + "+";
+            previewRules = card.UpgradePreviewRulesText();
+        }
+
+        public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            nameText.text = previewName;
+            rulesText.text = previewRules;
+        }
+
+        public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            nameText.text = originalName;
+            rulesText.text = originalRules;
+        }
+    }
+
     public static void SetInteractable(Button button, bool interactable)
     {
         button.interactable = interactable;

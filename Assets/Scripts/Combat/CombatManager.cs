@@ -126,9 +126,11 @@ public class CombatManager : MonoBehaviour
         if (player != null) player.EnterCombatPose(combatPlayerPosition, combatPlayerScale);
 
         enemyVisual = new GameObject("Enemy_" + data.enemyName);
-        enemyRenderer = enemyVisual.AddComponent<SpriteRenderer>();
-        enemyRenderer.sortingOrder = 2;
         enemyVisual.transform.position = combatEnemyPosition;
+        var spriteObject = new GameObject("Sprite");
+        spriteObject.transform.SetParent(enemyVisual.transform, false);
+        enemyRenderer = spriteObject.AddComponent<SpriteRenderer>();
+        enemyRenderer.sortingOrder = 2;
         if (data.sprite != null)
         {
             enemyRenderer.sprite = data.sprite;
@@ -139,6 +141,7 @@ public class CombatManager : MonoBehaviour
             enemyRenderer.sprite = PlaceholderSprites.Square(data.color);
             enemyVisual.transform.localScale = Vector3.one * 2f;
         }
+        if (data.flying) spriteObject.AddComponent<HoverBob>();
 
         if (ui == null) ui = CombatUI.Create(this);
         ui.Show();
@@ -359,36 +362,49 @@ public class CombatManager : MonoBehaviour
             ui.Refresh();
             yield return new WaitForSeconds(0.5f);
 
+            bool hasEffect = move.damage > 0 || move.block > 0 || move.poisonTurns > 0 || move.handReduce > 0;
+            if (!hasEffect)
+            {
+                yield return fx.Flutter(enemyVisual.transform, 1.1f);
+                LastEvent = $"{enemy.enemyName} ничего не делает.";
+                ui.Refresh();
+                yield return new WaitForSeconds(0.2f);
+            }
+
             if (move.damage > 0)
             {
-                Vector3 toPlayer = (PlayerPos - enemyVisual.transform.position).normalized * 1.3f;
-                yield return fx.Lunge(enemyVisual.transform, toPlayer, 0.3f);
-
-                int weakened = Mathf.Min(EnemyWeakAmount, move.damage);
-                int attack = move.damage - weakened;
-                int absorbed = Mathf.Min(playerBlock, attack);
-                int damage = attack - absorbed;
-                playerBlock -= absorbed;
-                GameManager.Instance.TakeDamage(damage);
-
-                LastEvent = $"{enemy.enemyName} атакует на {move.damage}.";
-                if (weakened > 0) LastEvent += $" Ослабление сняло {weakened}.";
-                if (absorbed > 0) LastEvent += $" Блок поглотил {absorbed}.";
-                LastEvent += damage > 0 ? $" Ты получил {damage} урона." : " Урон не прошёл.";
-
-                if (damage > 0)
+                for (int hit = 0; hit < move.hits; hit++)
                 {
-                    fx.Flash(playerRenderer, DamageColor);
-                    if (playerRenderer != null) fx.Shake(playerRenderer.transform);
-                    fx.FloatingText(PlayerHead, $"-{damage}", DamageColor);
+                    Vector3 toPlayer = (PlayerPos - enemyVisual.transform.position).normalized * 1.3f;
+                    yield return fx.Lunge(enemyVisual.transform, toPlayer, move.hits > 1 ? 0.22f : 0.3f);
+
+                    int weakened = Mathf.Min(EnemyWeakAmount, move.damage);
+                    int attack = move.damage - weakened;
+                    int absorbed = Mathf.Min(playerBlock, attack);
+                    int damage = attack - absorbed;
+                    playerBlock -= absorbed;
+                    GameManager.Instance.TakeDamage(damage);
+
+                    LastEvent = $"{enemy.enemyName} атакует на {move.damage}.";
+                    if (weakened > 0) LastEvent += $" Ослабление сняло {weakened}.";
+                    if (absorbed > 0) LastEvent += $" Блок поглотил {absorbed}.";
+                    LastEvent += damage > 0 ? $" Ты получил {damage} урона." : " Урон не прошёл.";
+
+                    if (damage > 0)
+                    {
+                        fx.Flash(playerRenderer, DamageColor);
+                        if (playerRenderer != null) fx.Shake(playerRenderer.transform);
+                        fx.FloatingText(PlayerHead, $"-{damage}", DamageColor);
+                    }
+                    else
+                    {
+                        fx.Flash(playerRenderer, BlockColor);
+                        fx.FloatingText(PlayerHead, "Блок!", BlockColor);
+                    }
+                    ui.Refresh();
+                    yield return new WaitForSeconds(move.hits > 1 ? 0.25f : 0.5f);
+                    if (GameManager.Instance.currentHP <= 0) break;
                 }
-                else
-                {
-                    fx.Flash(playerRenderer, BlockColor);
-                    fx.FloatingText(PlayerHead, "Блок!", BlockColor);
-                }
-                ui.Refresh();
-                yield return new WaitForSeconds(0.5f);
             }
 
             if (move.block > 0)
@@ -451,18 +467,36 @@ public class CombatManager : MonoBehaviour
         yield return fx.FadeOut(enemyRenderer, 0.7f);
         yield return new WaitForSeconds(0.5f);
         enemyActing = false;
-        ui.ShowRewards(PickRewards(), OnRewardChosen);
+
+        bool tutorial = RoomManager.Instance != null && !RoomManager.Instance.MarkedRewardsUnlocked;
+        if (tutorial) ShowUpgradeReward();
+        else ui.ShowRewards(PickRewards(), OnRewardChosen);
+    }
+
+    void ShowUpgradeReward()
+    {
+        var gm = GameManager.Instance;
+        DeckPickerUI.Get().Show(
+            "Победа! Усиль одну карту",
+            gm.playerDeck,
+            null,
+            card =>
+            {
+                gm.UpgradeCard(card);
+                OnRewardChosen(null);
+            },
+            ShowUpgradeReward,
+            upgradePreview: true);
     }
 
     List<CardData> PickRewards()
     {
+        var character = GameManager.Instance.selectedCharacter;
         var rewards = new List<CardData>();
-        var basePool = new List<CardData>(GameManager.Instance.selectedCharacter.rewardCards);
+        var basePool = new List<CardData>(character.rewardCards);
         Shuffle(basePool);
-        bool marked = RoomManager.Instance != null && RoomManager.Instance.MarkedRewardsUnlocked && enemy.rewardCards.Count > 0;
-
         if (basePool.Count > 0) rewards.Add(basePool[0]);
-        if (marked) rewards.Add(enemy.rewardCards[Random.Range(0, enemy.rewardCards.Count)]);
+        if (enemy.rewardCards.Count > 0) rewards.Add(enemy.rewardCards[Random.Range(0, enemy.rewardCards.Count)]);
         else if (basePool.Count > 1) rewards.Add(basePool[1]);
         return rewards;
     }

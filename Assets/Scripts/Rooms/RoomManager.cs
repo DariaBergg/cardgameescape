@@ -73,8 +73,6 @@ public class RoomManager : MonoBehaviour
         hud.SetRoom(HubName);
         SetBackground(startBackground);
 
-        foreach (var door in FindObjectsByType<Door>(FindObjectsSortMode.None))
-            doors.Add(door.gameObject);
         SpawnDoors();
     }
 
@@ -110,7 +108,9 @@ public class RoomManager : MonoBehaviour
         {
             case DoorType.Combat:
             {
-                var enemy = Pick(CombatPool());
+                var enemy = CurrentRoomIndex <= tutorialRooms && easyEnemies.Count > 0
+                    ? easyEnemies[(CurrentRoomIndex - 1) % easyEnemies.Count]
+                    : Pick(CombatPool());
                 return new RoomPlan { title = "Бой", background = PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
             }
             case DoorType.Danger:
@@ -196,14 +196,15 @@ public class RoomManager : MonoBehaviour
                     DeckPickerUI.Get().Show(
                         "Выбери карту для улучшения",
                         gm.playerDeck,
-                        card => !card.upgraded,
+                        null,
                         card =>
                         {
                             var upgraded = gm.UpgradeCard(card);
                             hud.Notify($"«{upgraded.cardName}»: {upgraded.EffectsSummary}", 4f);
                             OnRoomCleared();
                         },
-                        () => ShowCampfire(variant));
+                        () => ShowCampfire(variant),
+                        upgradePreview: true);
                 }
             }
         };

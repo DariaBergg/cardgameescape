@@ -30,6 +30,20 @@ public class CombatFX : MonoBehaviour
         target.position = start;
     }
 
+    public IEnumerator Flutter(Transform target, float duration, float radiusX = 1.6f, float radiusY = 0.7f)
+    {
+        if (target == null) yield break;
+        Vector3 start = target.position;
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            if (target == null) yield break;
+            float k = t / duration * Mathf.PI * 2f;
+            target.position = start + new Vector3(Mathf.Sin(k) * radiusX, Mathf.Sin(k * 2f) * radiusY, 0);
+            yield return null;
+        }
+        target.position = start;
+    }
+
     public void Flash(SpriteRenderer sr, Color color, float duration = 0.2f)
     {
         if (sr != null) StartCoroutine(FlashRoutine(sr, color, duration));

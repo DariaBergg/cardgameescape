@@ -8,6 +8,8 @@ public class EnemyData : ScriptableObject
     public int maxHP = 20;
     public Color color = Color.magenta;
     public Sprite sprite;
+    [Tooltip("Парит в воздухе: покачивается во время боя")]
+    public bool flying;
     public bool randomMoves = true;
     public List<EnemyMove> moves = new List<EnemyMove>();
 

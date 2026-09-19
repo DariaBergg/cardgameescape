@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
     public CardData UpgradeCard(CardData card)
     {
         int index = playerDeck.IndexOf(card);
-        if (index < 0 || card.upgraded) return card;
+        if (index < 0) return card;
         var upgraded = card.CreateUpgradedCopy();
         playerDeck[index] = upgraded;
         return upgraded;

@@ -17,7 +17,9 @@ public class CardData : ScriptableObject
     public EnemyData eliteMark;
     [Range(0, 100)] public int eliteChanceBonus;
 
-    [System.NonSerialized] public bool upgraded;
+    [System.NonSerialized] public int upgradeLevel;
+
+    public bool upgraded => upgradeLevel > 0;
 
     public bool IsMarked => eliteMark != null;
 
@@ -26,7 +28,7 @@ public class CardData : ScriptableObject
         var copy = Instantiate(this);
         copy.name = name + "+";
         copy.cardName = cardName + "+";
-        copy.upgraded = true;
+        copy.upgradeLevel = upgradeLevel + 1;
         copy.effects = new List<CardEffect>();
         foreach (var e in effects)
         {
@@ -47,6 +49,16 @@ public class CardData : ScriptableObject
     public string EffectsSummary => string.Join(", ", effects.Select(e => e.Summary));
 
     public string RulesText => string.Join("\n", effects.Select(e => e.RulesText));
+
+    public string UpgradePreviewRulesText()
+    {
+        var upgraded = CreateUpgradedCopy();
+        var lines = new List<string>();
+        for (int i = 0; i < upgraded.effects.Count; i++)
+            lines.Add(upgraded.effects[i].RulesTextComparedTo(effects[i]));
+        DestroyImmediate(upgraded);
+        return string.Join("\n", lines);
+    }
 
     public string MarkSummary => IsMarked ? $"Метка: {eliteMark.enemyName} (+{eliteChanceBonus}% к шансу встречи)" : "";
 
