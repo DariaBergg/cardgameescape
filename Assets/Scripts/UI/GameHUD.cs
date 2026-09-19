@@ -6,6 +6,8 @@ public class GameHUD : MonoBehaviour
 {
     Text roomText;
     Text eliteText;
+    Text goldText;
+    Text itemsText;
     Text notifyText;
     UnitFrame playerFrame;
     SpriteRenderer playerRenderer;
@@ -23,8 +25,14 @@ public class GameHUD : MonoBehaviour
     {
         roomText = UIFactory.CreateText(canvas, "RoomText", "", 20, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -14), new Vector2(500, 28));
         roomText.color = new Color(1f, 1f, 1f, 0.75f);
-        eliteText = UIFactory.CreateText(canvas, "EliteText", "", 16, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -42), new Vector2(500, 60));
+        eliteText = UIFactory.CreateText(canvas, "EliteText", "", 16, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -42), new Vector2(600, 120));
         eliteText.color = new Color(0.85f, 0.65f, 1f);
+        goldText = UIFactory.CreateText(canvas, "GoldText", "", 20, TextAnchor.UpperRight, new Vector2(1, 1), new Vector2(-160, -20), new Vector2(200, 30));
+        goldText.color = new Color(1f, 0.85f, 0.35f);
+        goldText.raycastTarget = false;
+        itemsText = UIFactory.CreateText(canvas, "ItemsText", "", 15, TextAnchor.UpperRight, new Vector2(1, 1), new Vector2(-16, -60), new Vector2(400, 80));
+        itemsText.color = new Color(0.9f, 0.9f, 0.75f);
+        itemsText.raycastTarget = false;
         notifyText = UIFactory.CreateText(canvas, "NotifyText", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 200), new Vector2(900, 60));
         notifyText.color = new Color(1f, 0.9f, 0.5f);
         roomText.raycastTarget = false;
@@ -87,6 +95,17 @@ public class GameHUD : MonoBehaviour
                 yield return card.eliteMark;
     }
 
+    public static string ItemName(string id)
+    {
+        switch (id)
+        {
+            case "SealedScroll": return "Запечатанный свиток";
+            case "OpenedScroll": return "Вскрытый свиток";
+            case "BrokenSeal": return "Сломанная печать";
+            default: return id;
+        }
+    }
+
     public void SetRoom(string roomName)
     {
         roomText.text = roomName;
@@ -111,7 +130,15 @@ public class GameHUD : MonoBehaviour
             string elites = "";
             foreach (var elite in MarkedElites(gm))
                 elites += $"{elite.enemyName}: +{gm.EliteChance(elite)}% за фиолетовой дверью\n";
+            foreach (var o in gm.obligations)
+                elites += $"<color=#ffb070>{o.HudText}</color>\n";
             eliteText.text = elites;
+
+            goldText.text = gm.gold > 0 ? $"Золото: {gm.gold}" : "";
+            string held = "";
+            foreach (var item in gm.items) held += ItemName(item) + "\n";
+            foreach (var relic in gm.relics) held += "<color=#ffd27f>" + ItemName(relic) + "</color>\n";
+            itemsText.text = held;
 
             deckButton.gameObject.SetActive(gm.combatsWon >= deckUnlockCombats && !inCombat);
         }

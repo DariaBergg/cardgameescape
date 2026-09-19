@@ -15,15 +15,22 @@ MonoBehaviour:
   cardName: "\u0427\u0443\u043C\u043D\u043E\u0435 \u043F\u043B\u0430\u043C\u044F"
   description: "\u041E\u0433\u043E\u043D\u044C, \u043E\u0442\u0440\u0430\u0432\u043B\u0435\u043D\u043D\u044B\u0439
     \u043A\u043E\u0440\u043E\u043B\u0435\u0432\u0441\u043A\u043E\u0439 \u0447\u0443\u043C\u043E\u0439."
+  illustration: {fileID: 0}
   artwork: {fileID: 0}
   effects:
   - type: 0
     value: 8
     hits: 1
     turns: 1
+    condition: 0
   - type: 3
     value: 3
     hits: 1
     turns: 2
+    condition: 0
+  rarity: 1
+  unplayable: 0
+  permanent: 0
+  failVariant: {fileID: 0}
   eliteMark: {fileID: 0}
   eliteChanceBonus: 0

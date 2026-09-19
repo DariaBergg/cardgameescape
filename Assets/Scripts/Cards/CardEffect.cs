@@ -36,6 +36,7 @@ public class CardEffect
         {
             case CardCondition.EnemyBurning: return $"Если враг горит — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
             case CardCondition.EnemyHasBlock: return $"Если у врага есть блок — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
+            case CardCondition.EnemyAttacking: return $"Если враг готовит атаку — {LowerFirst(body)}";
             default: return body;
         }
     }
@@ -64,6 +65,7 @@ public class CardEffect
         }
         if (condition == CardCondition.EnemyBurning) s = "если горит: " + s;
         if (condition == CardCondition.EnemyHasBlock) s = "если враг в блоке: " + s;
+        if (condition == CardCondition.EnemyAttacking) s = "если враг атакует: " + s;
         return s;
     }
 

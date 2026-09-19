@@ -291,11 +291,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   selectedCharacter: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
   cardVisuals: {fileID: 11400000, guid: 8d96f678f731b452c89ff7e925f8d313, type: 2}
+  cardPools: {fileID: 11400000, guid: 8f380ad3b2c3240869db5c4343404a16, type: 2}
   playerDeck: []
   currentHP: 0
   maxCardsPerTurn: 1
   roomsVisited: 0
   combatsWon: 0
+  gold: 0
+  maxHPBonus: 0
+  items: []
+  relics: []
+  obligations: []
 --- !u!4 &353056386
 Transform:
   m_ObjectHideFlags: 0
@@ -633,6 +639,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8f3d02d75294841d3a8d0335a5374dde, type: 2}
   - {fileID: 11400000, guid: 12aaf43d1d1d248519547e5ded540df8, type: 2}
   treasureChoices: 3
+  merchants:
+  - {fileID: 11400000, guid: 4117c4126f1d345a9b70f811976293bf, type: 2}
+  - {fileID: 11400000, guid: 9b4e95b336fb0468fb77794ae2a3bc0a, type: 2}
+  - {fileID: 11400000, guid: e904b376198bf4f52bb415a55f7ef785, type: 2}
+  chestChance: 50
+  forcedMerchantWindow: 5
   tutorialSequence:
   - {fileID: 11400000, guid: a12de2a92c9124dc6bca29c7f6a4267b, type: 2}
   - {fileID: 11400000, guid: 724460c7606e246d285a997477440a49, type: 2}

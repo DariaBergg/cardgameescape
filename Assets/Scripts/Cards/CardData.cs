@@ -13,13 +13,25 @@ public class CardData : ScriptableObject
     public Sprite artwork;
     public List<CardEffect> effects = new List<CardEffect>();
 
+    [Header("Редкость и особые свойства")]
+    public CardRarity rarity = CardRarity.Common;
+    [Tooltip("Нельзя разыграть: карта-балласт (Рана, Долг)")]
+    public bool unplayable;
+    [Tooltip("Нельзя удалить обычными способами (Долг)")]
+    public bool permanent;
+    [Tooltip("Во что превращается при провале залога (если пусто — снимается усиление)")]
+    public CardData failVariant;
+
     [Header("Метка элиты")]
     public EnemyData eliteMark;
     [Range(0, 100)] public int eliteChanceBonus;
 
     [System.NonSerialized] public int upgradeLevel;
+    [System.NonSerialized] public CardData baseCard;
 
     public bool upgraded => upgradeLevel > 0;
+    public CardData BaseCard => baseCard != null ? baseCard : this;
+    public bool IsBad => unplayable;
 
     public bool IsMarked => eliteMark != null;
 
@@ -35,6 +47,7 @@ public class CardData : ScriptableObject
         copy.name = name;
         copy.cardName = cardName;
         copy.upgradeLevel = upgradeLevel + 1;
+        copy.baseCard = BaseCard;
         copy.effects = new List<CardEffect>();
         foreach (var e in effects)
         {
@@ -60,7 +73,7 @@ public class CardData : ScriptableObject
 
     public string RulesText => string.Join("\n", effects.Select(e => e.RulesText));
 
-    public string ShortText => string.Join("\n", effects.Select(e => Capitalize(e.Summary)));
+    public string ShortText => unplayable ? "Нельзя разыграть" : string.Join("\n", effects.Select(e => Capitalize(e.Summary)));
 
     public string UpgradePreviewShortText()
     {
@@ -103,7 +116,9 @@ public class CardData : ScriptableObject
     {
         get
         {
-            string text = $"<b>{cardName}</b>\n<color=#ffd27f>{RulesText}</color>";
+            string rules = unplayable ? "Нельзя разыграть. Занимает место в руке." : RulesText;
+            string text = $"<b>{cardName}</b> <color=#aaaaaa>({(rarity == CardRarity.Rare ? "редкая" : "обычная")})</color>\n<color=#ffd27f>{rules}</color>";
+            if (permanent) text += "\n<color=#ff9090>Нельзя удалить обычным способом.</color>";
             if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{description}</i>";
             if (IsMarked) text += $"\n\n<color=#d9a6ff>{MarkSummary}</color>\nКаждая такая карта в колоде повышает шанс, что за фиолетовой дверью окажется {eliteMark.enemyName}.";
             return text;

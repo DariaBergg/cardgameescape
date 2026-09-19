@@ -25,6 +25,14 @@ public class RoomManager : MonoBehaviour
     public List<CardData> treasureCards = new List<CardData>();
     public int treasureChoices = 3;
 
+    [Header("Купцы (жёлтая дверь)")]
+    public List<MerchantData> merchants = new List<MerchantData>();
+    [Range(0, 100), Tooltip("Шанс, что за жёлтой дверью сундук, а не купец")]
+    public int chestChance = 50;
+    [Tooltip("Окно (в жёлтых комнатах), в котором гарантированно появится заказанный купец")]
+    public int forcedMerchantWindow = 5;
+    public Vector3 merchantPlayerPosition = new Vector3(-3f, -3f, 0);
+
     [Tooltip("Строгая последовательность первых боёв (мышь, слизень, крыса...)")]
     public List<EnemyData> tutorialSequence = new List<EnemyData>();
     [Tooltip("Лёгкие враги для ранних комнат после обучения")]
@@ -88,8 +96,30 @@ public class RoomManager : MonoBehaviour
         hud = GameHUD.Create();
         hud.SetRoom(HubName);
         SetBackground(startBackground);
+        GameManager.Instance.OnObligationResolved += OnObligationResolved;
 
         SpawnDoors();
+    }
+
+    void OnDestroy()
+    {
+        if (GameManager.Instance != null) GameManager.Instance.OnObligationResolved -= OnObligationResolved;
+    }
+
+    void OnObligationResolved(Obligation o, bool success)
+    {
+        switch (o.type)
+        {
+            case ObligationType.Credit:
+                hud.Notify($"Пришло время расплаты: −{o.hpCost} HP ({o.source})", 4f);
+                break;
+            case ObligationType.PledgeFights:
+                hud.Notify(success ? $"Залог выполнен: карта остаётся у тебя ({o.source})" : $"Залог провален: карта ослабла ({o.source})", 4f);
+                break;
+            case ObligationType.PledgeNoHeal:
+                hud.Notify(success ? $"Залог выполнен: карта остаётся у тебя ({o.source})" : $"Залог нарушен лечением: карта ослабла ({o.source})", 4f);
+                break;
+        }
     }
 
     public void EnterDoor(DoorType type)
@@ -106,6 +136,7 @@ public class RoomManager : MonoBehaviour
 
         if (type == DoorType.Random) type = (DoorType)Random.Range(0, 5);
         GameManager.Instance.roomsVisited++;
+        GameManager.Instance.OnRoomEntered();
         var plan = PlanRoom(type);
 
         yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
@@ -154,7 +185,17 @@ public class RoomManager : MonoBehaviour
                 };
             }
             case DoorType.Treasure:
-                return new RoomPlan { title = "Сокровищница", background = treasureBackground, start = StartTreasureRoom };
+            {
+                var merchant = PickYellowRoomMerchant();
+                if (merchant == null)
+                    return new RoomPlan { title = "Сокровищница", background = treasureBackground, start = StartTreasureRoom };
+                return new RoomPlan
+                {
+                    title = merchant.displayName,
+                    background = merchant.background != null ? merchant.background : treasureBackground,
+                    start = () => StartMerchantRoom(merchant)
+                };
+            }
             default:
             {
                 var variant = PickOrNull(eventVariants);
@@ -240,6 +281,60 @@ public class RoomManager : MonoBehaviour
     }
 
     TreasureChest chest;
+    GameObject merchantVisual;
+    readonly Dictionary<string, int> forcedMerchants = new Dictionary<string, int>();
+
+    public void ForceMerchant(MerchantKind kind, int withinYellowRooms = -1)
+    {
+        forcedMerchants[kind.ToString()] = withinYellowRooms > 0 ? withinYellowRooms : forcedMerchantWindow;
+    }
+
+    MerchantData FindMerchant(string id) => merchants.Find(m => m != null && m.Id == id);
+
+    MerchantData PickYellowRoomMerchant()
+    {
+        if (merchants.Count == 0) return null;
+
+        string due = null;
+        foreach (var kv in forcedMerchants)
+        {
+            if (FindMerchant(kv.Key) == null) continue;
+            if (kv.Value <= 1 || Random.Range(0, kv.Value) == 0) { due = kv.Key; break; }
+        }
+        if (due != null)
+        {
+            forcedMerchants.Remove(due);
+            return FindMerchant(due);
+        }
+
+        var keys = new List<string>(forcedMerchants.Keys);
+        foreach (var key in keys) forcedMerchants[key] = forcedMerchants[key] - 1;
+
+        if (Random.Range(0, 100) < chestChance) return null;
+        return merchants[Random.Range(0, merchants.Count)];
+    }
+
+    void StartMerchantRoom(MerchantData merchant)
+    {
+        if (merchantVisual != null) Destroy(merchantVisual);
+        merchantVisual = new GameObject("Merchant_" + merchant.Id);
+        var sr = merchantVisual.AddComponent<SpriteRenderer>();
+        sr.sortingOrder = 1;
+        if (merchant.sprite != null)
+        {
+            sr.sprite = merchant.sprite;
+        }
+        else
+        {
+            sr.sprite = PlaceholderSprites.Square(merchant.placeholderColor);
+            merchantVisual.transform.localScale = new Vector3(1.6f, merchant.spriteHeight, 1f);
+        }
+        merchantVisual.transform.position = merchant.position;
+
+        PlacePlayer(merchantPlayerPosition);
+        player.enabled = false;
+        MerchantVisit.Start(merchant, OnRoomCleared);
+    }
 
     void StartTreasureRoom()
     {
@@ -280,6 +375,7 @@ public class RoomManager : MonoBehaviour
         hud.SetRoom(HubName);
         player.ExitCombatPose(playerSpawn);
         if (chest != null) Destroy(chest.gameObject);
+        if (merchantVisual != null) Destroy(merchantVisual);
         SpawnDoors();
         yield return ScreenFader.Get().FadeTo(0f, fadeDuration);
 
@@ -319,13 +415,26 @@ public class RoomManager : MonoBehaviour
         var pool = DoorPool();
         int count = doorsPerChoice;
         int restSlot = NextRoomIndex == guaranteedRestRoom ? Random.Range(0, count) : -1;
+        int combatSlot = -1;
+        if (NeedsCombatDoor())
+        {
+            do combatSlot = Random.Range(0, count);
+            while (combatSlot == restSlot && count > 1);
+        }
         for (int i = 0; i < count; i++)
         {
             float x = (i - (count - 1) / 2f) * doorSpacing;
-            var type = i == restSlot ? DoorType.Rest : pool[Random.Range(0, pool.Length)];
+            var type = i == restSlot ? DoorType.Rest : i == combatSlot ? DoorType.Combat : pool[Random.Range(0, pool.Length)];
             if (restSlot >= 0 && i != restSlot && type == DoorType.Rest) type = DoorType.Combat;
             doors.Add(Door.Create(type, new Vector3(x, doorsY, 0)).gameObject);
         }
+    }
+
+    bool NeedsCombatDoor()
+    {
+        foreach (var o in GameManager.Instance.obligations)
+            if (o.type == ObligationType.PledgeFights && o.fightsWon < o.fightsRequired && o.roomsRemaining > 0) return true;
+        return false;
     }
 
     void ClearDoors()

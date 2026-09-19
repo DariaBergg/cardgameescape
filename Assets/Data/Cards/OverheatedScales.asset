@@ -28,5 +28,9 @@ MonoBehaviour:
     hits: 1
     turns: 1
     condition: 0
+  rarity: 0
+  unplayable: 0
+  permanent: 0
+  failVariant: {fileID: 0}
   eliteMark: {fileID: 0}
   eliteChanceBonus: 0

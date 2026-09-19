@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59074934d0c3846c6996168680887067, type: 3}
+  m_Name: Usurer
+  m_EditorClassIdentifier: Assembly-CSharp::MerchantData
+  kind: 2
+  displayName: "\u0420\u043E\u0441\u0442\u043E\u0432\u0449\u0438\u043A"
+  sprite: {fileID: 21300000, guid: f6bffa5afcd7f43b5b084eb93e3a1039, type: 3}
+  background: {fileID: 21300000, guid: c7d23b669e6b844f29da82638ca503ef, type: 3}
+  position: {x: 4.4, y: -3.8, z: 0}
+  spriteHeight: 3.2
+  placeholderColor: {r: 0.25, g: 0.1, b: 0.15, a: 1}

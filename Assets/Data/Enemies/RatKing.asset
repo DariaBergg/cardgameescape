@@ -16,6 +16,12 @@ MonoBehaviour:
   maxHP: 60
   color: {r: 0.5, g: 0.2, b: 0.6, a: 1}
   sprite: {fileID: 0}
+  hiddenSprite: {fileID: 0}
+  arena: {fileID: 0}
+  overridePlayerPosition: 0
+  playerPosition: {x: -5.5, y: -1.6, z: 0}
+  overrideEnemyPosition: 0
+  enemyPosition: {x: 3.5, y: 0.6, z: 0}
   flying: 0
   randomMoves: 1
   moves:
@@ -30,6 +36,9 @@ MonoBehaviour:
     handReduce: 0
     description: "\u041C\u043E\u0449\u043D\u044B\u0439 \u0443\u043A\u0443\u0441 \u043A\u043E\u0440\u043E\u043B\u044F
       \u043A\u0440\u044B\u0441."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
   - moveName: "\u041A\u0440\u044B\u0441\u0438\u043D\u044B\u0439 \u0437\u0430\u0441\u043B\u043E\u043D"
     icon: {fileID: 0}
     damage: 0
@@ -41,6 +50,9 @@ MonoBehaviour:
     description: "\u0421\u0432\u0438\u0442\u0430 \u0437\u0430\u043A\u0440\u044B\u0432\u0430\u0435\u0442
       \u043A\u043E\u0440\u043E\u043B\u044F \u0441\u043E\u0431\u043E\u0439: \u043E\u043D
       \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u0442 \u0431\u043B\u043E\u043A."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
   - moveName: "\u0427\u0443\u043C\u043D\u043E\u0439 \u0443\u043A\u0443\u0441"
     icon: {fileID: 0}
     damage: 4
@@ -53,6 +65,9 @@ MonoBehaviour:
       \u042F\u0434 \u043D\u0430\u043D\u043E\u0441\u0438\u0442 \u0443\u0440\u043E\u043D
       \u0432 \u043D\u0430\u0447\u0430\u043B\u0435 \u043A\u0430\u0436\u0434\u043E\u0433\u043E
       \u0442\u0432\u043E\u0435\u0433\u043E \u0445\u043E\u0434\u0430."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
   - moveName: "\u0420\u0430\u0437\u0433\u0440\u0430\u0431\u043B\u0435\u043D\u0438\u0435"
     icon: {fileID: 0}
     damage: 5
@@ -65,6 +80,9 @@ MonoBehaviour:
       \u0442\u0432\u043E\u0438 \u043F\u0440\u0438\u043F\u0430\u0441\u044B: \u0432
       \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0445\u043E\u0434 \u043D\u0430
       \u043E\u0434\u043D\u0443 \u043A\u0430\u0440\u0442\u0443 \u043C\u0435\u043D\u044C\u0448\u0435."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
   rewardCards:
   - {fileID: 11400000, guid: 25ceeb147c5b0456fa7548a16299b506, type: 2}
   - {fileID: 11400000, guid: dfed220ed5f5043c9bf8ebbe0ba816de, type: 2}
@@ -75,3 +93,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2ba7ef9a426274e479dc3db16725e875, type: 2}
   - {fileID: 11400000, guid: 8f3d02d75294841d3a8d0335a5374dde, type: 2}
   - {fileID: 11400000, guid: 12aaf43d1d1d248519547e5ded540df8, type: 2}
+  - {fileID: 11400000, guid: 297e040dc4fb1418588f239b603149e1, type: 2}

@@ -19,5 +19,6 @@ public enum CardCondition
     EnemyBurning,
     EnemyNotBurning,
     EnemyHasBlock,
-    EnemyNoBlock
+    EnemyNoBlock,
+    EnemyAttacking
 }

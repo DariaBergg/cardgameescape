@@ -74,7 +74,7 @@ public class CombatManager : MonoBehaviour
     public int DiscardPileCount => discardPile.Count;
     public int CardsLeftThisTurn => Mathf.Max(0, GameManager.Instance.maxCardsPerTurn - cardsPlayedThisTurn);
     public bool CanPlayCard => combatActive && !enemyActing && CardsLeftThisTurn > 0;
-    public bool CanPlay(CardData card) => CanPlayCard && !(blockLocked && card.HasEffect(CardEffectType.Block));
+    public bool CanPlay(CardData card) => CanPlayCard && !card.unplayable && !(blockLocked && card.HasEffect(CardEffectType.Block));
     public bool CanEndTurn => combatActive && !enemyActing;
 
     public int EnemyWeakAmount => enemyWeakTurns > 0 ? enemyWeakAmount : 0;
@@ -310,6 +310,7 @@ public class CombatManager : MonoBehaviour
             if (effect.condition == CardCondition.EnemyNotBurning && enemyBurnTurns > 0) continue;
             if (effect.condition == CardCondition.EnemyHasBlock && enemyBlock <= 0) continue;
             if (effect.condition == CardCondition.EnemyNoBlock && enemyBlock > 0) continue;
+            if (effect.condition == CardCondition.EnemyAttacking && (currentMove == null || currentMove.damage <= 0)) continue;
             switch (effect.type)
             {
                 case CardEffectType.Damage:
@@ -411,6 +412,12 @@ public class CombatManager : MonoBehaviour
     {
         enemyActing = true;
         enemyBlock = 0;
+        for (int i = hand.Count - 1; i >= 0; i--)
+        {
+            if (!hand[i].unplayable) continue;
+            discardPile.Add(hand[i]);
+            hand.RemoveAt(i);
+        }
         var move = currentMove;
 
         if (enemyPoisonTurns > 0)
@@ -594,7 +601,7 @@ public class CombatManager : MonoBehaviour
     {
         combatActive = false;
         enemyActing = true;
-        GameManager.Instance.combatsWon++;
+        GameManager.Instance.OnCombatWon();
         LastEvent = $"{enemy.enemyName} повержен!";
         ui.Refresh();
         StartCoroutine(WinRoutine());
