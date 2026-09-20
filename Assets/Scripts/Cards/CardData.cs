@@ -66,9 +66,46 @@ public class CardData : ScriptableObject
                 case CardEffectType.Thorns: u.value += 2; break;
                 case CardEffectType.SelfDamage: u.value = Mathf.Max(0, u.value - 1); break;
                 case CardEffectType.MoltenGuard: u.value += 1; break;
+                case CardEffectType.Rage: u.value += 1; break;
             }
             copy.effects.Add(u);
         }
+        return copy;
+    }
+
+    public CardData CreateWeakenedCopy()
+    {
+        var copy = Instantiate(this);
+        copy.name = name;
+        copy.cardName = cardName;
+        copy.upgradeLevel = Mathf.Max(0, upgradeLevel - 1);
+        copy.baseCard = BaseCard;
+        copy.effects = new List<CardEffect>();
+        foreach (var e in effects)
+        {
+            var w = new CardEffect { type = e.type, value = e.value, hits = e.hits, turns = e.turns, condition = e.condition };
+            switch (e.type)
+            {
+                case CardEffectType.Damage:
+                case CardEffectType.Block:
+                case CardEffectType.Heal:
+                case CardEffectType.PierceDamage:
+                    w.value = Mathf.Max(1, w.value - 2); break;
+            }
+            copy.effects.Add(w);
+        }
+        return copy;
+    }
+
+    public CardData CreateUnmarkedCopy()
+    {
+        var copy = Instantiate(this);
+        copy.name = name;
+        copy.cardName = cardName;
+        copy.upgradeLevel = upgradeLevel;
+        copy.baseCard = BaseCard;
+        copy.eliteMark = null;
+        copy.eliteChanceBonus = 0;
         return copy;
     }
 

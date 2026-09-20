@@ -112,6 +112,11 @@ public class GameManager : MonoBehaviour
         currentHP = Mathf.Max(0, currentHP - amount);
     }
 
+    public void LoseHPSafe(int amount)
+    {
+        currentHP = Mathf.Max(1, currentHP - amount);
+    }
+
     public void AddMaxHP(int amount)
     {
         maxHPBonus += amount;

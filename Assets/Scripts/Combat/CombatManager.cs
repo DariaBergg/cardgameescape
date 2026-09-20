@@ -36,6 +36,7 @@ public class CombatManager : MonoBehaviour
     bool attackLocked;
     int moltenBurnDamage;
     int moltenBurnTurns;
+    int rageTurnsLeft;
     int poisonDamage;
     int poisonTurns;
     int nextHandPenalty;
@@ -76,7 +77,8 @@ public class CombatManager : MonoBehaviour
     public IReadOnlyList<CardData> Hand => hand;
     public int DrawPileCount => drawPile.Count;
     public int DiscardPileCount => discardPile.Count;
-    public int CardsLeftThisTurn => Mathf.Max(0, GameManager.Instance.maxCardsPerTurn - cardsPlayedThisTurn);
+    public int TurnCardLimit => GameManager.Instance.maxCardsPerTurn + (rageTurnsLeft > 0 ? 1 : 0);
+    public int CardsLeftThisTurn => Mathf.Max(0, TurnCardLimit - cardsPlayedThisTurn);
     public bool CanPlayCard => combatActive && !enemyActing && CardsLeftThisTurn > 0;
     public bool CanPlay(CardData card) => CanPlayCard && !card.unplayable && !(blockLocked && card.IsDefense) && !(attackLocked && card.IsAttack);
     public bool CanEndTurn => combatActive && !enemyActing;
@@ -107,6 +109,7 @@ public class CombatManager : MonoBehaviour
             if (attackLocked) parts.Add("Нельзя атаковать в этот ход");
             else if (attackLockedNextTurn) parts.Add("В следующий ход нельзя атаковать");
             if (moltenBurnTurns > 0) parts.Add($"Раскалённая броня: пробьёт блок — загорится {moltenBurnDamage}×{moltenBurnTurns}");
+            if (rageTurnsLeft > 0) parts.Add($"Ярость: 2 карты за ход, ещё {rageTurnsLeft} х.");
             if (poisonTurns > 0) parts.Add($"Яд: {poisonDamage} урона в начале хода, ещё {poisonTurns} х.");
             if (nextHandPenalty > 0) parts.Add($"Ослаблен: −{nextHandPenalty} карта в следующий ход");
             return string.Join("   ", parts);
@@ -143,6 +146,7 @@ public class CombatManager : MonoBehaviour
         attackLockedNextTurn = false;
         moltenBurnDamage = 0;
         moltenBurnTurns = 0;
+        rageTurnsLeft = 0;
         poisonDamage = 0;
         poisonTurns = 0;
         nextHandPenalty = 0;
@@ -230,6 +234,7 @@ public class CombatManager : MonoBehaviour
         {
             GameManager.Instance.TakeDamage(poisonDamage);
             poisonTurns--;
+            if (poisonTurns == 0) poisonDamage = 0;
             LastEvent += $"  Яд: −{poisonDamage} HP.";
             fx.Flash(playerRenderer, PoisonColor);
             fx.FloatingText(PlayerHead, $"-{poisonDamage} яд", PoisonColor);
@@ -389,7 +394,7 @@ public class CombatManager : MonoBehaviour
                     break;
                 case CardEffectType.BurnEnemy:
                     enemyBurnDamage = Mathf.Max(enemyBurnDamage, effect.value);
-                    enemyBurnTurns = Mathf.Max(enemyBurnTurns, effect.turns);
+                    enemyBurnTurns += effect.turns;
                     log.Add($"горение {effect.value}×{effect.turns}");
                     fx.Flash(enemyRenderer, BurnColor);
                     fx.FloatingText(EnemyCenter, "Горит!", BurnColor);
@@ -421,6 +426,13 @@ public class CombatManager : MonoBehaviour
                     attackLockedNextTurn = true;
                     log.Add("без атаки в след. ход");
                     break;
+                case CardEffectType.Rage:
+                    rageTurnsLeft = Mathf.Max(rageTurnsLeft, effect.value);
+                    log.Add($"ярость на {effect.value} хода");
+                    fx.Flash(playerRenderer, DamageColor);
+                    if (playerRenderer != null) fx.Shake(playerRenderer.transform, 0.12f, 0.35f);
+                    fx.FloatingText(PlayerHead, "ЯРОСТЬ!", DamageColor);
+                    break;
                 case CardEffectType.MoltenGuard:
                     moltenBurnDamage = Mathf.Max(moltenBurnDamage, effect.value);
                     moltenBurnTurns = Mathf.Max(moltenBurnTurns, effect.turns);
@@ -450,6 +462,7 @@ public class CombatManager : MonoBehaviour
     {
         enemyActing = true;
         enemyBlock = 0;
+        if (rageTurnsLeft > 0) rageTurnsLeft--;
         ui.SweepHand();
         for (int i = hand.Count - 1; i >= 0; i--)
         {
@@ -463,6 +476,7 @@ public class CombatManager : MonoBehaviour
         {
             enemyHP = Mathf.Max(0, enemyHP - enemyPoisonDamage);
             enemyPoisonTurns--;
+            if (enemyPoisonTurns == 0) enemyPoisonDamage = 0;
             LastEvent = $"Яд: {enemy.enemyName} теряет {enemyPoisonDamage} HP.";
             fx.Flash(enemyRenderer, PoisonColor);
             fx.FloatingText(EnemyCenter, $"-{enemyPoisonDamage} яд", PoisonColor);
@@ -480,6 +494,7 @@ public class CombatManager : MonoBehaviour
         {
             enemyHP = Mathf.Max(0, enemyHP - enemyBurnDamage);
             enemyBurnTurns--;
+            if (enemyBurnTurns == 0) enemyBurnDamage = 0;
             LastEvent = $"Горение: {enemy.enemyName} теряет {enemyBurnDamage} HP.";
             fx.Flash(enemyRenderer, BurnColor);
             fx.FloatingText(EnemyCenter, $"-{enemyBurnDamage} огонь", BurnColor);
@@ -551,7 +566,7 @@ public class CombatManager : MonoBehaviour
                         if (moltenBurnTurns > 0)
                         {
                             enemyBurnDamage = Mathf.Max(enemyBurnDamage, moltenBurnDamage);
-                            enemyBurnTurns = Mathf.Max(enemyBurnTurns, moltenBurnTurns);
+                            enemyBurnTurns += moltenBurnTurns;
                             fx.Flash(enemyRenderer, BurnColor);
                             fx.FloatingText(EnemyCenter, "Горит!", BurnColor);
                         }
@@ -692,7 +707,13 @@ public class CombatManager : MonoBehaviour
             card =>
             {
                 gm.UpgradeCard(card);
-                OnRewardChosen(null);
+                var bonus = RoomManager.Instance != null ? RoomManager.Instance.TutorialBonusCard() : null;
+                if (bonus != null)
+                {
+                    gm.playerDeck.Add(bonus);
+                    CardChoiceUI.Get().Show("Ярость просыпается. Новая карта в колоде", new List<CardData> { bonus }, _ => OnRewardChosen(null), allowSkip: false);
+                }
+                else OnRewardChosen(null);
             },
             ShowUpgradeReward,
             upgradePreview: true);

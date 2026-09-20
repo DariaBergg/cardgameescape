@@ -13,8 +13,8 @@ public class RoomManager : MonoBehaviour
     public Sprite startBackground;
     public List<Sprite> combatBackgrounds = new List<Sprite>();
     public List<RestRoomVariant> restVariants = new List<RestRoomVariant>();
-    [Tooltip("События за синей дверью (пока используют те же варианты, что и отдых)")]
-    public List<RestRoomVariant> eventVariants = new List<RestRoomVariant>();
+    [Tooltip("События за синей дверью")]
+    public List<EventData> events = new List<EventData>();
 
     [Header("Сокровищница")]
     public Sprite treasureBackground;
@@ -71,6 +71,11 @@ public class RoomManager : MonoBehaviour
     int CurrentRoomIndex => GameManager.Instance.roomsVisited;
     int TutorialRooms => tutorialSequence.Count;
     public bool MarkedRewardsUnlocked => CurrentRoomIndex > upgradeRewardRooms;
+
+    [Tooltip("Карта, которую герой получает после последнего обучающего боя с усилением (перед крысой)")]
+    public CardData tutorialBonusCard;
+
+    public CardData TutorialBonusCard() => CurrentRoomIndex == upgradeRewardRooms ? tutorialBonusCard : null;
 
     class RoomPlan
     {
@@ -204,15 +209,16 @@ public class RoomManager : MonoBehaviour
             }
             default:
             {
-                var variant = PickOrNull(eventVariants);
+                var ev = PickNotLastEvent();
                 return new RoomPlan
                 {
-                    title = variant != null ? $"Событие — {variant.title}" : "Событие",
-                    background = variant != null ? variant.background : null,
+                    title = ev != null ? ev.title : "Событие",
+                    background = ev != null ? ev.background : null,
                     start = () =>
                     {
-                        if (variant == null) { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); }
-                        else ResolveRest(variant);
+                        if (ev == null) { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); return; }
+                        player.enabled = false;
+                        EventVisit.Start(ev, OnRoomCleared);
                     }
                 };
             }
@@ -284,6 +290,36 @@ public class RoomManager : MonoBehaviour
             }
         };
         ui.Show(variant.title, variant.description, options);
+    }
+
+    EventData lastEvent;
+
+    EventData PickNotLastEvent()
+    {
+        if (events.Count == 0) return null;
+        var pool = events.Count > 1 && lastEvent != null ? events.FindAll(e => e != lastEvent) : events;
+        lastEvent = pool[Random.Range(0, pool.Count)];
+        return lastEvent;
+    }
+
+    public void StartAmbush(string message)
+    {
+        var enemy = PickNotLast(enemies);
+        lastEnemy = enemy;
+        StartCoroutine(AmbushRoutine(enemy, message));
+    }
+
+    IEnumerator AmbushRoutine(EnemyData enemy, string message)
+    {
+        hud.Announce(message, true, 2.5f);
+        yield return new WaitForSeconds(1.2f);
+        yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
+        SetBackground(enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds));
+        hud.SetRoom($"Комната {GameManager.Instance.roomsVisited}: Засада");
+        PlacePlayer(playerSpawn);
+        CombatManager.Instance.StartCombat(enemy);
+        yield return null;
+        yield return ScreenFader.Get().FadeTo(0f, fadeDuration);
     }
 
     TreasureChest chest;

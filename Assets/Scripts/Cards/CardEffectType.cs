@@ -12,7 +12,8 @@ public enum CardEffectType
     SelfDamage,
     NoBlockNextTurn,
     NoAttackNextTurn,
-    MoltenGuard
+    MoltenGuard,
+    Rage
 }
 
 public enum CardCondition

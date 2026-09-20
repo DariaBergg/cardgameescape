@@ -31,6 +31,7 @@ public class CardEffect
             case CardEffectType.NoBlockNextTurn: body = "В следующий ход нельзя играть защитные карты."; break;
             case CardEffectType.NoAttackNextTurn: body = "В следующий ход нельзя играть атакующие карты."; break;
             case CardEffectType.MoltenGuard: body = $"Если враг пробьёт блок и ранит тебя — он загорится: {v} урона в ход, {t} х."; break;
+            case CardEffectType.Rage: body = $"Ярость на {v} хода: можно играть по 2 карты за ход (включая этот)."; break;
             default: body = type.ToString(); break;
         }
 
@@ -65,6 +66,7 @@ public class CardEffect
             case CardEffectType.NoBlockNextTurn: s = "без защиты в след. ход"; break;
             case CardEffectType.NoAttackNextTurn: s = "без атаки в след. ход"; break;
             case CardEffectType.MoltenGuard: s = $"пробил блок — горит {v}×{t}"; break;
+            case CardEffectType.Rage: s = $"2 карты за ход, {v} хода"; break;
             default: s = type.ToString(); break;
         }
         if (condition == CardCondition.EnemyBurning) s = "если горит: " + s;
