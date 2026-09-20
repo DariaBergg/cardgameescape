@@ -155,6 +155,8 @@ public class GameHUD : MonoBehaviour
             bool inCombat = combat != null && combat.CombatActive;
             string name = gm.selectedCharacter != null ? gm.selectedCharacter.characterName : "";
             playerFrame.Set(name, gm.currentHP, gm.MaxHP, inCombat ? combat.PlayerBlock : 0, inCombat ? combat.PlayerStatusText : "");
+            bool showMomentum = inCombat && combat.UsesMomentum;
+            playerFrame.SetMomentum(showMomentum ? combat.Momentum : -1, showMomentum ? combat.MomentumMax : 0);
 
             string elites = "";
             foreach (var elite in MarkedElites(gm))

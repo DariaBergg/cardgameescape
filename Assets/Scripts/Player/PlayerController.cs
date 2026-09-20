@@ -17,10 +17,15 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        ApplyCharacter(GameManager.Instance != null ? GameManager.Instance.selectedCharacter : null);
+    }
+
+    // Подменяет спрайт героя (после выбора персонажа)
+    public void ApplyCharacter(CharacterData character)
+    {
         var sr = GetComponent<SpriteRenderer>();
         if (sr == null) return;
 
-        var character = GameManager.Instance != null ? GameManager.Instance.selectedCharacter : null;
         if (character != null && character.sprite != null)
         {
             sr.sprite = character.sprite;

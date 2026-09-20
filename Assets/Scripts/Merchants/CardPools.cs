@@ -19,7 +19,7 @@ public class CardPools : ScriptableObject
     {
         var list = new List<CardData>();
         foreach (var c in allCards)
-            if (c != null && c.rarity == rarity && !c.unplayable && (exclude == null || !exclude.Contains(c))) list.Add(c);
+            if (c != null && c.rarity == rarity && !c.unplayable && c.AvailableNow && (exclude == null || !exclude.Contains(c))) list.Add(c);
         return list;
     }
 
@@ -34,7 +34,7 @@ public class CardPools : ScriptableObject
     public CardData RandomAny()
     {
         var pool = new List<CardData>();
-        foreach (var c in allCards) if (c != null && !c.unplayable) pool.Add(c);
+        foreach (var c in allCards) if (c != null && !c.unplayable && c.AvailableNow) pool.Add(c);
         return pool.Count > 0 ? pool[Random.Range(0, pool.Count)] : null;
     }
 

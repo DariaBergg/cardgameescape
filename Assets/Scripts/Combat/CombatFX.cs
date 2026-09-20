@@ -92,6 +92,44 @@ public class CombatFX : MonoBehaviour
         StartCoroutine(FloatingTextRoutine(worldPos, text, color));
     }
 
+    // Молния сверху в цель: ломаная линия, мигает и гаснет
+    public IEnumerator Lightning(Vector3 target, float duration = 0.35f)
+    {
+        var go = new GameObject("Lightning");
+        var lr = go.AddComponent<LineRenderer>();
+        lr.material = new Material(Shader.Find("Sprites/Default"));
+        lr.sortingOrder = 25;
+        lr.widthMultiplier = 0.12f;
+        lr.numCapVertices = 2;
+        lr.useWorldSpace = true;
+
+        Vector3 start = new Vector3(target.x + Random.Range(-0.8f, 0.8f), 7.5f, 0);
+        const int segments = 9;
+        var points = new Vector3[segments + 1];
+        for (int i = 0; i <= segments; i++)
+        {
+            float k = i / (float)segments;
+            var p = Vector3.Lerp(start, target, k);
+            if (i > 0 && i < segments) p.x += Random.Range(-0.6f, 0.6f);
+            points[i] = p;
+        }
+        lr.positionCount = points.Length;
+        lr.SetPositions(points);
+
+        var glow = new Color(0.75f, 0.9f, 1f, 1f);
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            float k = t / duration;
+            float flicker = Mathf.PerlinNoise(t * 60f, 0f) * 0.5f + 0.5f;
+            var c = new Color(glow.r, glow.g, glow.b, (1f - k) * flicker);
+            lr.startColor = Color.white * (1f - k);
+            lr.endColor = c;
+            lr.widthMultiplier = 0.12f + 0.08f * flicker;
+            yield return null;
+        }
+        Destroy(go);
+    }
+
     IEnumerator FloatingTextRoutine(Vector3 worldPos, string text, Color color)
     {
         var go = new GameObject("FloatingText");

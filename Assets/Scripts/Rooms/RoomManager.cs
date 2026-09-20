@@ -69,14 +69,25 @@ public class RoomManager : MonoBehaviour
     };
 
     int NextRoomIndex => GameManager.Instance.roomsVisited + 1;
-    int CurrentRoomIndex => GameManager.Instance.roomsVisited;
-    int TutorialRooms => tutorialSequence.Count;
+    public int CurrentRoomIndex => GameManager.Instance.roomsVisited;
+    // Обучающие бои: у героя могут быть свои (лев — скелет вместо крысы)
+    List<EnemyData> Tutorial
+    {
+        get
+        {
+            var c = GameManager.Instance.selectedCharacter;
+            return c != null && c.tutorialSequence.Count > 0 ? c.tutorialSequence : tutorialSequence;
+        }
+    }
+    int TutorialRooms => Tutorial.Count;
     public bool MarkedRewardsUnlocked => CurrentRoomIndex > upgradeRewardRooms;
 
-    [Tooltip("Карта, которую герой получает после последнего обучающего боя с усилением (перед крысой)")]
-    public CardData tutorialBonusCard;
-
-    public CardData TutorialBonusCard() => CurrentRoomIndex == upgradeRewardRooms ? tutorialBonusCard : null;
+    public CardData TutorialBonusCard()
+    {
+        if (CurrentRoomIndex != upgradeRewardRooms) return null;
+        var character = GameManager.Instance.selectedCharacter;
+        return character != null && character.tutorialBonusCard != null ? character.tutorialBonusCard : null;
+    }
 
     class RoomPlan
     {
@@ -110,7 +121,21 @@ public class RoomManager : MonoBehaviour
         if (titleScreen != null)
         {
             player.enabled = false;
-            MainMenuUI.Show(titleScreen, () => { player.enabled = true; SpawnDoors(); });
+            MainMenuUI.Show(titleScreen, () =>
+            {
+                var gm = GameManager.Instance;
+                if (gm.characters.Count > 1)
+                {
+                    CharacterSelectUI.Show(titleScreen, gm.characters, character =>
+                    {
+                        gm.SelectCharacter(character);
+                        player.ApplyCharacter(character);
+                        player.enabled = true;
+                        SpawnDoors();
+                    });
+                }
+                else { player.enabled = true; SpawnDoors(); }
+            });
         }
         else SpawnDoors();
     }
@@ -171,7 +196,7 @@ public class RoomManager : MonoBehaviour
             case DoorType.Combat:
             {
                 var enemy = CurrentRoomIndex <= TutorialRooms
-                    ? tutorialSequence[CurrentRoomIndex - 1]
+                    ? Tutorial[CurrentRoomIndex - 1]
                     : PickNotLast(CombatPool());
                 lastEnemy = enemy;
                 return new RoomPlan { title = "Бой", background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
@@ -423,7 +448,7 @@ public class RoomManager : MonoBehaviour
 
     public void StartAmbush(string message)
     {
-        var enemy = PickNotLast(enemies);
+        var enemy = PickNotLast(ForHero(enemies));
         lastEnemy = enemy;
         StartCoroutine(AmbushRoutine(enemy, message));
     }
@@ -516,7 +541,7 @@ public class RoomManager : MonoBehaviour
 
     void OnChestOpened()
     {
-        var pool = new List<CardData>(treasureCards);
+        var pool = treasureCards.FindAll(c => c != null && c.AvailableNow);
         Shuffle(pool);
         if (pool.Count > treasureChoices) pool.RemoveRange(treasureChoices, pool.Count - treasureChoices);
         CardChoiceUI.Get().Show("Сундук! Выбери карту", pool, card =>
@@ -560,16 +585,19 @@ public class RoomManager : MonoBehaviour
         player.transform.position = position;
     }
 
+    // Враги, доступные текущему герою (у каждого героя могут быть свои уникальные)
+    static List<EnemyData> ForHero(List<EnemyData> list) => list.FindAll(e => e != null && e.AvailableNow);
+
     List<EnemyData> CombatPool()
     {
         int room = CurrentRoomIndex;
         if (room <= earlyRooms && easyEnemies.Count > 0)
         {
-            var mixed = new List<EnemyData>(easyEnemies);
-            mixed.AddRange(enemies);
+            var mixed = ForHero(easyEnemies);
+            mixed.AddRange(ForHero(enemies));
             return mixed;
         }
-        return enemies;
+        return ForHero(enemies);
     }
 
     DoorType[] DoorPool()
@@ -626,7 +654,7 @@ public class RoomManager : MonoBehaviour
 
     EnemyData RollDangerEncounter(out bool isElite)
     {
-        var candidates = new List<EnemyData>(elites);
+        var candidates = ForHero(elites);
         Shuffle(candidates);
         foreach (var elite in candidates)
         {
@@ -638,7 +666,8 @@ public class RoomManager : MonoBehaviour
             }
         }
         isElite = false;
-        return PickNotLast(dangerEnemies.Count > 0 ? dangerEnemies : enemies);
+        var danger = ForHero(dangerEnemies);
+        return PickNotLast(danger.Count > 0 ? danger : ForHero(enemies));
     }
 
     static void Shuffle<T>(List<T> list)

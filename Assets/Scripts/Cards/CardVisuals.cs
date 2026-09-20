@@ -5,6 +5,10 @@ public class CardVisuals : ScriptableObject
 {
     public static CardVisuals Instance { get; set; }
 
+    // Шаблон для карты: у героя-владельца может быть свой (снежный у льва), иначе общий
+    public static CardVisuals For(CardData card) =>
+        card != null && card.owner != null && card.owner.cardVisuals != null ? card.owner.cardVisuals : Instance;
+
     public Sprite template;
 
     [Header("Разметка шаблона (доли от ширины/высоты карты)")]

@@ -9,7 +9,7 @@ public static class CardView
     public static Button Create(Transform parent, CardData card, Vector2 anchor, Vector2 pos, Vector2 size)
     {
         Button button;
-        var visuals = CardVisuals.Instance;
+        var visuals = CardVisuals.For(card);
         bool composite = visuals != null && visuals.template != null;
 
         if (composite)

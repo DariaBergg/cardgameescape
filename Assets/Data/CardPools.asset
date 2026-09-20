@@ -26,6 +26,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 297e040dc4fb1418588f239b603149e1, type: 2}
   - {fileID: 11400000, guid: 20218951d4a3c44b2a182d670bf073c6, type: 2}
   - {fileID: 11400000, guid: 63facfacc1cad4486b81178d455d3c02, type: 2}
+  - {fileID: 11400000, guid: b77643603c6b34dfc82688c09ab3f3e9, type: 2}
+  - {fileID: 11400000, guid: 7f405f288c57940c5bdf85de9d878388, type: 2}
+  - {fileID: 11400000, guid: a6940e71f5e0241d1b5eba729390e677, type: 2}
+  - {fileID: 11400000, guid: 26f34d7b24dca4b11a89ffe49317ce88, type: 2}
+  - {fileID: 11400000, guid: 866b41199cc46409daaab9c30d59e51c, type: 2}
+  - {fileID: 11400000, guid: 194d1a8c8219a4611b3b6e28c5a76f83, type: 2}
+  - {fileID: 11400000, guid: 442c7508e5ce74f6aaef616f915e80ec, type: 2}
+  - {fileID: 11400000, guid: 656f59e643fee4d6fa79bad99ac863c6, type: 2}
+  - {fileID: 11400000, guid: 1a26da0f1111d42aebcd5c82f84d1035, type: 2}
   wound: {fileID: 11400000, guid: 372a3669b2034475798a2eec83139336, type: 2}
   debt: {fileID: 11400000, guid: c52bf7932e062464b9d7ff10cd2875dd, type: 2}
   weakCards:

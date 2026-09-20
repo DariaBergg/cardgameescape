@@ -14,6 +14,10 @@ public class UnitFrame : MonoBehaviour
     Text statusText;
     Func<Vector3> worldAnchor;
     Vector4 inner; // жёлоб внутри рамки в долях (xMin, yMin, xMax, yMax)
+    RectTransform momentumRow;
+    readonly System.Collections.Generic.List<Image> momentumPips = new System.Collections.Generic.List<Image>();
+    static readonly Color PipOn = new Color(0.6f, 0.85f, 1f);
+    static readonly Color PipOff = new Color(0.12f, 0.12f, 0.16f, 0.85f);
 
     const float Width = 260f;
     const float BarHeight = 34f;
@@ -90,6 +94,10 @@ public class UnitFrame : MonoBehaviour
         blockBadge = badge.gameObject;
         blockBadge.SetActive(false);
 
+        // Шкала Замаха: деления над именем (видны только у героя с Замахом)
+        momentumRow = UIFactory.CreateRect(rect, "Momentum", new Vector2(0.5f, 1f), new Vector2(0, 22), new Vector2(Width, 20));
+        momentumRow.gameObject.SetActive(false);
+
         statusText = UIFactory.CreateText(rect, "Status", "", 14, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0, -22 - BarHeight - 4), new Vector2(Width + 80, 24));
         statusText.color = new Color(0.8f, 1f, 0.6f);
         statusText.raycastTarget = false;
@@ -114,6 +122,33 @@ public class UnitFrame : MonoBehaviour
         blockBadge.SetActive(block > 0);
         blockText.text = block.ToString();
         statusText.text = statuses ?? "";
+    }
+
+    // current < 0 — скрыть шкалу
+    public void SetMomentum(int current, int max)
+    {
+        if (current < 0 || max <= 0) { momentumRow.gameObject.SetActive(false); return; }
+        momentumRow.gameObject.SetActive(true);
+        const float pipSize = 18f, gap = 6f;
+        while (momentumPips.Count < max)
+        {
+            var pip = UIFactory.CreateRect(momentumRow, "Pip", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(pipSize, pipSize));
+            var img = pip.gameObject.AddComponent<Image>();
+            img.raycastTarget = false;
+            var outline = pip.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.05f, 0.05f, 0.08f, 1f);
+            outline.effectDistance = new Vector2(1.5f, -1.5f);
+            momentumPips.Add(img);
+        }
+        float startX = -(max - 1) * (pipSize + gap) / 2f;
+        for (int i = 0; i < momentumPips.Count; i++)
+        {
+            bool used = i < max;
+            momentumPips[i].gameObject.SetActive(used);
+            if (!used) continue;
+            momentumPips[i].rectTransform.anchoredPosition = new Vector2(startX + i * (pipSize + gap), 0);
+            momentumPips[i].color = i < current ? PipOn : PipOff;
+        }
     }
 
     public void Show(bool visible)

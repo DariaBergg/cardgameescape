@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd49e783fbcc547798c1325981836f36, type: 3}
+  m_Name: WhiteLion
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterName: "\u0411\u0435\u043B\u044B\u0439 \u043B\u0435\u0432"
+  description: "\u0418\u0437\u0433\u043D\u0430\u043D\u043D\u0438\u043A \u043F\u0440\u0430\u0439\u0434\u0430.
+    \u041A\u043E\u043F\u0438\u0442 \u0417\u0430\u043C\u0430\u0445 \u0443\u0434\u0430\u0440\u0430\u043C\u0438
+    \u0438 \u0441\u0442\u043E\u0439\u043A\u0430\u043C\u0438, \u0430 \u043A\u043E\u0433\u0434\u0430
+    \u0448\u043A\u0430\u043B\u0430 \u043F\u043E\u043B\u043D\u0430 \u2014 \u0431\u044C\u0451\u0442
+    \u043C\u043E\u043B\u043D\u0438\u0435\u0439 \u0441\u0430\u043C, \u043D\u0435 \u0442\u0440\u0430\u0442\u044F
+    \u0445\u043E\u0434."
+  maxHP: 60
+  sprite: {fileID: 21300000, guid: 6c3d6d947ee9e40a5bd670436da45941, type: 3}
+  portrait: {fileID: 21300000, guid: 2aba76ae430cd42f0b48a3bcbf1eceb1, type: 3}
+  cardVisuals: {fileID: 11400000, guid: 34f966703f4bf4dd4bf1162a20d7227b, type: 2}
+  startingDeck:
+  - {fileID: 11400000, guid: b77643603c6b34dfc82688c09ab3f3e9, type: 2}
+  - {fileID: 11400000, guid: 7f405f288c57940c5bdf85de9d878388, type: 2}
+  rewardCards:
+  - {fileID: 11400000, guid: 866b41199cc46409daaab9c30d59e51c, type: 2}
+  - {fileID: 11400000, guid: 194d1a8c8219a4611b3b6e28c5a76f83, type: 2}
+  - {fileID: 11400000, guid: 442c7508e5ce74f6aaef616f915e80ec, type: 2}
+  - {fileID: 11400000, guid: 656f59e643fee4d6fa79bad99ac863c6, type: 2}
+  - {fileID: 11400000, guid: 1a26da0f1111d42aebcd5c82f84d1035, type: 2}
+  tutorialBonusCard: {fileID: 0}
+  tutorialSequence:
+  - {fileID: 11400000, guid: a12de2a92c9124dc6bca29c7f6a4267b, type: 2}
+  - {fileID: 11400000, guid: 724460c7606e246d285a997477440a49, type: 2}
+  - {fileID: 11400000, guid: 18ba4521b6d6e4591a7e4f1f517e8f33, type: 2}
+  tutorialCardRewards:
+  - {fileID: 11400000, guid: a6940e71f5e0241d1b5eba729390e677, type: 2}
+  - {fileID: 11400000, guid: 26f34d7b24dca4b11a89ffe49317ce88, type: 2}
+  usesMomentum: 1
+  momentumMax: 3
+  passiveStrikeDamage: 6

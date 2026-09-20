@@ -25,6 +25,10 @@ public class CardData : ScriptableObject
     public bool retain;
     [Tooltip("После розыгрыша уходит из боя до конца боя (один раз за бой)")]
     public bool exhaust;
+    [Tooltip("Чья карта: пусто — общая, иначе выпадает только этому герою")]
+    public CharacterData owner;
+    [Tooltip("Появляется в наградах не раньше этой комнаты (0 — всегда)")]
+    public int minRoom;
 
     [Header("Метка элиты")]
     public EnemyData eliteMark;
@@ -40,6 +44,17 @@ public class CardData : ScriptableObject
     public bool IsDefense => HasEffect(CardEffectType.Block);
 
     public bool IsMarked => eliteMark != null;
+
+    // Доступна ли карта текущему герою (общие карты — всем)
+    public bool AvailableTo(CharacterData character) => owner == null || owner == character;
+    public bool AvailableNow
+    {
+        get
+        {
+            var gm = GameManager.Instance;
+            return gm == null || (AvailableTo(gm.selectedCharacter) && gm.roomsVisited >= minRoom);
+        }
+    }
 
     public bool HasEffect(CardEffectType type)
     {
@@ -71,6 +86,9 @@ public class CardData : ScriptableObject
                 case CardEffectType.SelfDamage: u.value = Mathf.Max(0, u.value - 1); break;
                 case CardEffectType.MoltenGuard: u.value += 1; break;
                 case CardEffectType.Rage: u.value += 1; break;
+                case CardEffectType.Momentum: u.value += 1; break;
+                case CardEffectType.PassiveStrikeBonus: u.value += 2; break;
+                case CardEffectType.Retaliation: u.value += 1; break;
             }
             copy.effects.Add(u);
         }

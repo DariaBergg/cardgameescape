@@ -290,6 +290,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   selectedCharacter: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
+  characters:
+  - {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
+  - {fileID: 11400000, guid: 8808660730758438ab5674b4b347ff7c, type: 2}
   cardVisuals: {fileID: 11400000, guid: 8d96f678f731b452c89ff7e925f8d313, type: 2}
   cardPools: {fileID: 11400000, guid: 8f380ad3b2c3240869db5c4343404a16, type: 2}
   uiSkin: {fileID: 11400000, guid: 5a2348d65a4374082a20e51e21991c9f, type: 2}
@@ -667,6 +670,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 499724c8a5b94479097c0f7ece6a0ed3, type: 2}
   - {fileID: 11400000, guid: 1612ae07398534cb39babadecbd7c71b, type: 2}
   - {fileID: 11400000, guid: 84e00f245101c4e3bbfed9b29438edef, type: 2}
+  - {fileID: 11400000, guid: 18ba4521b6d6e4591a7e4f1f517e8f33, type: 2}
   dangerEnemies: []
   elites:
   - {fileID: 11400000, guid: a8871c368cbc548f9bc1119a95857ea6, type: 2}
@@ -679,7 +683,6 @@ MonoBehaviour:
   doorsY: 3.2
   doorSpacing: 6.5
   fadeDuration: 0.3
-  tutorialBonusCard: {fileID: 11400000, guid: c6611b0f364934cc88823c88b30a2402, type: 2}
 --- !u!4 &2043284902
 Transform:
   m_ObjectHideFlags: 0

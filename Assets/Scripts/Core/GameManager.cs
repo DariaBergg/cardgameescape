@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public CharacterData selectedCharacter;
+    [Tooltip("Герои на экране выбора")]
+    public List<CharacterData> characters = new List<CharacterData>();
     public CardVisuals cardVisuals;
     public CardPools cardPools;
     public UISkin uiSkin;
@@ -60,6 +62,12 @@ public class GameManager : MonoBehaviour
             playerDeck = new List<CardData>(selectedCharacter.startingDeck);
             currentHP = selectedCharacter.maxHP;
         }
+    }
+
+    public void SelectCharacter(CharacterData character)
+    {
+        selectedCharacter = character;
+        ResetRun();
     }
 
     // --- Cards ---

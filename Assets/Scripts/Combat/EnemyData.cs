@@ -5,6 +5,8 @@ using UnityEngine;
 public class EnemyData : ScriptableObject
 {
     public string enemyName;
+    [Tooltip("Чей враг: пусто — встречается всем, иначе только на пути этого героя")]
+    public CharacterData owner;
     public int maxHP = 20;
     public Color color = Color.magenta;
     public Sprite sprite;
@@ -26,4 +28,7 @@ public class EnemyData : ScriptableObject
     [Header("Награды")]
     [Tooltip("Карты с изюминкой этого врага (обычно с меткой элиты)")]
     public List<CardData> rewardCards = new List<CardData>();
+
+    public bool AvailableTo(CharacterData character) => owner == null || owner == character;
+    public bool AvailableNow => GameManager.Instance == null || AvailableTo(GameManager.Instance.selectedCharacter);
 }

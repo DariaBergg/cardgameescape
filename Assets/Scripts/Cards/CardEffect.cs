@@ -32,6 +32,13 @@ public class CardEffect
             case CardEffectType.NoAttackNextTurn: body = "В следующий ход нельзя играть атакующие карты."; break;
             case CardEffectType.MoltenGuard: body = $"Если враг пробьёт блок и ранит тебя — он загорится: {v} урона в ход, {t} х."; break;
             case CardEffectType.Rage: body = $"Ярость на {v} хода: можно играть по 2 карты за ход (включая этот)."; break;
+            case CardEffectType.Momentum: body = $"+{v} Замах."; break;
+            case CardEffectType.ConsumeMomentum: body = $"Забирает {v} Замах."; break;
+            case CardEffectType.MomentumThreshold: body = $"В этот ход пассивный удар срабатывает на {v} Замах раньше."; break;
+            case CardEffectType.PassiveStrikeBonus: body = $"Следующий пассивный удар наносит +{v} урона."; break;
+            case CardEffectType.Combo: body = "Связка: после этой карты можно сразу сыграть ещё одну карту атаки."; break;
+            case CardEffectType.Retaliation: body = $"Если враг пробьёт блок и ранит тебя — +{v} Замах в начале следующего хода."; break;
+            case CardEffectType.Execute: body = $"Если после удара у врага останется меньше {v}% HP — добить."; break;
             default: body = type.ToString(); break;
         }
 
@@ -40,6 +47,7 @@ public class CardEffect
             case CardCondition.EnemyBurning: return $"Если враг горит — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
             case CardCondition.EnemyHasBlock: return $"Если у врага есть блок — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
             case CardCondition.EnemyAttacking: return $"Если враг готовит атаку — {LowerFirst(body)}";
+            case CardCondition.EnemyBelowHalf: return $"Если у врага меньше половины HP — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
             default: return body;
         }
     }
@@ -67,9 +75,17 @@ public class CardEffect
             case CardEffectType.NoAttackNextTurn: s = "без атаки в след. ход"; break;
             case CardEffectType.MoltenGuard: s = $"пробил блок — горит {v}×{t}"; break;
             case CardEffectType.Rage: s = $"2 карты за ход, {v} хода"; break;
+            case CardEffectType.Momentum: s = $"+{v} Замах"; break;
+            case CardEffectType.ConsumeMomentum: s = $"−{v} Замах"; break;
+            case CardEffectType.MomentumThreshold: s = $"порог удара −{v}"; break;
+            case CardEffectType.PassiveStrikeBonus: s = $"пасс. удар +{v}"; break;
+            case CardEffectType.Combo: s = "связка: ещё атака"; break;
+            case CardEffectType.Retaliation: s = $"ранят — +{v} Замах"; break;
+            case CardEffectType.Execute: s = $"< {v}% HP — добить"; break;
             default: s = type.ToString(); break;
         }
         if (condition == CardCondition.EnemyBurning) s = "если горит: " + s;
+        if (condition == CardCondition.EnemyBelowHalf) s = "если < ½ HP: " + s;
         if (condition == CardCondition.EnemyHasBlock) s = "если враг в блоке: " + s;
         if (condition == CardCondition.EnemyAttacking) s = "если враг атакует: " + s;
         return s;

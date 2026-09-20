@@ -42,6 +42,18 @@ public class CombatManager : MonoBehaviour
     int nextHandPenalty;
 
     int cardsPlayedThisTurn;
+
+    // --- Замах (лев) ---
+    int momentum;
+    int pendingMomentum;      // придёт в начале следующего хода (Возмездие)
+    int momentumThresholdCut; // порог ниже на N в этот ход
+    int passiveStrikeBonus;   // бонус к следующему пассивному удару
+    int retaliationMomentum;  // сколько Замаха даст ранение в этот ход врага
+    bool comboAttack;         // связка: ещё одна карта атаки в этот ход
+    bool passiveStrikeReady;  // шкала заполнилась картой — ударить после её розыгрыша
+    bool strikeRunning;
+    bool endingTurn;
+    static readonly Color MomentumColor = new Color(0.6f, 0.85f, 1f);
     bool combatActive;
     bool enemyActing;
 
@@ -78,9 +90,16 @@ public class CombatManager : MonoBehaviour
     public int DrawPileCount => drawPile.Count;
     public int DiscardPileCount => discardPile.Count;
     public int TurnCardLimit => GameManager.Instance.maxCardsPerTurn + (rageTurnsLeft > 0 ? 1 : 0);
-    public int CardsLeftThisTurn => Mathf.Max(0, TurnCardLimit - cardsPlayedThisTurn);
+    int BaseCardsLeft => Mathf.Max(0, TurnCardLimit - cardsPlayedThisTurn);
+    public int CardsLeftThisTurn => BaseCardsLeft + (comboAttack ? 1 : 0);
     public bool CanPlayCard => combatActive && !enemyActing && CardsLeftThisTurn > 0;
-    public bool CanPlay(CardData card) => CanPlayCard && !card.unplayable && !(blockLocked && card.IsDefense) && !(attackLocked && card.IsAttack);
+    public bool CanPlay(CardData card) => CanPlayCard && !card.unplayable && !(blockLocked && card.IsDefense) && !(attackLocked && card.IsAttack)
+        && (BaseCardsLeft > 0 || card.IsAttack); // связка даёт только атаку
+
+    public bool UsesMomentum => GameManager.Instance.selectedCharacter != null && GameManager.Instance.selectedCharacter.usesMomentum;
+    public int Momentum => momentum;
+    public int MomentumMax => GameManager.Instance.selectedCharacter != null ? GameManager.Instance.selectedCharacter.momentumMax : 3;
+    public int MomentumThreshold => Mathf.Max(1, MomentumMax - momentumThresholdCut);
     public bool CanEndTurn => combatActive && !enemyActing;
 
     public int EnemyWeakAmount => enemyWeakTurns > 0 ? enemyWeakAmount : 0;
@@ -147,6 +166,7 @@ public class CombatManager : MonoBehaviour
         moltenBurnDamage = 0;
         moltenBurnTurns = 0;
         rageTurnsLeft = 0;
+        momentum = 0; pendingMomentum = 0; momentumThresholdCut = 0; passiveStrikeBonus = 0; retaliationMomentum = 0; comboAttack = false;
         poisonDamage = 0;
         poisonTurns = 0;
         nextHandPenalty = 0;
@@ -221,6 +241,12 @@ public class CombatManager : MonoBehaviour
         cardsPlayedThisTurn = 0;
         playerBlock = 0;
         playerThorns = 0;
+        comboAttack = false;
+        endingTurn = false;
+        passiveStrikeReady = false;
+        momentumThresholdCut = 0;
+        retaliationMomentum = 0;
+        if (pendingMomentum > 0) { GainMomentum(pendingMomentum, "Возмездие"); pendingMomentum = 0; }
         blockLocked = blockLockedNextTurn;
         blockLockedNextTurn = false;
         attackLocked = attackLockedNextTurn;
@@ -263,6 +289,7 @@ public class CombatManager : MonoBehaviour
         int normalDraws = Mathf.Min(Mathf.Max(0, handSize - hand.Count), totalCards);
         for (int i = 0; i < normalDraws; i++) DrawCard();
         ui.Refresh();
+        if (UsesMomentum && momentum >= MomentumThreshold) StartCoroutine(PassiveStrike());
 
         int steal = Mathf.Min(nextHandPenalty, Mathf.Max(0, hand.Count - 1));
         nextHandPenalty = 0;
@@ -308,7 +335,8 @@ public class CombatManager : MonoBehaviour
 
         hand.Remove(card);
         if (!card.exhaust) discardPile.Add(card); // exhaust: карта выбывает до конца боя
-        cardsPlayedThisTurn++;
+        if (BaseCardsLeft == 0 && comboAttack) comboAttack = false; // сыграно по связке
+        else cardsPlayedThisTurn++;
         ui.NotifyCardPlayed(card);
         ApplyCardEffect(card);
 
@@ -324,11 +352,14 @@ public class CombatManager : MonoBehaviour
         }
         ui.Refresh();
 
-        if (CardsLeftThisTurn == 0) StartCoroutine(AutoEndTurn());
+        if (passiveStrikeReady) { passiveStrikeReady = false; StartCoroutine(PassiveStrike()); return; } // конец хода решит молния
+        if (CardsLeftThisTurn == 0 || !hand.Exists(CanPlay)) StartCoroutine(AutoEndTurn());
     }
 
     IEnumerator AutoEndTurn()
     {
+        if (endingTurn) yield break;
+        endingTurn = true;
         enemyActing = true;
         ui.Refresh();
         yield return new WaitForSeconds(0.7f);
@@ -350,6 +381,8 @@ public class CombatManager : MonoBehaviour
             if (effect.condition == CardCondition.EnemyHasBlock && enemyBlock <= 0) continue;
             if (effect.condition == CardCondition.EnemyNoBlock && enemyBlock > 0) continue;
             if (effect.condition == CardCondition.EnemyAttacking && (currentMove == null || currentMove.damage <= 0)) continue;
+            if (effect.condition == CardCondition.EnemyBelowHalf && enemyHP * 2 > enemy.maxHP) continue;
+            if (effect.condition == CardCondition.EnemyNotBelowHalf && enemyHP * 2 <= enemy.maxHP) continue;
             switch (effect.type)
             {
                 case CardEffectType.Damage:
@@ -447,6 +480,46 @@ public class CombatManager : MonoBehaviour
                     fx.Flash(playerRenderer, BurnColor);
                     fx.FloatingText(PlayerHead, "Раскалена!", BurnColor);
                     break;
+                case CardEffectType.Momentum:
+                    log.Add($"+{effect.value} Замах");
+                    GainMomentum(effect.value, card.cardName);
+                    break;
+                case CardEffectType.ConsumeMomentum:
+                {
+                    int taken = Mathf.Min(momentum, effect.value);
+                    momentum -= taken;
+                    log.Add(taken > 0 ? $"−{taken} Замах" : "Замаха нет");
+                    break;
+                }
+                case CardEffectType.MomentumThreshold:
+                    momentumThresholdCut += effect.value;
+                    log.Add($"порог удара {MomentumThreshold}");
+                    fx.FloatingText(PlayerHead, $"Удар на {MomentumThreshold}!", MomentumColor);
+                    break;
+                case CardEffectType.PassiveStrikeBonus:
+                    passiveStrikeBonus += effect.value;
+                    log.Add($"след. пасс. удар +{effect.value}");
+                    fx.FloatingText(PlayerHead, $"Сила +{passiveStrikeBonus}", MomentumColor);
+                    break;
+                case CardEffectType.Combo:
+                    comboAttack = true;
+                    log.Add("связка");
+                    fx.FloatingText(PlayerHead, "Связка!", MomentumColor);
+                    break;
+                case CardEffectType.Retaliation:
+                    retaliationMomentum += effect.value;
+                    log.Add($"возмездие +{effect.value}");
+                    break;
+                case CardEffectType.Execute:
+                    if (enemyHP > 0 && enemyHP * 100 <= enemy.maxHP * effect.value)
+                    {
+                        enemyHP = 0;
+                        log.Add("казнь");
+                        fx.Flash(enemyRenderer, DamageColor);
+                        fx.Shake(enemyVisual.transform, 0.3f, 0.4f);
+                        fx.FloatingText(EnemyCenter, "КАЗНЬ!", DamageColor);
+                    }
+                    break;
                 case CardEffectType.Cleanse:
                     if (poisonTurns > 0) { poisonTurns = 0; poisonDamage = 0; log.Add("яд снят"); }
                     else if (nextHandPenalty > 0) { nextHandPenalty = 0; log.Add("ослабление снято"); }
@@ -457,11 +530,46 @@ public class CombatManager : MonoBehaviour
             }
         }
         LastEvent = $"«{card.cardName}»: {string.Join(", ", log)}";
+        if (UsesMomentum && momentum >= MomentumThreshold) passiveStrikeReady = true;
+    }
+
+    void GainMomentum(int amount, string source)
+    {
+        if (!UsesMomentum || amount <= 0) return;
+        momentum = Mathf.Min(MomentumMax, momentum + amount);
+        fx.FloatingText(PlayerHead, $"Замах {momentum}/{MomentumMax}", MomentumColor);
+        ui.Refresh();
+    }
+
+    // Шкала Замаха полна: лев сам бьёт молнией. Не тратит карту и ход, Замах сбрасывается.
+    IEnumerator PassiveStrike()
+    {
+        if (strikeRunning || !combatActive) yield break;
+        strikeRunning = true;
+        enemyActing = true;
+        ui.Refresh();
+        yield return new WaitForSeconds(0.35f);
+        int damage = (GameManager.Instance.selectedCharacter != null ? GameManager.Instance.selectedCharacter.passiveStrikeDamage : 6) + passiveStrikeBonus;
+        passiveStrikeBonus = 0;
+        momentum = 0;
+        yield return fx.Lightning(EnemyCenter, 0.35f);
+        enemyHP = Mathf.Max(0, enemyHP - damage);
+        fx.Flash(enemyRenderer, MomentumColor);
+        fx.Shake(enemyVisual.transform, 0.25f, 0.35f);
+        fx.FloatingText(EnemyCenter, $"⚡ -{damage}", MomentumColor);
+        LastEvent = $"Замах! Молния бьёт на {damage}.";
+        yield return new WaitForSeconds(0.4f);
+        enemyActing = false;
+        strikeRunning = false;
+        if (enemyHP <= 0) { Win(); yield break; }
+        ui.Refresh();
+        if (CardsLeftThisTurn == 0 || !hand.Exists(CanPlay)) StartCoroutine(AutoEndTurn());
     }
 
     public void EndTurn()
     {
-        if (!CanEndTurn) return;
+        if (!CanEndTurn || endingTurn) return;
+        endingTurn = true;
         StartCoroutine(EnemyTurnRoutine());
     }
 
@@ -570,6 +678,7 @@ public class CombatManager : MonoBehaviour
                         fx.Flash(playerRenderer, DamageColor);
                         if (playerRenderer != null) fx.Shake(playerRenderer.transform);
                         fx.FloatingText(PlayerHead, $"-{damage}", DamageColor);
+                        if (retaliationMomentum > 0) { pendingMomentum += retaliationMomentum; retaliationMomentum = 0; }
                         if (moltenBurnTurns > 0)
                         {
                             enemyBurnDamage = Mathf.Max(enemyBurnDamage, moltenBurnDamage);
@@ -710,8 +819,22 @@ public class CombatManager : MonoBehaviour
         enemyActing = false;
 
         bool tutorial = RoomManager.Instance != null && !RoomManager.Instance.MarkedRewardsUnlocked;
-        if (tutorial) ShowUpgradeReward();
+        if (tutorial)
+        {
+            var character = GameManager.Instance.selectedCharacter;
+            int fight = RoomManager.Instance.CurrentRoomIndex - 1; // 0 — первый обучающий бой
+            var fixedReward = character != null && fight >= 0 && fight < character.tutorialCardRewards.Count ? character.tutorialCardRewards[fight] : null;
+            if (fixedReward != null) ShowFixedReward(fixedReward);
+            else ShowUpgradeReward();
+        }
         else ui.ShowRewards(PickRewards(), OnRewardChosen);
+    }
+
+    // Обучающая награда без выбора: герой просто получает заданную карту
+    void ShowFixedReward(CardData card)
+    {
+        GameManager.Instance.playerDeck.Add(card);
+        CardChoiceUI.Get().Show("Победа! Новая карта в колоде", new List<CardData> { card }, _ => OnRewardChosen(null), allowSkip: false);
     }
 
     void ShowUpgradeReward()
@@ -740,10 +863,11 @@ public class CombatManager : MonoBehaviour
     {
         var character = GameManager.Instance.selectedCharacter;
         var rewards = new List<CardData>();
-        var basePool = new List<CardData>(character.rewardCards);
+        var basePool = character.rewardCards.FindAll(c => c != null && c.AvailableNow);
         Shuffle(basePool);
         if (basePool.Count > 0) rewards.Add(basePool[0]);
-        if (enemy.rewardCards.Count > 0) rewards.Add(enemy.rewardCards[Random.Range(0, enemy.rewardCards.Count)]);
+        var enemyPool = enemy.rewardCards.FindAll(c => c != null && c.AvailableNow);
+        if (enemyPool.Count > 0) rewards.Add(enemyPool[Random.Range(0, enemyPool.Count)]);
         else if (basePool.Count > 1) rewards.Add(basePool[1]);
         return rewards;
     }
