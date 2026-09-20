@@ -246,6 +246,94 @@ public class CombatUI : MonoBehaviour
 
     static Vector2 SlotPosition(int index, int count) => new Vector2((index - (count - 1) / 2f) * HandSpacing, 0f);
 
+    public void StealCard(CardData card)
+    {
+        var view = handViews.Find(v => v.card == card && !v.swept);
+        if (view == null) return;
+        handViews.Remove(view);
+        view.button.interactable = false;
+        StartCoroutine(StealMotion(view));
+        RelayoutHand();
+    }
+
+    IEnumerator StealMotion(HandCardView view)
+    {
+        Vector2 start = view.rect.anchoredPosition;
+        Vector2 up = start + new Vector2(0, 230f);
+        yield return MoveOnly(view, start, up, 0.3f);
+        yield return new WaitForSeconds(0.6f);
+        if (view.button == null) yield break;
+        StartMotion(view, up, DiscardTarget, 0.35f, 0f, fadeOut: true, destroy: true);
+    }
+
+    public void CorruptCard(CardData oldCard, CardData newCard)
+    {
+        var view = handViews.Find(v => v.card == oldCard && !v.swept);
+        if (view == null) return;
+        int index = handViews.IndexOf(view);
+        var slot = view.rect.anchoredPosition;
+        handViews.Remove(view);
+        view.button.interactable = false;
+        StartCoroutine(CorruptMotion(view));
+
+        var button = CardView.Create(handArea, newCard, new Vector2(0.5f, 0), slot, HandCardSize);
+        var captured = newCard;
+        button.onClick.AddListener(() => combat.PlayCard(captured));
+        var fresh = new HandCardView
+        {
+            card = newCard,
+            button = button,
+            rect = button.GetComponent<RectTransform>(),
+            group = button.gameObject.AddComponent<CanvasGroup>()
+        };
+        fresh.group.alpha = 0f;
+        fresh.button.interactable = false;
+        handViews.Insert(Mathf.Clamp(index, 0, handViews.Count), fresh);
+        StartMotion(fresh, slot + new Vector2(0, -30f), slot, 0.35f, 0.35f, fadeOut: false, destroy: false,
+            onDone: () => CardView.SetInteractable(fresh.button, combat.CanPlay(fresh.card)));
+    }
+
+    IEnumerator CorruptMotion(HandCardView view)
+    {
+        var tint = view.button.transform.Find("Template")?.GetComponent<Image>();
+        Vector2 origin = view.rect.anchoredPosition;
+        for (float t = 0; t < 0.35f; t += Time.deltaTime)
+        {
+            if (view.button == null) yield break;
+            float k = t / 0.35f;
+            view.rect.anchoredPosition = origin + new Vector2(Mathf.Sin(t * 60f) * 8f * (1f - k), 0);
+            if (tint != null) tint.color = Color.Lerp(new Color(0.85f, 0.5f, 1f), Color.white, Mathf.PingPong(k * 4f, 1f));
+            view.group.alpha = 1f - k;
+            yield return null;
+        }
+        if (view.button != null) Destroy(view.button.gameObject);
+    }
+
+    IEnumerator MoveOnly(HandCardView view, Vector2 from, Vector2 to, float duration)
+    {
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            if (view.button == null) yield break;
+            float k = 1f - Mathf.Pow(1f - t / duration, 3f);
+            view.rect.anchoredPosition = Vector2.LerpUnclamped(from, to, k);
+            yield return null;
+        }
+        if (view.button != null) view.rect.anchoredPosition = to;
+    }
+
+    void RelayoutHand()
+    {
+        int count = handViews.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var view = handViews[i];
+            if (view.swept) continue;
+            var slot = SlotPosition(i, count);
+            if ((view.rect.anchoredPosition - slot).sqrMagnitude > 1f)
+                StartMotion(view, view.rect.anchoredPosition, slot, 0.2f, 0f, fadeOut: false, destroy: false);
+        }
+    }
+
     void StartMotion(HandCardView view, Vector2 from, Vector2 to, float duration, float delay, bool fadeOut, bool destroy, Action onDone = null)
     {
         if (view.motion != null) StopCoroutine(view.motion);

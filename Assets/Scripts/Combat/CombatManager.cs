@@ -240,15 +240,39 @@ public class CombatManager : MonoBehaviour
             }
         }
 
+        if (currentMove != null && currentMove.block > 0)
+        {
+            enemyBlock += currentMove.block;
+            fx.Flash(enemyRenderer, BlockColor);
+            fx.FloatingText(EnemyCenter, $"+{currentMove.block} блок", BlockColor);
+        }
+
         discardPile.AddRange(hand);
         hand.Clear();
         int totalCards = drawPile.Count + discardPile.Count;
         int normalDraws = Mathf.Min(handSize, totalCards);
-        int draws = Mathf.Max(1, normalDraws - nextHandPenalty);
-        if (nextHandPenalty > 0 && draws < normalDraws)
-            fx.FloatingText(PlayerHead, $"-{normalDraws - draws} карта", DebuffColor);
+        for (int i = 0; i < normalDraws; i++) DrawCard();
+        ui.Refresh();
+
+        int steal = Mathf.Min(nextHandPenalty, Mathf.Max(0, hand.Count - 1));
         nextHandPenalty = 0;
-        for (int i = 0; i < draws; i++) DrawCard();
+        if (steal > 0) StartCoroutine(StealRoutine(steal));
+    }
+
+    IEnumerator StealRoutine(int count)
+    {
+        enemyActing = true;
+        ui.Refresh();
+        yield return new WaitForSeconds(0.7f);
+        for (int n = 0; n < count && hand.Count > 1; n++)
+        {
+            var stolen = hand[Random.Range(0, hand.Count)];
+            hand.Remove(stolen);
+            discardPile.Add(stolen);
+            ui.StealCard(stolen);
+            yield return new WaitForSeconds(1.1f);
+        }
+        enemyActing = false;
         ui.Refresh();
     }
 
@@ -560,16 +584,6 @@ public class CombatManager : MonoBehaviour
                 }
             }
 
-            if (move.block > 0)
-            {
-                enemyBlock += move.block;
-                LastEvent = $"{enemy.enemyName} получает {move.block} блока.";
-                fx.Flash(enemyRenderer, BlockColor);
-                fx.FloatingText(EnemyCenter, $"+{move.block} блок", BlockColor);
-                ui.Refresh();
-                yield return new WaitForSeconds(0.5f);
-            }
-
             if (move.poisonTurns > 0)
             {
                 poisonDamage = Mathf.Max(poisonDamage, move.poisonDamage);
@@ -579,6 +593,32 @@ public class CombatManager : MonoBehaviour
                 fx.FloatingText(PlayerHead, "Яд!", PoisonColor);
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
+            }
+
+            if (move.corruptCards > 0)
+            {
+                int corrupted = 0;
+                for (int n = 0; n < move.corruptCards; n++)
+                {
+                    var candidates = new List<int>();
+                    for (int i = 0; i < hand.Count; i++) if (!hand[i].unplayable) candidates.Add(i);
+                    if (candidates.Count == 0) break;
+                    int index = candidates[Random.Range(0, candidates.Count)];
+                    var weak = CardPools.Instance != null ? CardPools.Instance.RandomWeak() : null;
+                    if (weak == null) break;
+                    var old = hand[index];
+                    hand[index] = weak;
+                    ui.CorruptCard(old, weak);
+                    corrupted++;
+                    yield return new WaitForSeconds(0.7f);
+                }
+                if (corrupted > 0)
+                {
+                    LastEvent = $"{enemy.enemyName} портит твои карты: {corrupted} карта заменена слабой до конца боя.";
+                    fx.FloatingText(PlayerHead, corrupted > 1 ? $"Испорчено {corrupted} карты!" : "Карта испорчена!", DebuffColor);
+                    ui.Refresh();
+                    yield return new WaitForSeconds(0.4f);
+                }
             }
 
             if (move.handReduce > 0)

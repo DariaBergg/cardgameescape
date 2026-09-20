@@ -10,6 +10,10 @@ public class CardPools : ScriptableObject
     public List<CardData> allCards = new List<CardData>();
     public CardData wound;
     public CardData debt;
+    [Tooltip("Слабые карты, которыми враги подменяют карты в руке")]
+    public List<CardData> weakCards = new List<CardData>();
+
+    public CardData RandomWeak() => weakCards.Count > 0 ? weakCards[Random.Range(0, weakCards.Count)] : null;
 
     public List<CardData> OfRarity(CardRarity rarity, ICollection<CardData> exclude = null)
     {

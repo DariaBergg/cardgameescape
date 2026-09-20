@@ -16,11 +16,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b0cfe685e4a23410e94b11858136d49a, type: 2}
   - {fileID: 11400000, guid: a79717600600a439c81555561f0d4dae, type: 2}
   - {fileID: 11400000, guid: e819efead0c8c41b0bba0a259a6e32c1, type: 2}
-  - {fileID: 11400000, guid: 6877a71130eca4168a4f00579bea0bdf, type: 2}
-  - {fileID: 11400000, guid: cce22c71730b0429da56c35f4dcc00ff, type: 2}
-  - {fileID: 11400000, guid: af2cfb36b835e47ec924621474cfc7a6, type: 2}
-  - {fileID: 11400000, guid: 6dd2973e9bb7447ac93a9ebbc22b540b, type: 2}
-  - {fileID: 11400000, guid: 71a71fb2a39ac44f1bcf6c7870726141, type: 2}
+  - {fileID: 11400000, guid: 9bea3b0087bf54f60903cee9eee99a62, type: 2}
   - {fileID: 11400000, guid: 220e7308ca9f541198649c1efd5e55cb, type: 2}
   - {fileID: 11400000, guid: db8f21783efe4489bbc2dbbf6577c964, type: 2}
   - {fileID: 11400000, guid: 05109c9c09872494ca310a3fedcbd957, type: 2}
@@ -28,8 +24,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8f3d02d75294841d3a8d0335a5374dde, type: 2}
   - {fileID: 11400000, guid: 12aaf43d1d1d248519547e5ded540df8, type: 2}
   - {fileID: 11400000, guid: 297e040dc4fb1418588f239b603149e1, type: 2}
-  - {fileID: 11400000, guid: 9bea3b0087bf54f60903cee9eee99a62, type: 2}
   - {fileID: 11400000, guid: 20218951d4a3c44b2a182d670bf073c6, type: 2}
   - {fileID: 11400000, guid: 63facfacc1cad4486b81178d455d3c02, type: 2}
   wound: {fileID: 11400000, guid: 372a3669b2034475798a2eec83139336, type: 2}
   debt: {fileID: 11400000, guid: c52bf7932e062464b9d7ff10cd2875dd, type: 2}
+  weakCards:
+  - {fileID: 11400000, guid: 6877a71130eca4168a4f00579bea0bdf, type: 2}
+  - {fileID: 11400000, guid: cce22c71730b0429da56c35f4dcc00ff, type: 2}
+  - {fileID: 11400000, guid: af2cfb36b835e47ec924621474cfc7a6, type: 2}
+  - {fileID: 11400000, guid: 6dd2973e9bb7447ac93a9ebbc22b540b, type: 2}
+  - {fileID: 11400000, guid: 71a71fb2a39ac44f1bcf6c7870726141, type: 2}

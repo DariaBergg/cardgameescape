@@ -81,6 +81,7 @@ public class RoomManager : MonoBehaviour
 
     readonly List<GameObject> doors = new List<GameObject>();
     DoorType lastRoomType = DoorType.Combat;
+    EnemyData lastEnemy;
     PlayerController player;
     Rigidbody2D playerBody;
     GameHUD hud;
@@ -160,12 +161,14 @@ public class RoomManager : MonoBehaviour
             {
                 var enemy = CurrentRoomIndex <= TutorialRooms
                     ? tutorialSequence[CurrentRoomIndex - 1]
-                    : Pick(CombatPool());
+                    : PickNotLast(CombatPool());
+                lastEnemy = enemy;
                 return new RoomPlan { title = "Бой", background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
             }
             case DoorType.Danger:
             {
                 var enemy = RollDangerEncounter(out bool isElite);
+                lastEnemy = enemy;
                 return new RoomPlan
                 {
                     title = "Опасная комната",
@@ -470,7 +473,7 @@ public class RoomManager : MonoBehaviour
             }
         }
         isElite = false;
-        return Pick(dangerEnemies.Count > 0 ? dangerEnemies : enemies);
+        return PickNotLast(dangerEnemies.Count > 0 ? dangerEnemies : enemies);
     }
 
     static void Shuffle<T>(List<T> list)
@@ -483,5 +486,15 @@ public class RoomManager : MonoBehaviour
     }
 
     static T Pick<T>(List<T> list) => list[Random.Range(0, list.Count)];
+
+    EnemyData PickNotLast(List<EnemyData> list)
+    {
+        if (list.Count > 1 && lastEnemy != null)
+        {
+            var filtered = list.FindAll(e => e != lastEnemy);
+            if (filtered.Count > 0) return Pick(filtered);
+        }
+        return Pick(list);
+    }
     static T PickOrNull<T>(List<T> list) where T : class => list.Count > 0 ? list[Random.Range(0, list.Count)] : null;
 }
