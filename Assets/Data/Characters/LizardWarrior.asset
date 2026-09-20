@@ -22,6 +22,7 @@ MonoBehaviour:
   maxHP: 50
   sprite: {fileID: 21300000, guid: e1ee471552732466e9c99c9303a4738c, type: 3}
   portrait: {fileID: 21300000, guid: 4c298dd6e9ab04df0a8059ac8f0192d1, type: 3}
+  cardVisuals: {fileID: 0}
   startingDeck:
   - {fileID: 11400000, guid: b0cfe685e4a23410e94b11858136d49a, type: 2}
   - {fileID: 11400000, guid: a79717600600a439c81555561f0d4dae, type: 2}
@@ -38,6 +39,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e819efead0c8c41b0bba0a259a6e32c1, type: 2}
   - {fileID: 11400000, guid: 9bea3b0087bf54f60903cee9eee99a62, type: 2}
   tutorialBonusCard: {fileID: 11400000, guid: c6611b0f364934cc88823c88b30a2402, type: 2}
+  bonusCard: {fileID: 11400000, guid: c6611b0f364934cc88823c88b30a2402, type: 2}
+  bonusCardChance: 60
+  bonusCardCooldownRooms: 4
+  tutorialSequence: []
+  tutorialCardRewards: []
   usesMomentum: 0
   momentumMax: 3
   passiveStrikeDamage: 6

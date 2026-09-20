@@ -29,6 +29,8 @@ public class CardData : ScriptableObject
     public CharacterData owner;
     [Tooltip("Появляется в наградах не раньше этой комнаты (0 — всегда)")]
     public int minRoom;
+    [Tooltip("Только из событий (трещина, странник): в обычные награды, сундуки и лавки не попадает")]
+    public bool eventOnly;
 
     [Header("Метка элиты")]
     public EnemyData eliteMark;

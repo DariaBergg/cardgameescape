@@ -35,6 +35,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 442c7508e5ce74f6aaef616f915e80ec, type: 2}
   - {fileID: 11400000, guid: 656f59e643fee4d6fa79bad99ac863c6, type: 2}
   - {fileID: 11400000, guid: 1a26da0f1111d42aebcd5c82f84d1035, type: 2}
+  - {fileID: 11400000, guid: e424f2a094f824e90b5b7b7dd3182331, type: 2}
+  - {fileID: 11400000, guid: 11b393429dd604737870466f48643496, type: 2}
+  - {fileID: 11400000, guid: 125b1cbb16e4047a080828612103dd0a, type: 2}
+  - {fileID: 11400000, guid: 99b3d84f794dc408bbead62697cb1c7d, type: 2}
   wound: {fileID: 11400000, guid: 372a3669b2034475798a2eec83139336, type: 2}
   debt: {fileID: 11400000, guid: c52bf7932e062464b9d7ff10cd2875dd, type: 2}
   weakCards:

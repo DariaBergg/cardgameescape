@@ -13,6 +13,7 @@ public class CombatUI : MonoBehaviour
     RectTransform intentBadge;
     Image intentBadgeBg;
     Image intentIcon;
+    Text intentNumber;
     Text intentText;
     TooltipTrigger intentTooltip;
     Text drawPileText;
@@ -62,9 +63,20 @@ public class CombatUI : MonoBehaviour
         intentIcon = iconRect.gameObject.AddComponent<Image>();
         intentIcon.preserveAspect = true;
         intentIcon.raycastTarget = false;
+        // Число под иконкой: урон / защита, чтобы не лезть в подсказку
+        intentNumber = UIFactory.CreateText(intentBadge, "Number", "", 22, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0, -6), new Vector2(160, 30));
+        intentNumber.rectTransform.pivot = new Vector2(0.5f, 1f);
+        intentNumber.fontStyle = FontStyle.Bold;
+        intentNumber.raycastTarget = false;
+        UIFactory.AddShadow(intentNumber, 1f);
 
         drawPileText = CreatePill(root.transform, "DrawPile", new Vector2(0, 0), new Vector2(16, 16));
         discardPileText = CreatePill(root.transform, "DiscardPile", new Vector2(1, 0), new Vector2(-16, 16));
+        var discardImg = discardPileText.transform.parent.GetComponent<Image>();
+        discardImg.raycastTarget = true;
+        var discardButton = discardImg.gameObject.AddComponent<Button>();
+        discardButton.targetGraphic = discardImg;
+        discardButton.onClick.AddListener(OpenDiscardPile);
 
         handArea = UIFactory.CreateRect(root.transform, "HandArea", new Vector2(0.5f, 0), new Vector2(0, 16), new Vector2(1000, 260));
 
@@ -72,9 +84,9 @@ public class CombatUI : MonoBehaviour
         endTurnButton.onClick.AddListener(() => combat.EndTurn());
 
         rewardPanel = UIFactory.CreateFullscreenPanel(root.transform, "RewardPanel", new Color(0, 0, 0, 0.75f));
-        var rewardPlate = UIFactory.CreatePanel(rewardPanel, "TitlePlate", new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(720, 64), UISkin.Get(k => k.labelTitle), Color.clear);
+        var rewardPlate = UIFactory.CreatePanel(rewardPanel, "TitlePlate", new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(880, 64), UISkin.Get(k => k.labelTitle), Color.clear);
         rewardPlate.GetComponent<Image>().raycastTarget = false;
-        var rewardTitle = UIFactory.CreateText(rewardPlate, "Title", "Победа! Выбери карту", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(620, 50));
+        var rewardTitle = UIFactory.CreateText(rewardPlate, "Title", "Победа! Выбери карту", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(780, 50));
         rewardTitle.color = new Color(0.93f, 0.88f, 0.78f);
         rewardTitle.font = UIFactory.TitleFont;
         UIFactory.AddShadow(rewardTitle);
@@ -102,9 +114,16 @@ public class CombatUI : MonoBehaviour
         return text;
     }
 
+    void OpenDiscardPile()
+    {
+        if (combat.DiscardPile.Count == 0) return;
+        DeckPickerUI.Get().Show($"Сброс — {combat.DiscardPile.Count} карт", new List<CardData>(combat.DiscardPile), c => false, null, null, closeLabel: "Закрыть");
+    }
+
     public void Show()
     {
         root.SetActive(true);
+        enemyFrame.Show(true);
         rewardPanel.gameObject.SetActive(false);
         defeatPanel.gameObject.SetActive(false);
     }
@@ -116,7 +135,8 @@ public class CombatUI : MonoBehaviour
 
     public void Refresh()
     {
-        enemyFrame.Set(combat.EnemyName, combat.EnemyHP, combat.EnemyMaxHP, combat.EnemyBlock, combat.EnemyStatusText);
+        enemyFrame.Set(combat.EnemyName, combat.EnemyHP, combat.EnemyMaxHP, combat.EnemyBlock, "");
+        enemyFrame.SetStatuses(combat.EnemyStatuses);
 
         var move = combat.CurrentMove;
         bool showIntent = combat.CombatActive && !combat.EnemyActing && move != null;
@@ -131,6 +151,7 @@ public class CombatUI : MonoBehaviour
             intentBadge.sizeDelta = hasIcon ? IntentIconSize : IntentWordSize;
             if (hasIcon) intentIcon.sprite = move.icon;
             else intentText.text = move.moveName;
+            intentNumber.text = IntentNumbers(move, combat.PendingDamageBonus);
         }
 
         drawPileText.text = $"Колода {combat.DrawPileCount}";
@@ -144,6 +165,21 @@ public class CombatUI : MonoBehaviour
     void LateUpdate()
     {
         if (intentBadge.gameObject.activeSelf) PositionIntentBadge();
+    }
+
+    // Короткая числовая подпись к намерению: «5», «2×3», «защ. 6»
+    static string IntentNumbers(EnemyMove move, int bonus)
+    {
+        var parts = new List<string>();
+        if (move.damage > 0)
+        {
+            int dmg = move.damage + bonus;
+            parts.Add(move.hits > 1 ? $"<color=#ff9a8a>{dmg}×{move.hits}</color>" : $"<color=#ff9a8a>{dmg}</color>");
+        }
+        if (move.block > 0) parts.Add($"<color=#9fd0ff>защ. {move.block}</color>");
+        if (move.poisonTurns > 0) parts.Add($"<color=#9de08a>яд {move.poisonDamage}×{move.poisonTurns}</color>");
+        if (move.handReduce > 0) parts.Add($"<color=#d9a6ff>−{move.handReduce} карта</color>");
+        return string.Join("  ", parts);
     }
 
     void PositionIntentBadge()
@@ -174,6 +210,8 @@ public class CombatUI : MonoBehaviour
     const float DealStagger = 0.09f;
 
     public void NotifyCardPlayed(CardData card) => lastPlayedCard = card;
+
+    public void HideEnemyFrame() => enemyFrame.Show(false);
 
     public void SweepHand()
     {

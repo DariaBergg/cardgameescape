@@ -28,9 +28,9 @@ public class CardChoiceUI : MonoBehaviour
     void Build(Transform canvas)
     {
         panel = UIFactory.CreateFullscreenPanel(canvas, "Panel", new Color(0, 0, 0, 0.75f));
-        var titlePlate = UIFactory.CreatePanel(panel, "TitlePlate", new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(720, 64), UISkin.Get(k => k.labelTitle), Color.clear);
+        var titlePlate = UIFactory.CreatePanel(panel, "TitlePlate", new Vector2(0.5f, 0.5f), new Vector2(0, 252), new Vector2(920, 66), UISkin.Get(k => k.labelTitle), Color.clear);
         titlePlate.GetComponent<Image>().raycastTarget = false;
-        titleText = UIFactory.CreateText(titlePlate, "Title", "", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(620, 50));
+        titleText = UIFactory.CreateText(titlePlate, "Title", "", 24, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(820, 52));
         titleText.color = new Color(0.93f, 0.88f, 0.78f);
         titleText.font = UIFactory.TitleFont;
         UIFactory.AddShadow(titleText);

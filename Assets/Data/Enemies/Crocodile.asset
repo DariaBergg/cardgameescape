@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Crocodile
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: "\u0411\u043E\u043B\u043E\u0442\u043D\u044B\u0439 \u043A\u0440\u043E\u043A\u043E\u0434\u0438\u043B"
+  owner: {fileID: 0}
   maxHP: 28
   color: {r: 1, g: 0, b: 1, a: 1}
   sprite: {fileID: 21300000, guid: c79a67775375f415b8d11ca13ba3982d, type: 3}
@@ -32,8 +33,11 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 0
     corruptCards: 0
+    lockBlock: 0
     description: "\u041A\u0440\u043E\u043A\u043E\u0434\u0438\u043B \u0441\u043C\u044B\u043A\u0430\u0435\u0442
       \u0447\u0435\u043B\u044E\u0441\u0442\u0438."
     submerge: 0
@@ -46,8 +50,11 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 1
     corruptCards: 0
+    lockBlock: 0
     description: "\u0427\u0435\u043B\u044E\u0441\u0442\u0438 \u0441\u0436\u0430\u043B\u0438
       \u0442\u0435\u0431\u044F \u2014 \u0432 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439
       \u0445\u043E\u0434 \u043D\u0435 \u0440\u0430\u0437\u043C\u0430\u0445\u043D\u0443\u0442\u044C\u0441\u044F:
@@ -62,8 +69,11 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 0
     corruptCards: 0
+    lockBlock: 0
     description: "\u0414\u0432\u0430 \u0442\u044F\u0436\u0451\u043B\u044B\u0445 \u0443\u0434\u0430\u0440\u0430
       \u0445\u0432\u043E\u0441\u0442\u043E\u043C."
     submerge: 0
@@ -76,8 +86,11 @@ MonoBehaviour:
     block: 6
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 0
     corruptCards: 0
+    lockBlock: 0
     description: "\u041A\u0440\u043E\u043A\u043E\u0434\u0438\u043B \u0437\u0430\u043B\u0451\u0433
       \u043F\u043E\u0434 \u0432\u043E\u0434\u043E\u0439: \u0432 \u044D\u0442\u043E\u0442
       \u0445\u043E\u0434 \u0443 \u043D\u0435\u0433\u043E \u0435\u0441\u0442\u044C

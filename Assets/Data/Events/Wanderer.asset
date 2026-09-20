@@ -21,5 +21,5 @@ MonoBehaviour:
   npcScale: 0.85
   npcMaskSize: {x: 0, y: 0}
   npcMaskCenter: {x: 0, y: 0, z: 0}
-  playerPosition: {x: 2.6, y: -0.4, z: 0}
+  playerPosition: {x: 4.2, y: -0.6, z: 0}
   playerScale: 1.3

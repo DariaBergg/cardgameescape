@@ -27,7 +27,7 @@ public class BlacksmithVisit : MerchantVisit
         return new[]
         {
             Opt("Перековка", "Улучшить одну карту из колоды", () => Reforge("«Держи. Теперь она бьёт как надо.»")),
-            Opt("Залог", $"Улучшенная редкая карта сейчас. Условие: {PledgeFights} победы за следующие {PledgeRooms} комнат", Pledge, !hasPledge),
+            Opt("Залог", $"Улучшенная редкая карта. Условие: {PledgeFights} победы за {PledgeRooms} комнат", Pledge, !hasPledge),
             Leave()
         };
     }

@@ -656,9 +656,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4117c4126f1d345a9b70f811976293bf, type: 2}
   - {fileID: 11400000, guid: 9b4e95b336fb0468fb77794ae2a3bc0a, type: 2}
   - {fileID: 11400000, guid: e904b376198bf4f52bb415a55f7ef785, type: 2}
-  chestChance: 50
+  chestChance: 35
   forcedMerchantWindow: 5
   merchantPlayerPosition: {x: -3.5, y: -2.4, z: 0}
+  restPlayerPosition: {x: -6.2, y: -3.6, z: 0}
   merchantPlayerScale: 1.3
   tutorialSequence:
   - {fileID: 11400000, guid: a12de2a92c9124dc6bca29c7f6a4267b, type: 2}
@@ -671,6 +672,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1612ae07398534cb39babadecbd7c71b, type: 2}
   - {fileID: 11400000, guid: 84e00f245101c4e3bbfed9b29438edef, type: 2}
   - {fileID: 11400000, guid: 18ba4521b6d6e4591a7e4f1f517e8f33, type: 2}
+  - {fileID: 11400000, guid: cbbfd312bcd2d457ab89d9ad3b15405e, type: 2}
+  - {fileID: 11400000, guid: d3ce9758920bf43d393052b4fb8c1b0a, type: 2}
+  - {fileID: 11400000, guid: cd439188560654a7183a0208354b5f03, type: 2}
+  - {fileID: 11400000, guid: 88b7559afcf9642819edf9e7a9d4af23, type: 2}
+  - {fileID: 11400000, guid: 8b31c8f5bb1c945f0b39d9f2e79b4254, type: 2}
+  - {fileID: 11400000, guid: b1bb4de7f41c340b38d549f020b08da0, type: 2}
+  - {fileID: 11400000, guid: 59beb65dd93164cc88fbc996b5427ca5, type: 2}
+  - {fileID: 11400000, guid: fce6e9b7487bb45c7bc4eb5126986490, type: 2}
   dangerEnemies: []
   elites:
   - {fileID: 11400000, guid: a8871c368cbc548f9bc1119a95857ea6, type: 2}

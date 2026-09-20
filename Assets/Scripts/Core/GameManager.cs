@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
         relics.Clear();
         obligations.Clear();
         flags.Clear();
+        bonusCardCooldownUntilRoom = 0;
         if (selectedCharacter != null)
         {
             playerDeck = new List<CardData>(selectedCharacter.startingDeck);
@@ -71,6 +72,24 @@ public class GameManager : MonoBehaviour
     }
 
     // --- Cards ---
+
+    public bool HasCard(CardData card) => card != null && playerDeck.Exists(c => c != null && c.BaseCard == card.BaseCard);
+
+    // Особая карта героя (Ярость): выпадает ли шанс предложить её сейчас. Копий может быть несколько,
+    // но после выдачи несколько комнат её не предлагают.
+    int bonusCardCooldownUntilRoom;
+
+    public CardData RollBonusCard()
+    {
+        var c = selectedCharacter;
+        if (c == null || c.bonusCard == null || roomsVisited < bonusCardCooldownUntilRoom) return null;
+        return UnityEngine.Random.Range(0, 100) < c.bonusCardChance ? c.bonusCard : null;
+    }
+
+    public void OnBonusCardTaken()
+    {
+        if (selectedCharacter != null) bonusCardCooldownUntilRoom = roomsVisited + selectedCharacter.bonusCardCooldownRooms;
+    }
 
     public CardData UpgradeCard(CardData card)
     {

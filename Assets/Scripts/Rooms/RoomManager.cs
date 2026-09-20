@@ -33,6 +33,7 @@ public class RoomManager : MonoBehaviour
     [Tooltip("Окно (в жёлтых комнатах), в котором гарантированно появится заказанный купец")]
     public int forcedMerchantWindow = 5;
     public Vector3 merchantPlayerPosition = new Vector3(-3.5f, -2.4f, 0);
+    public Vector3 restPlayerPosition = new Vector3(-6.2f, -3.6f, 0);
     public float merchantPlayerScale = 1.3f;
 
     [Tooltip("Строгая последовательность первых боёв (мышь, слизень, крыса...)")]
@@ -150,13 +151,13 @@ public class RoomManager : MonoBehaviour
         switch (o.type)
         {
             case ObligationType.Credit:
-                hud.Announce($"Пришло время расплаты.\n{o.source} забирает {o.hpCost} HP.", true);
+                Announce($"Пришло время расплаты.\n{o.source} забирает {o.hpCost} HP.", true);
                 break;
             case ObligationType.PledgeFights:
-                hud.Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог провален.\nКарта ослабла ({o.source}).", !success);
+                Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог провален.\nКарта ослабла ({o.source}).", !success);
                 break;
             case ObligationType.PledgeNoHeal:
-                hud.Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог нарушен лечением.\nКарта ослабла ({o.source}).", !success);
+                Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог нарушен лечением.\nКарта ослабла ({o.source}).", !success);
                 break;
         }
     }
@@ -223,7 +224,7 @@ public class RoomManager : MonoBehaviour
                 {
                     title = variant != null ? variant.title : "Отдых",
                     background = variant != null ? variant.background : null,
-                    start = () => ResolveRest(variant)
+                    start = () => { player.EnterCombatPose(restPlayerPosition, 1.15f); player.enabled = false; ResolveRest(variant); }
                 };
             }
             case DoorType.Treasure:
@@ -249,6 +250,7 @@ public class RoomManager : MonoBehaviour
                     {
                         if (ev == null) { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); return; }
                         player.enabled = false;
+                        player.EnterCombatPose(ev.playerPosition, ev.playerScale);
                         if (ev.npcSprite != null)
                         {
                             var npc = SpawnRoomNpc("Event_" + ev.kind, ev.npcSprite, ev.npcPosition);
@@ -263,9 +265,8 @@ public class RoomManager : MonoBehaviour
                                 mask.transform.localScale = new Vector3(ev.npcMaskSize.x, ev.npcMaskSize.y, 1f);
                                 mask.transform.SetParent(npc.transform, true);
                             }
-                            player.EnterCombatPose(ev.playerPosition, ev.playerScale);
                         }
-                        EventVisit.Start(ev, OnRoomCleared);
+                        EventVisit.Start(ev, LeaveRoom);
                     }
                 };
             }
@@ -279,7 +280,7 @@ public class RoomManager : MonoBehaviour
         {
             gm.Heal(10);
             hud.Notify("Ты отдохнул: +10 HP");
-            OnRoomCleared();
+            AfterHeal();
             return;
         }
 
@@ -297,7 +298,7 @@ public class RoomManager : MonoBehaviour
             default:
                 gm.Heal(variant.healAmount);
                 hud.Notify($"{variant.description}  +{variant.healAmount} HP", 4f);
-                OnRoomCleared();
+                AfterHeal();
                 break;
         }
     }
@@ -317,7 +318,7 @@ public class RoomManager : MonoBehaviour
                     ui.Hide();
                     gm.Heal(variant.healAmount);
                     hud.Notify($"Ты отдохнул у костра: +{variant.healAmount} HP");
-                    OnRoomCleared();
+                    AfterHeal();
                 }
             },
             new RestRoomUI.Option
@@ -363,7 +364,7 @@ public class RoomManager : MonoBehaviour
                     ui.Hide();
                     gm.Heal(variant.healAmount);
                     hud.Notify($"Зелёный огонь теплеет. +{variant.healAmount} HP");
-                    OnRoomCleared();
+                    AfterHeal();
                 }
             }
         };
@@ -410,7 +411,7 @@ public class RoomManager : MonoBehaviour
                     ui.Hide();
                     gm.Heal(variant.healAmount);
                     hud.Notify($"Ночь проходит тихо. +{variant.healAmount} HP");
-                    OnRoomCleared();
+                    AfterHeal();
                 }
             },
             new RestRoomUI.Option
@@ -470,6 +471,7 @@ public class RoomManager : MonoBehaviour
     TreasureChest chest;
     GameObject merchantVisual;
     readonly Dictionary<string, int> forcedMerchants = new Dictionary<string, int>();
+    bool lastYellowWasChest;
 
     public void ForceMerchant(MerchantKind kind, int withinYellowRooms = -1)
     {
@@ -497,7 +499,9 @@ public class RoomManager : MonoBehaviour
         var keys = new List<string>(forcedMerchants.Keys);
         foreach (var key in keys) forcedMerchants[key] = forcedMerchants[key] - 1;
 
-        if (Random.Range(0, 100) < chestChance) return null;
+        bool chest = Random.Range(0, 100) < chestChance && !lastYellowWasChest; // сундук — не два раза подряд
+        lastYellowWasChest = chest;
+        if (chest) return null;
         return merchants[Random.Range(0, merchants.Count)];
     }
 
@@ -529,7 +533,7 @@ public class RoomManager : MonoBehaviour
 
         player.EnterCombatPose(merchantPlayerPosition, merchantPlayerScale);
         player.enabled = false;
-        MerchantVisit.Start(merchant, OnRoomCleared);
+        MerchantVisit.Start(merchant, LeaveRoom);
     }
 
     void StartTreasureRoom()
@@ -541,24 +545,59 @@ public class RoomManager : MonoBehaviour
 
     void OnChestOpened()
     {
+        // Сундук: общий список сокровищ, а если для героя там ничего нет — его собственные сильные карты
         var pool = treasureCards.FindAll(c => c != null && c.AvailableNow);
+        var character = GameManager.Instance.selectedCharacter;
+        if (pool.Count == 0 && character != null) pool = character.rewardCards.FindAll(c => c != null && c.AvailableNow);
         Shuffle(pool);
         if (pool.Count > treasureChoices) pool.RemoveRange(treasureChoices, pool.Count - treasureChoices);
+        var bonus = GameManager.Instance.RollBonusCard();
+        if (bonus != null) pool.Add(bonus); // особая карта героя — редкий гость в сундуке
         CardChoiceUI.Get().Show("Сундук! Выбери карту", pool, card =>
         {
             if (card != null)
             {
                 GameManager.Instance.playerDeck.Add(card);
+                if (card == bonus) GameManager.Instance.OnBonusCardTaken();
                 hud.Notify($"«{card.cardName}» добавлена в колоду", 3f);
             }
             OnRoomCleared();
         });
     }
 
+    bool healedThisRoom;
+
+    // После лечения: надпись остаётся в комнате, а особую карту (Ярость) предложим при выходе
+    void AfterHeal()
+    {
+        healedThisRoom = true;
+        OnRoomCleared();
+    }
+
     public void OnRoomCleared()
     {
         player.enabled = true;
-        hud.ShowExitButton(() => StartCoroutine(ReturnToHub()));
+        hud.ShowExitButton(LeaveRoom);
+    }
+
+    // Перед уходом из комнаты: шанс на особую карту героя после лечения
+    void OfferBonusThenLeave()
+    {
+        var bonus = healedThisRoom ? GameManager.Instance.RollBonusCard() : null;
+        healedThisRoom = false;
+        if (bonus == null) { StartCoroutine(ReturnToHub()); return; }
+        CardChoiceUI.Get().Show("Силы возвращаются — и с ними ярость. Взять карту?", new List<CardData> { bonus }, card =>
+        {
+            if (card != null) { GameManager.Instance.playerDeck.Add(card); GameManager.Instance.OnBonusCardTaken(); }
+            StartCoroutine(ReturnToHub());
+        });
+    }
+
+    // Сразу вернуться на перекрёсток без кнопки «Выйти» (после награды за бой)
+    public void LeaveRoom()
+    {
+        hud.HideExitButton();
+        if (!transitioning) OfferBonusThenLeave();
     }
 
     IEnumerator ReturnToHub()
@@ -567,6 +606,7 @@ public class RoomManager : MonoBehaviour
         player.enabled = false;
 
         yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
+        hud.ClearNotify();
         SetBackground(startBackground);
         hud.SetRoom(HubName);
         player.ExitCombatPose(playerSpawn);
@@ -577,6 +617,20 @@ public class RoomManager : MonoBehaviour
 
         transitioning = false;
         player.enabled = true;
+        FlushAnnouncements();
+    }
+
+    // Объявления о долгах/залогах копим и показываем уже на перекрёстке
+    readonly List<(string text, bool bad)> pendingAnnouncements = new List<(string, bool)>();
+    void Announce(string text, bool bad) => pendingAnnouncements.Add((text, bad));
+    void FlushAnnouncements()
+    {
+        if (pendingAnnouncements.Count == 0) return;
+        var all = new List<string>();
+        bool anyBad = false;
+        foreach (var a in pendingAnnouncements) { all.Add(a.text); anyBad |= a.bad; }
+        pendingAnnouncements.Clear();
+        hud.Announce(string.Join("\n\n", all), anyBad, 5.5f);
     }
 
     void PlacePlayer(Vector3 position)
@@ -615,6 +669,7 @@ public class RoomManager : MonoBehaviour
         int count = doorsPerChoice;
         int restSlot = NextRoomIndex == guaranteedRestRoom ? Random.Range(0, count) : -1;
         bool treasureSpawned = false;
+        bool restSpawned = restSlot >= 0;
         int combatSlot = -1;
         if (NeedsCombatDoor())
         {
@@ -626,6 +681,8 @@ public class RoomManager : MonoBehaviour
             float x = (i - (count - 1) / 2f) * doorSpacing;
             var type = i == restSlot ? DoorType.Rest : i == combatSlot ? DoorType.Combat : pool[Random.Range(0, pool.Length)];
             if (restSlot >= 0 && i != restSlot && type == DoorType.Rest) type = DoorType.Combat;
+            if (type == DoorType.Rest && (lastRoomType == DoorType.Rest || restSpawned)) type = DoorType.Combat; // две зелёные рядом — бессмысленно
+            if (type == DoorType.Rest) restSpawned = true;
             if (type == DoorType.Treasure && (lastRoomType == DoorType.Treasure || treasureSpawned)) type = DoorType.Combat;
             if (type == DoorType.Treasure) treasureSpawned = true;
             doors.Add(Door.Create(type, new Vector3(x, doorsY, 0)).gameObject);

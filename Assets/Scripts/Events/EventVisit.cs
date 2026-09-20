@@ -56,10 +56,10 @@ public class WandererEvent : EventVisit
     protected override void Begin()
     {
         Say("У стены сидит ящер в рваном плаще, прижимая руку к боку. Кровь тёмная, дыхание короткое.\n«Эй... подойди. Или не подходи. Мне уже всё равно.»",
-            Opt("Помочь", Hp(6) + ": перевязать раной со своей чешуи. Он отблагодарит", () =>
+            Opt("Помочь", Hp(6) + ": перевязать его рану, оторвав лоскут собственной чешуи. Он отблагодарит", () =>
             {
                 gm.LoseHPSafe(6);
-                var pool = CardPools.Instance.RandomOfRarity(CardRarity.Rare, 1);
+                var pool = CardPools.Instance.EventRares(1);
                 var card = pool.Count > 0 ? pool[0] : null;
                 if (card != null) gm.playerDeck.Add(card);
                 End($"Он выдыхает и суёт тебе в руку потёртую карту.\n«{(card != null ? card.cardName : "Пусто")}. Мне она больше не пригодится.»");
@@ -110,7 +110,7 @@ public class CrackEvent : EventVisit
 
     void OfferChest(string intro)
     {
-        var pool = CardPools.Instance.RandomOfRarity(CardRarity.Rare, 3);
+        var pool = CardPools.Instance.EventRares(3);
         CardChoiceUI.Get().Show("Тайник: выбери карту", pool, chosen =>
         {
             if (chosen != null) gm.playerDeck.Add(chosen);
@@ -136,9 +136,10 @@ public class MirrorEvent : EventVisit
                 gm.ReplaceCard(down, weakened);
                 ui.Hide();
                 string outcome = $"Стекло холодное, как лёд. Ты чувствуешь, как что-то перетекает.\n«{upgraded.cardName}» стала сильнее, «{weakened.cardName}» — слабее.";
+                // Показываем «было → стало» для обеих карт
                 DeckPickerUI.Get().Show(
-                    $"Зеркало: «{upgraded.cardName}» сильнее, «{weakened.cardName}» слабее",
-                    new List<CardData> { upgraded, weakened },
+                    "Зеркало: было → стало",
+                    new List<CardData> { up, upgraded, down, weakened },
                     null,
                     _ => End(outcome),
                     () => End(outcome),

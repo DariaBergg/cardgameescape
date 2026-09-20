@@ -25,5 +25,30 @@ MonoBehaviour:
   hpFillEnemy: {fileID: 21300000, guid: 26b587c3e35364600a87619d26b53028, type: 3}
   hpFrameInner: {x: 0.087272726, y: 0.30555558, z: 0.91239667, w: 0.6944444}
   blockIcon: {fileID: 21300000, guid: a2846ee001f53436c9e0017ac331cdb4, type: 3}
+  statusIcons:
+  - id: poison
+    sprite: {fileID: 21300000, guid: f17ac3bc957394310a8a2f642b4785c5, type: 3}
+  - id: burn
+    sprite: {fileID: 21300000, guid: 04f463ccf75344edd9d95e2ae15a59bf, type: 3}
+  - id: rage
+    sprite: {fileID: 21300000, guid: 44de95abd299440bda027c1f89c7667e, type: 3}
+  - id: thorns
+    sprite: {fileID: 21300000, guid: 92b31fe7c67cd48e7801df2aad5352ed, type: 3}
+  - id: weak
+    sprite: {fileID: 21300000, guid: 81bcb712e5be44ce49e1c949b5decf6c, type: 3}
+  - id: hidden
+    sprite: {fileID: 21300000, guid: 1373b4bb333404863889b15343ae1dd1, type: 3}
+  - id: molten
+    sprite: {fileID: 21300000, guid: 729225016943a400092d639b3f885b42, type: 3}
+  - id: noblock
+    sprite: {fileID: 21300000, guid: 4b76dd10412184b0a9d89d35eb7cf4b8, type: 3}
+  - id: noattack
+    sprite: {fileID: 21300000, guid: 153c1a00c31a84ac1bdcb0a58c853875, type: 3}
+  - id: hand
+    sprite: {fileID: 21300000, guid: d0382beb147944b40893360562901636, type: 3}
+  - id: combo
+    sprite: {fileID: 21300000, guid: 0dbc88fb6fea14a4a9d9351c492dcb4f, type: 3}
+  - id: retaliation
+    sprite: {fileID: 21300000, guid: 6dc7fa20c4c66408abb6ccd2af3b1b9a, type: 3}
   parchmentText: {r: 0.22, g: 0.15, b: 0.09, a: 1}
   parchmentTitle: {r: 0.45, g: 0.14, b: 0.08, a: 1}

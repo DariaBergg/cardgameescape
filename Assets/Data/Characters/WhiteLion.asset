@@ -33,6 +33,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 656f59e643fee4d6fa79bad99ac863c6, type: 2}
   - {fileID: 11400000, guid: 1a26da0f1111d42aebcd5c82f84d1035, type: 2}
   tutorialBonusCard: {fileID: 0}
+  bonusCard: {fileID: 0}
+  bonusCardChance: 60
+  bonusCardCooldownRooms: 4
   tutorialSequence:
   - {fileID: 11400000, guid: a12de2a92c9124dc6bca29c7f6a4267b, type: 2}
   - {fileID: 11400000, guid: 724460c7606e246d285a997477440a49, type: 2}

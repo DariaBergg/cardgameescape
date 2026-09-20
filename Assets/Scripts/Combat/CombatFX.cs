@@ -87,9 +87,17 @@ public class CombatFX : MonoBehaviour
         if (sr != null) sr.color = new Color(start.r, start.g, start.b, 0f);
     }
 
+    // Недавние всплывашки рядом — новые поднимаем выше, чтобы не накладывались
+    readonly System.Collections.Generic.List<(Vector3 pos, float time)> recentTexts = new System.Collections.Generic.List<(Vector3, float)>();
+
     public void FloatingText(Vector3 worldPos, string text, Color color)
     {
-        StartCoroutine(FloatingTextRoutine(worldPos, text, color));
+        recentTexts.RemoveAll(r => Time.time - r.time > 0.9f);
+        int stacked = 0;
+        foreach (var r in recentTexts) if ((r.pos - worldPos).sqrMagnitude < 1.5f) stacked++;
+        var pos = worldPos + Vector3.up * (0.55f * stacked);
+        recentTexts.Add((worldPos, Time.time));
+        StartCoroutine(FloatingTextRoutine(pos, text, color));
     }
 
     // Молния сверху в цель: ломаная линия, мигает и гаснет

@@ -37,11 +37,11 @@ public class MerchantUI : MonoBehaviour
         var bg = panel.gameObject.AddComponent<Image>();
         bool parchment = UISkin.Apply(bg, UISkin.Get(k => k.panelDialogue), new Color(0.05f, 0.05f, 0.08f, 0.9f));
 
-        nameText = UIFactory.CreateText(panel, "Name", "", 28, TextAnchor.MiddleLeft, new Vector2(0, 1), new Vector2(48, -24), new Vector2(Width - 72, 36));
+        nameText = UIFactory.CreateText(panel, "Name", "", 28, TextAnchor.MiddleLeft, new Vector2(0, 1), new Vector2(48, -40), new Vector2(Width - 72, 36));
         nameText.color = parchment ? UISkin.Instance.parchmentTitle : new Color(1f, 0.85f, 0.55f);
         nameText.font = UIFactory.TitleFont;
         nameText.fontStyle = FontStyle.Normal;
-        speechText = UIFactory.CreateText(panel, "Speech", "", 19, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(36, -64), new Vector2(Width - 72, 110));
+        speechText = UIFactory.CreateText(panel, "Speech", "", 19, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(48, -84), new Vector2(Width - 72, 110));
         speechText.color = parchment ? UISkin.Instance.parchmentText : new Color(1f, 1f, 1f, 0.9f);
         speechText.fontStyle = FontStyle.Italic;
         optionsArea = UIFactory.CreateRect(panel, "Options", new Vector2(0.5f, 0), new Vector2(0, 30), new Vector2(Width - 72, 160));
@@ -71,7 +71,7 @@ public class MerchantUI : MonoBehaviour
         }
 
         optionsArea.sizeDelta = new Vector2(Width - 72, totalHeight);
-        panel.sizeDelta = new Vector2(Width, 190 + totalHeight + 40);
+        panel.sizeDelta = new Vector2(Width, 214 + totalHeight + 44);
         panel.gameObject.SetActive(true);
     }
 

@@ -39,7 +39,7 @@ public class DeckPickerUI : MonoBehaviour
 
         var titlePlate = UIFactory.CreatePanel(panel, "TitlePlate", new Vector2(0.5f, 1), new Vector2(0, -12), new Vector2(620, 60), UISkin.Get(k => k.labelTitle), Color.clear);
         titlePlate.GetComponent<Image>().raycastTarget = false;
-        titleText = UIFactory.CreateText(titlePlate, "Title", "", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(520, 44));
+        titleText = UIFactory.CreateText(titlePlate, "Title", "", 22, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(540, 44));
         titleText.color = new Color(0.93f, 0.88f, 0.78f);
         titleText.font = UIFactory.TitleFont;
         UIFactory.AddShadow(titleText);
@@ -74,7 +74,7 @@ public class DeckPickerUI : MonoBehaviour
         foreach (Transform child in content) Destroy(child.gameObject);
 
         int rows = Mathf.Max(1, Mathf.CeilToInt(cards.Count / (float)PerRow));
-        float contentHeight = Mathf.Max(ViewportHeight, rows * SpacingY + 20f);
+        float contentHeight = Mathf.Max(ViewportHeight, rows * SpacingY + 44f);
         content.sizeDelta = new Vector2(PerRow * SpacingX, contentHeight);
 
         for (int i = 0; i < cards.Count; i++)
@@ -84,7 +84,7 @@ public class DeckPickerUI : MonoBehaviour
             int inRow = Mathf.Min(PerRow, cards.Count - row * PerRow);
             int col = i % PerRow;
             float x = (col - (inRow - 1) / 2f) * SpacingX;
-            float y = -(row * SpacingY + 10f);
+            float y = -(row * SpacingY + 34f);
             var button = CardView.Create(content, card, new Vector2(0.5f, 1f), new Vector2(x, y), CardSize);
             button.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
             bool ok = selectable == null || selectable(card);

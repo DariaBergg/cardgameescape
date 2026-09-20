@@ -10,6 +10,8 @@ public class Tooltip : MonoBehaviour
     RectTransform canvasRect;
     RectTransform panel;
     Text text;
+    LayoutElement element;
+    public Component Owner { get; private set; }
 
     public static Tooltip Get()
     {
@@ -48,14 +50,20 @@ public class Tooltip : MonoBehaviour
         text = UIFactory.CreateText(panel, "Text", "", 20, TextAnchor.UpperLeft, new Vector2(0, 1), Vector2.zero, new Vector2(320, 40));
         text.raycastTarget = false;
         text.supportRichText = true;
-        var element = text.gameObject.AddComponent<LayoutElement>();
+        text.lineSpacing = 1.15f;
+        element = text.gameObject.AddComponent<LayoutElement>();
         element.preferredWidth = 320;
 
         panel.gameObject.SetActive(false);
     }
 
-    public void Show(string content)
+    bool preferLeft;
+
+    public void Show(string content, bool left = false, float width = 320f, Component owner = null)
     {
+        preferLeft = left;
+        Owner = owner;
+        element.preferredWidth = width;
         text.text = content;
         panel.gameObject.SetActive(true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
@@ -64,7 +72,14 @@ public class Tooltip : MonoBehaviour
 
     public void Hide()
     {
+        Owner = null;
         panel.gameObject.SetActive(false);
+    }
+
+    // Скрыть, только если подсказку показывает именно этот источник
+    public void HideIfOwner(Component owner)
+    {
+        if (Owner == owner) Hide();
     }
 
     void Update()
@@ -80,8 +95,8 @@ public class Tooltip : MonoBehaviour
         Vector2 screen = mouse.position.ReadValue();
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, null, out Vector2 local);
 
-        Vector2 pos = local + new Vector2(18, 18);
         Vector2 size = panel.rect.size;
+        Vector2 pos = preferLeft ? local + new Vector2(-18 - size.x, 18) : local + new Vector2(18, 18);
         Rect bounds = canvasRect.rect;
         pos.x = Mathf.Min(pos.x, bounds.xMax - size.x - 8);
         pos.y = Mathf.Min(pos.y, bounds.yMax - size.y - 8);
@@ -94,19 +109,22 @@ public class Tooltip : MonoBehaviour
 public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public string content;
+    [Tooltip("Показывать подсказку слева от курсора")]
+    public bool preferLeft;
+    public float width = 320f;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!string.IsNullOrEmpty(content)) Tooltip.Get().Show(content);
+        if (!string.IsNullOrEmpty(content)) Tooltip.Get().Show(content, preferLeft, width, this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (Tooltip.Instance != null) Tooltip.Instance.Hide();
+        if (Tooltip.Instance != null) Tooltip.Instance.HideIfOwner(this);
     }
 
     void OnDisable()
     {
-        if (Tooltip.Instance != null) Tooltip.Instance.Hide();
+        if (Tooltip.Instance != null) Tooltip.Instance.HideIfOwner(this);
     }
 }

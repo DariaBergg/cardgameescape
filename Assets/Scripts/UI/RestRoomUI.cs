@@ -34,11 +34,11 @@ public class RestRoomUI : MonoBehaviour
         var bg = panel.gameObject.AddComponent<Image>();
         bool parchment = UISkin.Apply(bg, UISkin.Get(k => k.panelDialogue), new Color(0.05f, 0.05f, 0.08f, 0.88f));
 
-        titleText = UIFactory.CreateText(panel, "Title", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 1), new Vector2(0, -24), new Vector2(500, 40));
+        titleText = UIFactory.CreateText(panel, "Title", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 1), new Vector2(0, -40), new Vector2(500, 40));
         titleText.font = UIFactory.TitleFont;
         titleText.fontStyle = FontStyle.Normal;
         titleText.color = parchment ? UISkin.Instance.parchmentTitle : Color.white;
-        descriptionText = UIFactory.CreateText(panel, "Description", "", 18, TextAnchor.UpperCenter, new Vector2(0.5f, 1), new Vector2(0, -68), new Vector2(480, 60));
+        descriptionText = UIFactory.CreateText(panel, "Description", "", 18, TextAnchor.UpperCenter, new Vector2(0.5f, 1), new Vector2(0, -86), new Vector2(480, 60));
         descriptionText.color = parchment ? UISkin.Instance.parchmentText : new Color(1f, 1f, 1f, 0.8f);
         buttonsArea = UIFactory.CreateRect(panel, "Buttons", new Vector2(0.5f, 0), new Vector2(0, 34), new Vector2(480, 150));
         panel.gameObject.SetActive(false);
@@ -61,7 +61,7 @@ public class RestRoomUI : MonoBehaviour
             button.onClick.AddListener(() => option.action?.Invoke());
         }
 
-        panel.sizeDelta = new Vector2(560, 150 + totalHeight + 44);
+        panel.sizeDelta = new Vector2(560, 172 + totalHeight + 48);
         panel.gameObject.SetActive(true);
     }
 

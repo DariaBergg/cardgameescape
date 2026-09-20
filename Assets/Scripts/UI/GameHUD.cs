@@ -43,11 +43,12 @@ public class GameHUD : MonoBehaviour
         notifyText = UIFactory.CreateText(canvas, "NotifyText", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 200), new Vector2(900, 60));
         notifyText.color = new Color(1f, 0.9f, 0.5f);
 
-        announcePanel = UIFactory.CreateRect(canvas, "Announce", new Vector2(0.5f, 0.5f), new Vector2(0, 110), new Vector2(760, 110));
+        announcePanel = UIFactory.CreateRect(canvas, "Announce", new Vector2(0.5f, 0.5f), new Vector2(0, 110), new Vector2(760, 150));
         var announceBg = announcePanel.gameObject.AddComponent<Image>();
-        UISkin.Apply(announceBg, UISkin.Get(k => k.panelMenu), new Color(0.08f, 0.02f, 0.02f, 0.92f));
+        UISkin.Apply(announceBg, UISkin.Get(k => k.panelDialogue), new Color(0.08f, 0.02f, 0.02f, 0.92f));
+        announceBg.pixelsPerUnitMultiplier = 1.6f;
         announceBg.raycastTarget = false;
-        announceText = UIFactory.CreateText(announcePanel, "Text", "", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(720, 100));
+        announceText = UIFactory.CreateText(announcePanel, "Text", "", 24, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(660, 120));
         announceText.color = new Color(1f, 0.55f, 0.5f);
         announceText.raycastTarget = false;
         announcePanel.gameObject.SetActive(false);
@@ -130,7 +131,8 @@ public class GameHUD : MonoBehaviour
     public void Announce(string message, bool bad, float seconds = 4.5f)
     {
         announceText.text = message;
-        announceText.color = bad ? new Color(1f, 0.55f, 0.5f) : new Color(0.7f, 1f, 0.7f);
+        bool onParchment = UISkin.Instance != null && UISkin.Instance.panelDialogue != null;
+        announceText.color = onParchment ? (bad ? new Color(0.55f, 0.12f, 0.08f) : new Color(0.12f, 0.35f, 0.12f)) : (bad ? new Color(1f, 0.55f, 0.5f) : new Color(0.7f, 1f, 0.7f));
         announcePanel.gameObject.SetActive(true);
         announceUntil = Time.time + seconds;
         if (bad && playerRenderer != null)
@@ -138,6 +140,12 @@ public class GameHUD : MonoBehaviour
             var fx = FindFirstObjectByType<CombatFX>();
             if (fx != null) fx.Flash(playerRenderer, new Color(1f, 0.35f, 0.3f), 0.4f);
         }
+    }
+
+    public void ClearNotify()
+    {
+        notifyText.text = "";
+        notifyUntil = 0f;
     }
 
     public void Notify(string message, float seconds = 3f)
@@ -154,7 +162,8 @@ public class GameHUD : MonoBehaviour
             var combat = CombatManager.Instance;
             bool inCombat = combat != null && combat.CombatActive;
             string name = gm.selectedCharacter != null ? gm.selectedCharacter.characterName : "";
-            playerFrame.Set(name, gm.currentHP, gm.MaxHP, inCombat ? combat.PlayerBlock : 0, inCombat ? combat.PlayerStatusText : "");
+            playerFrame.Set(name, gm.currentHP, gm.MaxHP, inCombat ? combat.PlayerBlock : 0, "");
+            playerFrame.SetStatuses(inCombat ? combat.PlayerStatuses : null);
             bool showMomentum = inCombat && combat.UsesMomentum;
             playerFrame.SetMomentum(showMomentum ? combat.Momentum : -1, showMomentum ? combat.MomentumMax : 0);
 

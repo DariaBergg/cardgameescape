@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,15 @@ public class UISkin : ScriptableObject
     [Tooltip("Прозрачный «жёлоб» внутри рамки, в долях от её размера (xMin, yMin, xMax, yMax)")]
     public Vector4 hpFrameInner = new Vector4(0.087f, 0.305f, 0.912f, 0.694f);
     public Sprite blockIcon;
+
+    [Header("Иконки статусов (id: poison, burn, rage, thorns, weak, molten, noblock, noattack, hand, hidden, combo, retaliation)")]
+    public List<StatusIconEntry> statusIcons = new List<StatusIconEntry>();
+    [System.Serializable] public class StatusIconEntry { public string id; public Sprite sprite; }
+    public Sprite StatusIcon(string id)
+    {
+        foreach (var e in statusIcons) if (e.id == id && e.sprite != null) return e.sprite;
+        return null;
+    }
 
     [Header("Цвет текста на пергаменте")]
     public Color parchmentText = new Color(0.22f, 0.15f, 0.09f);

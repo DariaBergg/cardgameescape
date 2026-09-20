@@ -14,7 +14,10 @@ public class UnitFrame : MonoBehaviour
     Text statusText;
     Func<Vector3> worldAnchor;
     Vector4 inner; // жёлоб внутри рамки в долях (xMin, yMin, xMax, yMax)
+    bool isEnemy;
     RectTransform momentumRow;
+    RectTransform statusRow;
+    readonly System.Collections.Generic.List<GameObject> statusIcons = new System.Collections.Generic.List<GameObject>();
     readonly System.Collections.Generic.List<Image> momentumPips = new System.Collections.Generic.List<Image>();
     static readonly Color PipOn = new Color(0.6f, 0.85f, 1f);
     static readonly Color PipOff = new Color(0.12f, 0.12f, 0.16f, 0.85f);
@@ -29,6 +32,7 @@ public class UnitFrame : MonoBehaviour
         var frame = rect.gameObject.AddComponent<UnitFrame>();
         frame.rect = rect;
         frame.canvasRect = canvas.GetComponent<RectTransform>();
+        frame.isEnemy = enemy;
         frame.Build(barColor, enemy);
         return frame;
     }
@@ -98,7 +102,10 @@ public class UnitFrame : MonoBehaviour
         momentumRow = UIFactory.CreateRect(rect, "Momentum", new Vector2(0.5f, 1f), new Vector2(0, 22), new Vector2(Width, 20));
         momentumRow.gameObject.SetActive(false);
 
-        statusText = UIFactory.CreateText(rect, "Status", "", 14, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0, -22 - BarHeight - 4), new Vector2(Width + 80, 24));
+        // Значки статусов под полоской: иконка + число ходов, подсказка по наведению
+        statusRow = UIFactory.CreateRect(rect, "Statuses", new Vector2(0.5f, 1f), new Vector2(0, -22), new Vector2(Width, BarHeight));
+
+        statusText = UIFactory.CreateText(rect, "Status", "", 14, TextAnchor.UpperCenter, new Vector2(0.5f, 1f), new Vector2(0, -22 - BarHeight - 48), new Vector2(Width + 80, 24));
         statusText.color = new Color(0.8f, 1f, 0.6f);
         statusText.raycastTarget = false;
         UIFactory.AddShadow(statusText);
@@ -122,6 +129,55 @@ public class UnitFrame : MonoBehaviour
         blockBadge.SetActive(block > 0);
         blockText.text = block.ToString();
         statusText.text = statuses ?? "";
+    }
+
+    string statusSignature = "";
+
+    // Статусы столбиком сбоку от полоски (у героя справа, у врага слева). Перестраиваются только при изменении.
+    public void SetStatuses(System.Collections.Generic.List<CombatManager.StatusInfo> statuses)
+    {
+        var sb = new System.Text.StringBuilder();
+        if (statuses != null) foreach (var st in statuses) sb.Append(st.id).Append(':').Append(st.turns).Append('|');
+        string signature = sb.ToString();
+        if (signature == statusSignature) return;
+        statusSignature = signature;
+
+        foreach (var go in statusIcons) Destroy(go);
+        statusIcons.Clear();
+        if (statuses == null || statuses.Count == 0) return;
+        const float size = 46f, gap = 8f;
+        float columnX = isEnemy ? -Width / 2f - 34f : Width / 2f + 62f; // у героя правее щита блока
+        var skin = UISkin.Instance;
+        for (int i = 0; i < statuses.Count; i++)
+        {
+            var st = statuses[i];
+            var icon = UIFactory.CreateRect(statusRow, "Status_" + st.id, new Vector2(0.5f, 1f), new Vector2(columnX, -i * (size + gap)), new Vector2(size, size));
+            icon.pivot = new Vector2(0.5f, 1f);
+            var img = icon.gameObject.AddComponent<Image>();
+            var sprite = skin != null ? skin.StatusIcon(st.id) : null;
+            if (sprite != null) { img.sprite = sprite; img.preserveAspect = true; }
+            else
+            {
+                // Пока нет нарисованной иконки — цветной кружок с подписью
+                img.sprite = skin != null ? skin.blockIcon : null;
+                img.preserveAspect = true;
+                img.color = st.color;
+                var label = UIFactory.CreateText(icon, "Label", st.label, 9, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(size + 10, size));
+                label.raycastTarget = false;
+                UIFactory.AddShadow(label);
+            }
+            if (st.turns > 0)
+            {
+                var num = UIFactory.CreateText(icon, "Turns", st.turns.ToString(), 14, TextAnchor.LowerRight, new Vector2(1f, 0f), new Vector2(6, -6), new Vector2(24, 18));
+                num.fontStyle = FontStyle.Bold;
+                num.raycastTarget = false;
+                UIFactory.AddShadow(num, 1f);
+            }
+            var trigger = icon.gameObject.AddComponent<TooltipTrigger>();
+            trigger.content = st.tooltip;
+            trigger.preferLeft = isEnemy;
+            statusIcons.Add(icon.gameObject);
+        }
     }
 
     // current < 0 — скрыть шкалу

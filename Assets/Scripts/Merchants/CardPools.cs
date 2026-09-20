@@ -19,7 +19,7 @@ public class CardPools : ScriptableObject
     {
         var list = new List<CardData>();
         foreach (var c in allCards)
-            if (c != null && c.rarity == rarity && !c.unplayable && c.AvailableNow && (exclude == null || !exclude.Contains(c))) list.Add(c);
+            if (c != null && c.rarity == rarity && !c.unplayable && !c.eventOnly && c.AvailableNow && (exclude == null || !exclude.Contains(c))) list.Add(c);
         return list;
     }
 
@@ -31,10 +31,21 @@ public class CardPools : ScriptableObject
         return pool;
     }
 
+    // Редкие карты из событий: сначала особые «событийные», если их не хватает — обычные редкие
+    public List<CardData> EventRares(int count)
+    {
+        var pool = new List<CardData>();
+        foreach (var c in allCards) if (c != null && c.eventOnly && !c.unplayable && c.AvailableNow) pool.Add(c);
+        Shuffle(pool);
+        if (pool.Count > count) pool.RemoveRange(count, pool.Count - count);
+        if (pool.Count < count) pool.AddRange(RandomOfRarity(CardRarity.Rare, count - pool.Count, pool));
+        return pool;
+    }
+
     public CardData RandomAny()
     {
         var pool = new List<CardData>();
-        foreach (var c in allCards) if (c != null && !c.unplayable && c.AvailableNow) pool.Add(c);
+        foreach (var c in allCards) if (c != null && !c.unplayable && !c.eventOnly && c.AvailableNow) pool.Add(c);
         return pool.Count > 0 ? pool[Random.Range(0, pool.Count)] : null;
     }
 
