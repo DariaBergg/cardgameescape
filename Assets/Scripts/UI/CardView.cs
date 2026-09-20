@@ -91,8 +91,8 @@ public static class CardView
 
         var nameRect = PlaceRect(parent, "Name", visuals.nameArea, size);
         var name = nameRect.gameObject.AddComponent<Text>();
-        name.font = UIFactory.Font;
-        name.fontStyle = FontStyle.Bold;
+        name.font = UIFactory.TitleFont;
+        name.fontStyle = FontStyle.Normal;
         name.alignment = TextAnchor.MiddleCenter;
         name.color = visuals.nameColor;
         name.resizeTextForBestFit = true;
@@ -111,7 +111,7 @@ public static class CardView
         rules.resizeTextForBestFit = true;
         rules.resizeTextMinSize = 6;
         rules.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.11f);
-        rules.fontStyle = FontStyle.Bold;
+        rules.fontStyle = FontStyle.Normal;
         rules.horizontalOverflow = HorizontalWrapMode.Wrap;
         rules.verticalOverflow = VerticalWrapMode.Truncate;
         rules.text = card.ShortText;

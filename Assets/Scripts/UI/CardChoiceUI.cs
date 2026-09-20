@@ -28,7 +28,12 @@ public class CardChoiceUI : MonoBehaviour
     void Build(Transform canvas)
     {
         panel = UIFactory.CreateFullscreenPanel(canvas, "Panel", new Color(0, 0, 0, 0.75f));
-        titleText = UIFactory.CreateText(panel, "Title", "", 34, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(900, 50));
+        var titlePlate = UIFactory.CreatePanel(panel, "TitlePlate", new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(720, 64), UISkin.Get(k => k.labelTitle), Color.clear);
+        titlePlate.GetComponent<Image>().raycastTarget = false;
+        titleText = UIFactory.CreateText(titlePlate, "Title", "", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(620, 50));
+        titleText.color = new Color(0.93f, 0.88f, 0.78f);
+        titleText.font = UIFactory.TitleFont;
+        UIFactory.AddShadow(titleText);
         cardsArea = UIFactory.CreateRect(panel, "Cards", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1000, 420));
         skipButton = UIFactory.CreateButton(panel, "Skip", "Пропустить", 20, new Vector2(0.5f, 0.5f), new Vector2(0, -265), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
         skipButton.onClick.AddListener(() => Choose(null));

@@ -32,12 +32,15 @@ public class RestRoomUI : MonoBehaviour
     {
         panel = UIFactory.CreateRect(canvas, "Panel", new Vector2(0.5f, 0.5f), new Vector2(0, 40), new Vector2(560, 300));
         var bg = panel.gameObject.AddComponent<Image>();
-        bg.color = new Color(0.05f, 0.05f, 0.08f, 0.88f);
+        bool parchment = UISkin.Apply(bg, UISkin.Get(k => k.panelDialogue), new Color(0.05f, 0.05f, 0.08f, 0.88f));
 
-        titleText = UIFactory.CreateText(panel, "Title", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 1), new Vector2(0, -16), new Vector2(520, 40));
-        descriptionText = UIFactory.CreateText(panel, "Description", "", 18, TextAnchor.UpperCenter, new Vector2(0.5f, 1), new Vector2(0, -60), new Vector2(500, 60));
-        descriptionText.color = new Color(1f, 1f, 1f, 0.8f);
-        buttonsArea = UIFactory.CreateRect(panel, "Buttons", new Vector2(0.5f, 0), new Vector2(0, 24), new Vector2(520, 150));
+        titleText = UIFactory.CreateText(panel, "Title", "", 30, TextAnchor.MiddleCenter, new Vector2(0.5f, 1), new Vector2(0, -24), new Vector2(500, 40));
+        titleText.font = UIFactory.TitleFont;
+        titleText.fontStyle = FontStyle.Normal;
+        titleText.color = parchment ? UISkin.Instance.parchmentTitle : Color.white;
+        descriptionText = UIFactory.CreateText(panel, "Description", "", 18, TextAnchor.UpperCenter, new Vector2(0.5f, 1), new Vector2(0, -68), new Vector2(480, 60));
+        descriptionText.color = parchment ? UISkin.Instance.parchmentText : new Color(1f, 1f, 1f, 0.8f);
+        buttonsArea = UIFactory.CreateRect(panel, "Buttons", new Vector2(0.5f, 0), new Vector2(0, 34), new Vector2(480, 150));
         panel.gameObject.SetActive(false);
     }
 
@@ -54,11 +57,11 @@ public class RestRoomUI : MonoBehaviour
         {
             var option = options[i];
             float y = totalHeight / 2f - buttonHeight / 2f - i * (buttonHeight + gap);
-            var button = UIFactory.CreateButton(buttonsArea, "Option" + i, $"{option.label}\n<size=15><color=#cccccc>{option.description}</color></size>", 20, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(480, buttonHeight), new Color(0.25f, 0.3f, 0.25f));
+            var button = UIFactory.CreateButton(buttonsArea, "Option" + i, $"{option.label}\n<size=15><color=#d8d0c0>{option.description}</color></size>", 20, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(480, buttonHeight), new Color(0.25f, 0.3f, 0.25f));
             button.onClick.AddListener(() => option.action?.Invoke());
         }
 
-        panel.sizeDelta = new Vector2(560, 140 + totalHeight + 24);
+        panel.sizeDelta = new Vector2(560, 150 + totalHeight + 44);
         panel.gameObject.SetActive(true);
     }
 

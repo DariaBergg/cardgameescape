@@ -28,5 +28,7 @@ MonoBehaviour:
   unplayable: 0
   permanent: 0
   failVariant: {fileID: 0}
+  retain: 1
+  exhaust: 1
   eliteMark: {fileID: 0}
   eliteChanceBonus: 0

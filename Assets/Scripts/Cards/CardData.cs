@@ -21,6 +21,10 @@ public class CardData : ScriptableObject
     public bool permanent;
     [Tooltip("Во что превращается при провале залога (если пусто — снимается усиление)")]
     public CardData failVariant;
+    [Tooltip("Остаётся в руке в конце хода, пока не разыграна")]
+    public bool retain;
+    [Tooltip("После розыгрыша уходит из боя до конца боя (один раз за бой)")]
+    public bool exhaust;
 
     [Header("Метка элиты")]
     public EnemyData eliteMark;
@@ -159,6 +163,8 @@ public class CardData : ScriptableObject
             string rules = unplayable ? "Нельзя разыграть. Занимает место в руке." : RulesText;
             string text = $"<b>{cardName}</b> <color=#aaaaaa>({(rarity == CardRarity.Rare ? "редкая" : "обычная")})</color>\n<color=#ffd27f>{rules}</color>";
             if (permanent) text += "\n<color=#ff9090>Нельзя удалить обычным способом.</color>";
+            if (retain) text += "\n<color=#9fd8ff>Остаётся в руке, пока не разыграна.</color>";
+            if (exhaust) text += "\n<color=#9fd8ff>Один раз за бой.</color>";
             if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{description}</i>";
             if (IsMarked) text += $"\n\n<color=#d9a6ff>{MarkSummary}</color>\nКаждая такая карта в колоде повышает шанс, что за фиолетовой дверью окажется {eliteMark.enemyName}.";
             return text;

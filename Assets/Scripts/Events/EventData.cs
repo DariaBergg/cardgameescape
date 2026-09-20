@@ -19,6 +19,7 @@ public class EventData : ScriptableObject
     public Sprite npcSprite;
     public Vector3 npcPosition = new Vector3(3.5f, -4.9f, 0);
     public bool npcFlipX;
+    public float npcScale = 1f;
     [Tooltip("Показывать персонажа только внутри прямоугольника (например, в зеркале). Размер 0 = без маски")]
     public Vector2 npcMaskSize;
     public Vector3 npcMaskCenter;

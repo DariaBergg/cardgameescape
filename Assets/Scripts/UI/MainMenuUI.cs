@@ -23,7 +23,7 @@ public class MainMenuUI : MonoBehaviour
         img.preserveAspect = true;
         img.raycastTarget = false;
 
-        var button = UIFactory.CreateButton(panel, "Start", "Начать путь", 30, new Vector2(0.5f, 0), new Vector2(0, 70), new Vector2(320, 76), new Color(0.35f, 0.12f, 0.1f, 0.95f));
+        var button = UIFactory.CreateSpriteButton(panel, "Start", "Начать путь", 32, new Vector2(0.5f, 0), new Vector2(0, 60), new Vector2(380, 90), UISkin.Get(k => k.mainButton), new Color(0.35f, 0.12f, 0.1f, 0.95f));
         button.onClick.AddListener(() =>
         {
             Destroy(gameObject);

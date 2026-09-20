@@ -292,6 +292,7 @@ MonoBehaviour:
   selectedCharacter: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
   cardVisuals: {fileID: 11400000, guid: 8d96f678f731b452c89ff7e925f8d313, type: 2}
   cardPools: {fileID: 11400000, guid: 8f380ad3b2c3240869db5c4343404a16, type: 2}
+  uiSkin: {fileID: 11400000, guid: 5a2348d65a4374082a20e51e21991c9f, type: 2}
   playerDeck: []
   currentHP: 0
   maxCardsPerTurn: 1

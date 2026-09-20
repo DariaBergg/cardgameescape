@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public CharacterData selectedCharacter;
     public CardVisuals cardVisuals;
     public CardPools cardPools;
+    public UISkin uiSkin;
     public List<CardData> playerDeck = new List<CardData>();
     public int currentHP;
     public int maxCardsPerTurn = 1;
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         CardVisuals.Instance = cardVisuals;
         CardPools.Instance = cardPools;
+        UISkin.Instance = uiSkin;
         ResetRun();
     }
 

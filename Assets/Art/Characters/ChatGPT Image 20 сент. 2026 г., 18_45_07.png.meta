@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e9a7fd69e199c435390a2b39c23417ae
+guid: dc03960b573ed4dd284107b60f1c0efc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4530670122045351285
-    second: Scorpion_0
+      213: 5031627615193420681
+    second: "ChatGPT Image 20 \u0441\u0435\u043D\u0442. 2026 \u0433., 18_45_07_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 317.85715
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Scorpion_0
+      name: "ChatGPT Image 20 \u0441\u0435\u043D\u0442. 2026 \u0433., 18_45_07_0"
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1151
-        height: 1335
+        width: 1254
+        height: 1254
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b8ad20d4783df11c0800000000000000
-      internalID: -4530670122045351285
+      spriteID: 98356a548aee3d540800000000000000
+      internalID: 5031627615193420681
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Scorpion_0: -4530670122045351285
+      "ChatGPT Image 20 \u0441\u0435\u043D\u0442. 2026 \u0433., 18_45_07_0": 5031627615193420681
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

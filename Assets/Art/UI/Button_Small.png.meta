@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: e9a7fd69e199c435390a2b39c23417ae
+guid: 84946367eef4944f68403e97e20c9418
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4530670122045351285
-    second: Scorpion_0
+      213: -7256404960856042099
+    second: Button_Small_0
+  - first:
+      213: -6400481290736094889
+    second: Button_Small_1
+  - first:
+      213: 8776072444369373596
+    second: Button_Small_2
+  - first:
+      213: 7030446533443905340
+    second: Button_Small_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -48,11 +57,11 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 317.85715
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 968
+  spriteBorder: {x: 120, y: 90, z: 120, w: 90}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -100,13 +109,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Scorpion_0
+      name: Button_Small_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 1151
-        height: 1335
+        y: 364
+        width: 5
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +124,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b8ad20d4783df11c0800000000000000
-      internalID: -4530670122045351285
+      spriteID: d851bc952221c4b90800000000000000
+      internalID: -7256404960856042099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Button_Small_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 0
+        width: 1793
+        height: 484
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75134226d2cec27a0800000000000000
+      internalID: -6400481290736094889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Button_Small_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 97
+        width: 5
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c990bb9f36fdac970800000000000000
+      internalID: 8776072444369373596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Button_Small_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 29
+        width: 5
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c37ec4e8fd9219160800000000000000
+      internalID: 7030446533443905340
       vertices: []
       indices: 
       edges: []
@@ -135,7 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Scorpion_0: -4530670122045351285
+      Button_Small_0: -7256404960856042099
+      Button_Small_1: -6400481290736094889
+      Button_Small_2: 8776072444369373596
+      Button_Small_3: 7030446533443905340
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -228,6 +228,7 @@ public class RoomManager : MonoBehaviour
                         {
                             var npc = SpawnRoomNpc("Event_" + ev.kind, ev.npcSprite, ev.npcPosition);
                             npc.flipX = ev.npcFlipX;
+                            npc.transform.localScale = Vector3.one * ev.npcScale;
                             if (ev.npcMaskSize.x > 0 && ev.npcMaskSize.y > 0)
                             {
                                 npc.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;

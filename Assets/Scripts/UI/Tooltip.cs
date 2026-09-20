@@ -30,11 +30,12 @@ public class Tooltip : MonoBehaviour
         panel = UIFactory.CreateRect(canvas.transform, "Panel", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(340, 100));
         panel.pivot = new Vector2(0, 0);
         var bg = panel.gameObject.AddComponent<Image>();
-        bg.color = new Color(0.08f, 0.08f, 0.1f, 0.95f);
+        bool skinned = UISkin.Apply(bg, UISkin.Get(k => k.panelMenu), new Color(0.08f, 0.08f, 0.1f, 0.95f));
+        bg.pixelsPerUnitMultiplier = 2.5f; // тонкая рамка для маленькой подсказки
         bg.raycastTarget = false;
 
         var layout = panel.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.padding = new RectOffset(14, 14, 10, 12);
+        layout.padding = skinned ? new RectOffset(22, 22, 18, 20) : new RectOffset(14, 14, 10, 12);
         layout.childControlWidth = true;
         layout.childControlHeight = true;
         layout.childForceExpandWidth = false;

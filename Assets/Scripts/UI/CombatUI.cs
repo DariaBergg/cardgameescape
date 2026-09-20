@@ -48,7 +48,7 @@ public class CombatUI : MonoBehaviour
         rootRect.offsetMin = Vector2.zero;
         rootRect.offsetMax = Vector2.zero;
 
-        enemyFrame = UnitFrame.Create(root.transform, "EnemyFrame", new Color(0.85f, 0.25f, 0.25f));
+        enemyFrame = UnitFrame.Create(root.transform, "EnemyFrame", new Color(0.85f, 0.25f, 0.25f), enemy: true);
         enemyFrame.SetAnchor(() => combat.EnemyTop + Vector3.up * 0.05f);
 
         intentBadge = UIFactory.CreateRect(root.transform, "IntentBadge", new Vector2(0.5f, 0.5f), Vector2.zero, IntentWordSize);
@@ -72,7 +72,12 @@ public class CombatUI : MonoBehaviour
         endTurnButton.onClick.AddListener(() => combat.EndTurn());
 
         rewardPanel = UIFactory.CreateFullscreenPanel(root.transform, "RewardPanel", new Color(0, 0, 0, 0.75f));
-        UIFactory.CreateText(rewardPanel, "Title", "Победа! Выбери карту", 34, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(800, 50));
+        var rewardPlate = UIFactory.CreatePanel(rewardPanel, "TitlePlate", new Vector2(0.5f, 0.5f), new Vector2(0, 250), new Vector2(720, 64), UISkin.Get(k => k.labelTitle), Color.clear);
+        rewardPlate.GetComponent<Image>().raycastTarget = false;
+        var rewardTitle = UIFactory.CreateText(rewardPlate, "Title", "Победа! Выбери карту", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(620, 50));
+        rewardTitle.color = new Color(0.93f, 0.88f, 0.78f);
+        rewardTitle.font = UIFactory.TitleFont;
+        UIFactory.AddShadow(rewardTitle);
         rewardCardsArea = UIFactory.CreateRect(rewardPanel, "Cards", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900, 420));
         var skip = UIFactory.CreateButton(rewardPanel, "SkipButton", "Пропустить", 20, new Vector2(0.5f, 0.5f), new Vector2(0, -265), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
         skip.onClick.AddListener(() => rewardCallback?.Invoke(null));

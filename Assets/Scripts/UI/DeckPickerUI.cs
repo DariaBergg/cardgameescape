@@ -33,9 +33,18 @@ public class DeckPickerUI : MonoBehaviour
     void Build(Transform canvas)
     {
         panel = UIFactory.CreateFullscreenPanel(canvas, "Panel", new Color(0, 0, 0, 0.82f));
-        titleText = UIFactory.CreateText(panel, "Title", "", 32, TextAnchor.MiddleCenter, new Vector2(0.5f, 1), new Vector2(0, -34), new Vector2(1000, 44));
+        // Каменная рамка вокруг области карт
+        var frame = UIFactory.CreatePanel(panel, "Frame", new Vector2(0.5f, 0.5f), new Vector2(0, -18), new Vector2(PerRow * SpacingX + 100, ViewportHeight + 40), UISkin.Get(k => k.panelMenu), Color.clear);
+        frame.GetComponent<Image>().raycastTarget = false;
 
-        var viewport = UIFactory.CreateRect(panel, "Viewport", new Vector2(0.5f, 0.5f), new Vector2(0, 0), new Vector2(PerRow * SpacingX + 40, ViewportHeight));
+        var titlePlate = UIFactory.CreatePanel(panel, "TitlePlate", new Vector2(0.5f, 1), new Vector2(0, -12), new Vector2(620, 60), UISkin.Get(k => k.labelTitle), Color.clear);
+        titlePlate.GetComponent<Image>().raycastTarget = false;
+        titleText = UIFactory.CreateText(titlePlate, "Title", "", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(520, 44));
+        titleText.color = new Color(0.93f, 0.88f, 0.78f);
+        titleText.font = UIFactory.TitleFont;
+        UIFactory.AddShadow(titleText);
+
+        var viewport = UIFactory.CreateRect(panel, "Viewport", new Vector2(0.5f, 0.5f), new Vector2(0, -18), new Vector2(PerRow * SpacingX + 40, ViewportHeight));
         viewport.gameObject.AddComponent<RectMask2D>();
         var viewportImage = viewport.gameObject.AddComponent<Image>();
         viewportImage.color = new Color(0, 0, 0, 0.01f);

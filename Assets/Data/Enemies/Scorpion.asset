@@ -20,8 +20,8 @@ MonoBehaviour:
   arena: {fileID: 21300000, guid: 308102c258ce241c185b3080e9115a29, type: 3}
   overridePlayerPosition: 0
   playerPosition: {x: -5.5, y: -1.6, z: 0}
-  overrideEnemyPosition: 0
-  enemyPosition: {x: 3.5, y: 0.6, z: 0}
+  overrideEnemyPosition: 1
+  enemyPosition: {x: 4, y: -0.9, z: 0}
   flying: 0
   randomMoves: 0
   moves:

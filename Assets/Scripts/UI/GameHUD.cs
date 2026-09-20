@@ -26,9 +26,13 @@ public class GameHUD : MonoBehaviour
 
     void Build(Transform canvas)
     {
-        roomText = UIFactory.CreateText(canvas, "RoomText", "", 20, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -14), new Vector2(500, 28));
-        roomText.color = new Color(1f, 1f, 1f, 0.75f);
-        eliteText = UIFactory.CreateText(canvas, "EliteText", "", 16, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -42), new Vector2(600, 120));
+        var roomPlate = UIFactory.CreatePanel(canvas, "RoomPlate", new Vector2(0, 1), new Vector2(14, -12), new Vector2(360, 44), UISkin.Get(k => k.labelTitle), Color.clear);
+        roomPlate.GetComponent<Image>().raycastTarget = false;
+        roomText = UIFactory.CreateText(roomPlate, "RoomText", "", 18, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(300, 40));
+        roomText.color = new Color(0.93f, 0.88f, 0.78f);
+        roomText.font = UIFactory.TitleFont;
+        UIFactory.AddShadow(roomText);
+        eliteText = UIFactory.CreateText(canvas, "EliteText", "", 16, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(20, -62), new Vector2(600, 120));
         eliteText.color = new Color(0.85f, 0.65f, 1f);
         goldText = UIFactory.CreateText(canvas, "GoldText", "", 20, TextAnchor.UpperRight, new Vector2(1, 1), new Vector2(-160, -20), new Vector2(200, 30));
         goldText.color = new Color(1f, 0.85f, 0.35f);
@@ -41,7 +45,7 @@ public class GameHUD : MonoBehaviour
 
         announcePanel = UIFactory.CreateRect(canvas, "Announce", new Vector2(0.5f, 0.5f), new Vector2(0, 110), new Vector2(760, 110));
         var announceBg = announcePanel.gameObject.AddComponent<Image>();
-        announceBg.color = new Color(0.08f, 0.02f, 0.02f, 0.92f);
+        UISkin.Apply(announceBg, UISkin.Get(k => k.panelMenu), new Color(0.08f, 0.02f, 0.02f, 0.92f));
         announceBg.raycastTarget = false;
         announceText = UIFactory.CreateText(announcePanel, "Text", "", 26, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(720, 100));
         announceText.color = new Color(1f, 0.55f, 0.5f);

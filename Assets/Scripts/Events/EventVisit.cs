@@ -134,7 +134,15 @@ public class MirrorEvent : EventVisit
                 var upgraded = gm.UpgradeCard(up);
                 var weakened = down.CreateWeakenedCopy();
                 gm.ReplaceCard(down, weakened);
-                End($"Стекло холодное, как лёд. Ты чувствуешь, как что-то перетекает.\n«{upgraded.cardName}» стала сильнее, «{weakened.cardName}» — слабее.");
+                ui.Hide();
+                string outcome = $"Стекло холодное, как лёд. Ты чувствуешь, как что-то перетекает.\n«{upgraded.cardName}» стала сильнее, «{weakened.cardName}» — слабее.";
+                DeckPickerUI.Get().Show(
+                    $"Зеркало: «{upgraded.cardName}» сильнее, «{weakened.cardName}» слабее",
+                    new List<CardData> { upgraded, weakened },
+                    null,
+                    _ => End(outcome),
+                    () => End(outcome),
+                    closeLabel: "Дальше");
             }),
             Opt("Разбить", Hp(5) + ": осколки. Все метки Короля исчезнут с карт, бонусы останутся", () =>
             {

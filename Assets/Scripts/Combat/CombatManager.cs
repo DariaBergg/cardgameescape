@@ -252,10 +252,15 @@ public class CombatManager : MonoBehaviour
             fx.FloatingText(EnemyCenter, $"+{currentMove.block} блок", BlockColor);
         }
 
-        discardPile.AddRange(hand);
-        hand.Clear();
+        // Карты с retain остаются в руке, остальные уходят в сброс
+        for (int i = hand.Count - 1; i >= 0; i--)
+        {
+            if (hand[i].retain) continue;
+            discardPile.Add(hand[i]);
+            hand.RemoveAt(i);
+        }
         int totalCards = drawPile.Count + discardPile.Count;
-        int normalDraws = Mathf.Min(handSize, totalCards);
+        int normalDraws = Mathf.Min(Mathf.Max(0, handSize - hand.Count), totalCards);
         for (int i = 0; i < normalDraws; i++) DrawCard();
         ui.Refresh();
 
@@ -271,7 +276,9 @@ public class CombatManager : MonoBehaviour
         yield return new WaitForSeconds(0.7f);
         for (int n = 0; n < count && hand.Count > 1; n++)
         {
-            var stolen = hand[Random.Range(0, hand.Count)];
+            var stealable = hand.FindAll(c => !c.retain);
+            if (stealable.Count == 0) break;
+            var stolen = stealable[Random.Range(0, stealable.Count)];
             hand.Remove(stolen);
             discardPile.Add(stolen);
             ui.StealCard(stolen);
@@ -300,7 +307,7 @@ public class CombatManager : MonoBehaviour
         if (!CanPlay(card) || !hand.Contains(card)) return;
 
         hand.Remove(card);
-        discardPile.Add(card);
+        if (!card.exhaust) discardPile.Add(card); // exhaust: карта выбывает до конца боя
         cardsPlayedThisTurn++;
         ui.NotifyCardPlayed(card);
         ApplyCardEffect(card);
@@ -616,7 +623,7 @@ public class CombatManager : MonoBehaviour
                 for (int n = 0; n < move.corruptCards; n++)
                 {
                     var candidates = new List<int>();
-                    for (int i = 0; i < hand.Count; i++) if (!hand[i].unplayable) candidates.Add(i);
+                    for (int i = 0; i < hand.Count; i++) if (!hand[i].unplayable && !hand[i].retain) candidates.Add(i);
                     if (candidates.Count == 0) break;
                     int index = candidates[Random.Range(0, candidates.Count)];
                     var weak = CardPools.Instance != null ? CardPools.Instance.RandomWeak() : null;
