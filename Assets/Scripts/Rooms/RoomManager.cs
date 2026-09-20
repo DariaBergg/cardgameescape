@@ -9,6 +9,7 @@ public class RoomManager : MonoBehaviour
     public static RoomManager Instance { get; private set; }
 
     public DoorVisuals doorVisuals;
+    public Sprite titleScreen;
     public SpriteRenderer background;
     public Sprite startBackground;
     public List<Sprite> combatBackgrounds = new List<Sprite>();
@@ -106,7 +107,12 @@ public class RoomManager : MonoBehaviour
         SetBackground(startBackground);
         GameManager.Instance.OnObligationResolved += OnObligationResolved;
 
-        SpawnDoors();
+        if (titleScreen != null)
+        {
+            player.enabled = false;
+            MainMenuUI.Show(titleScreen, () => { player.enabled = true; SpawnDoors(); });
+        }
+        else SpawnDoors();
     }
 
     void OnDestroy()

@@ -14,6 +14,8 @@ public class EnemyMove
     public int handReduce;
     [Tooltip("Подменить N случайных карт в руке слабыми до конца боя")]
     public int corruptCards;
+    [Tooltip("В следующий ход игрок не может играть защитные карты")]
+    public bool lockBlock;
     [TextArea] public string description;
 
     [Header("Особое")]
@@ -24,7 +26,7 @@ public class EnemyMove
     [Tooltip("Бонус к урону следующего хода")]
     public int nextDamageBonus;
 
-    public bool HasEffect => damage > 0 || block > 0 || poisonTurns > 0 || handReduce > 0 || corruptCards > 0;
+    public bool HasEffect => damage > 0 || block > 0 || poisonTurns > 0 || handReduce > 0 || corruptCards > 0 || lockBlock;
 
     public string Summary => SummaryWithBonus(0);
 
@@ -37,6 +39,7 @@ public class EnemyMove
         if (poisonTurns > 0) parts.Add($"Яд {poisonDamage}×{poisonTurns}");
         if (handReduce > 0) parts.Add($"−{handReduce} карта");
         if (corruptCards > 0) parts.Add(corruptCards > 1 ? $"портит {corruptCards} карты" : "портит карту");
+        if (lockBlock) parts.Add("без защиты в след. ход");
         if (submerge) parts.Add("Прячется");
         return parts.Count > 0 ? string.Join(" + ", parts) : "Ничего";
     }

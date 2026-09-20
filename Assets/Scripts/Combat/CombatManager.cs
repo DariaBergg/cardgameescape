@@ -636,6 +636,16 @@ public class CombatManager : MonoBehaviour
                 }
             }
 
+            if (move.lockBlock)
+            {
+                blockLockedNextTurn = true;
+                LastEvent = "Клешни держат щит: в следующий ход нельзя защищаться.";
+                fx.Flash(playerRenderer, DebuffColor);
+                fx.FloatingText(PlayerHead, "Без защиты!", DebuffColor);
+                ui.Refresh();
+                yield return new WaitForSeconds(0.5f);
+            }
+
             if (move.handReduce > 0)
             {
                 nextHandPenalty += move.handReduce;

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EventData
   kind: 1
   title: "\u0422\u0440\u0435\u0449\u0438\u043D\u0430 \u0432 \u0441\u0442\u0435\u043D\u0435"
-  background: {fileID: 21300000, guid: e48a5fb9248c742a9a706bd7cb0f6f24, type: 3}
+  background: {fileID: 21300000, guid: 0a9eda103681c400f8876929c3743faf, type: 3}

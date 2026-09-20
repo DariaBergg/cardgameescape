@@ -1,15 +1,18 @@
 fileFormatVersion: 2
-guid: db0d5c114361f4e60b621a3ce8e1e28c
+guid: 6cdf0fb96723f428c84e7bed2361e8ec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1240754808404769573
-    second: mainlabel_0
+      213: -1824123326647649592
+    second: Scorp_Pincer_0
+  - first:
+      213: -4153838548606874498
+    second: Scorp_Pincer_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -46,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -72,7 +75,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -100,13 +103,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: mainlabel_0
+      name: Scorp_Pincer_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1672
-        height: 941
+        width: 920
+        height: 631
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +118,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 52bf258aceb083110800000000000000
-      internalID: 1240754808404769573
+      spriteID: 8cab9a0cf796fa6e0800000000000000
+      internalID: -1824123326647649592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scorp_Pincer_1
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 144
+        width: 1199
+        height: 1094
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7c86f719d99a56c0800000000000000
+      internalID: -4153838548606874498
       vertices: []
       indices: 
       edges: []
@@ -125,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      mainlabel_0: 1240754808404769573
+      Scorp_Pincer_0: -1824123326647649592
+      Scorp_Pincer_1: -4153838548606874498
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
