@@ -124,12 +124,14 @@ public static class CardView
         if (momentum > 0 && momentumIcon != null)
         {
             rules.text = card.ShortTextWithout(CardEffectType.Momentum);
-            float iconSize = size.x * 0.11f;
+            float iconSize = size.x * 0.13f;
+            // Освобождаем низ текстового поля под значки
+            textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, textRect.sizeDelta.y - iconSize * 1.2f);
             float gap = iconSize * 0.15f;
             float rowWidth = momentum * iconSize + (momentum - 1) * gap;
             for (int i = 0; i < momentum; i++)
             {
-                var icon = UIFactory.CreateRect(textRect, "Momentum" + i, new Vector2(0.5f, 0f), new Vector2(-rowWidth / 2f + iconSize / 2f + i * (iconSize + gap), iconSize * 0.15f), new Vector2(iconSize, iconSize));
+                var icon = UIFactory.CreateRect(textRect, "Momentum" + i, new Vector2(0.5f, 0f), new Vector2(-rowWidth / 2f + iconSize / 2f + i * (iconSize + gap), -iconSize * 1.1f), new Vector2(iconSize, iconSize));
                 icon.pivot = new Vector2(0.5f, 0f);
                 var img = icon.gameObject.AddComponent<Image>();
                 img.sprite = momentumIcon; img.preserveAspect = true; img.raycastTarget = false;

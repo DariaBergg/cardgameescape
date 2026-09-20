@@ -287,12 +287,9 @@ public class CombatUI : MonoBehaviour
             if (view.swept) continue;
             var slot = SlotPosition(i, count);
             bool arriving = view.group.alpha < 1f;
-            if (!arriving)
-            {
-                if ((view.rect.anchoredPosition - slot).sqrMagnitude > 1f)
-                    StartMotion(view, view.rect.anchoredPosition, slot, 0.2f, 0f, fadeOut: false, destroy: false);
-                CardView.SetInteractable(view.button, combat.CanPlay(view.card));
-            }
+            if (!arriving && (view.rect.anchoredPosition - slot).sqrMagnitude > 1f)
+                StartMotion(view, view.rect.anchoredPosition, slot, 0.2f, 0f, fadeOut: false, destroy: false);
+            CardView.SetInteractable(view.button, combat.CanPlay(view.card)); // всегда актуализируем кликабельность
         }
     }
 
@@ -396,13 +393,14 @@ public class CombatUI : MonoBehaviour
     {
         if (delay > 0) yield return new WaitForSeconds(delay);
         if (view.button == null) yield break;
-        float startAlpha = fadeOut ? view.group.alpha : 0f;
+        float startAlpha = view.group.alpha;
         for (float t = 0; t < duration; t += Time.deltaTime)
         {
             if (view.button == null) yield break;
             float k = 1f - Mathf.Pow(1f - t / duration, 3f);
             view.rect.anchoredPosition = Vector2.LerpUnclamped(from, to, k);
-            view.group.alpha = fadeOut ? Mathf.Lerp(startAlpha, 0f, k) : Mathf.Min(1f, k * 2f);
+            // Сдвиг уже видимой карты не должен её гасить (иначе она считается «прилетающей» и остаётся серой)
+            view.group.alpha = fadeOut ? Mathf.Lerp(startAlpha, 0f, k) : Mathf.Max(startAlpha, Mathf.Min(1f, k * 2f));
             yield return null;
         }
         if (view.button == null) yield break;

@@ -185,15 +185,20 @@ public class UnitFrame : MonoBehaviour
     {
         if (current < 0 || max <= 0) { momentumRow.gameObject.SetActive(false); return; }
         momentumRow.gameObject.SetActive(true);
-        const float pipSize = 18f, gap = 6f;
+        const float pipSize = 20f, gap = 10f;
         while (momentumPips.Count < max)
         {
             var pip = UIFactory.CreateRect(momentumRow, "Pip", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(pipSize, pipSize));
             var img = pip.gameObject.AddComponent<Image>();
             img.raycastTarget = false;
-            var outline = pip.gameObject.AddComponent<Outline>();
-            outline.effectColor = new Color(0.05f, 0.05f, 0.08f, 1f);
-            outline.effectDistance = new Vector2(1.5f, -1.5f);
+            var bolt = UISkin.Get(k => k.momentumIcon);
+            if (bolt != null) { img.sprite = bolt; img.preserveAspect = true; pip.sizeDelta = new Vector2(pipSize * 1.4f, pipSize * 1.4f); }
+            else
+            {
+                var outline = pip.gameObject.AddComponent<Outline>();
+                outline.effectColor = new Color(0.05f, 0.05f, 0.08f, 1f);
+                outline.effectDistance = new Vector2(1.5f, -1.5f);
+            }
             momentumPips.Add(img);
         }
         float startX = -(max - 1) * (pipSize + gap) / 2f;
@@ -203,7 +208,8 @@ public class UnitFrame : MonoBehaviour
             momentumPips[i].gameObject.SetActive(used);
             if (!used) continue;
             momentumPips[i].rectTransform.anchoredPosition = new Vector2(startX + i * (pipSize + gap), 0);
-            momentumPips[i].color = i < current ? PipOn : PipOff;
+            bool bolt = momentumPips[i].sprite != null;
+            momentumPips[i].color = i < current ? (bolt ? Color.white : PipOn) : (bolt ? new Color(0.35f, 0.35f, 0.45f, 0.8f) : PipOff);
         }
     }
 

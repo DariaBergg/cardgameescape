@@ -50,5 +50,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 0dbc88fb6fea14a4a9d9351c492dcb4f, type: 3}
   - id: retaliation
     sprite: {fileID: 21300000, guid: 6dc7fa20c4c66408abb6ccd2af3b1b9a, type: 3}
+  momentumIcon: {fileID: 21300000, guid: 73a8911b75ca94cd781bd18ae6542e40, type: 3}
+  itemIcons:
+  - id: SealedScroll
+    sprite: {fileID: 21300000, guid: 53cc9f62bb1c244c9badfc96a5c2d413, type: 3}
+  - id: OpenedScroll
+    sprite: {fileID: 21300000, guid: c2985f8b961e54e92b1cf8b68d5c05ff, type: 3}
+  - id: BrokenSeal
+    sprite: {fileID: 21300000, guid: e85b9c3501ab843d8b9207362718b2e2, type: 3}
   parchmentText: {r: 0.22, g: 0.15, b: 0.09, a: 1}
   parchmentTitle: {r: 0.45, g: 0.14, b: 0.08, a: 1}
