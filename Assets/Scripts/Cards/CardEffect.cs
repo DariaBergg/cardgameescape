@@ -18,36 +18,36 @@ public class CardEffect
         string body;
         switch (type)
         {
-            case CardEffectType.Damage: body = hits > 1 ? $"Нанести {v} урона {hits} раза." : $"Нанести {v} урона."; break;
-            case CardEffectType.Block: body = $"Получить {v} блока."; break;
-            case CardEffectType.Heal: body = $"Восстановить {v} HP."; break;
-            case CardEffectType.PoisonEnemy: body = $"Отравить врага: {v} урона в ход, {t} х."; break;
-            case CardEffectType.WeakenEnemy: body = $"Ослабить врага на {v} ({t} х.)."; break;
-            case CardEffectType.BurnEnemy: body = $"Поджечь врага: {v} урона в начале его хода, {t} х."; break;
-            case CardEffectType.PierceDamage: body = $"Нанести {v} урона, игнорируя блок."; break;
-            case CardEffectType.Thorns: body = $"Если враг атакует в этот ход — он получает {v} урона."; break;
-            case CardEffectType.Cleanse: body = "Снять с себя один отрицательный эффект."; break;
-            case CardEffectType.SelfDamage: body = $"Получить {v} урона самому."; break;
-            case CardEffectType.NoBlockNextTurn: body = "В следующий ход нельзя играть защитные карты."; break;
-            case CardEffectType.NoAttackNextTurn: body = "В следующий ход нельзя играть атакующие карты."; break;
-            case CardEffectType.MoltenGuard: body = $"Если враг пробьёт блок и ранит тебя — он загорится: {v} урона в ход, {t} х."; break;
-            case CardEffectType.Rage: body = $"Ярость на {v} хода: можно играть по 2 карты за ход (включая этот)."; break;
-            case CardEffectType.Momentum: body = $"+{v} Замах."; break;
-            case CardEffectType.ConsumeMomentum: body = $"Забирает {v} Замах."; break;
-            case CardEffectType.MomentumThreshold: body = $"В этот ход пассивный удар срабатывает на {v} Замах раньше."; break;
-            case CardEffectType.PassiveStrikeBonus: body = $"Следующий пассивный удар наносит +{v} урона."; break;
-            case CardEffectType.Combo: body = "Связка: после этой карты можно сразу сыграть ещё одну карту атаки."; break;
-            case CardEffectType.Retaliation: body = $"Если враг пробьёт блок и ранит тебя — +{v} Замах в начале следующего хода."; break;
-            case CardEffectType.Execute: body = $"Если после удара у врага останется меньше {v}% HP — добить."; break;
+            case CardEffectType.Damage: body = hits > 1 ? L.F("Нанести {0} урона {1} раза.", v, hits) : L.F("Нанести {0} урона.", v); break;
+            case CardEffectType.Block: body = L.F("Получить {0} блока.", v); break;
+            case CardEffectType.Heal: body = L.F("Восстановить {0} HP.", v); break;
+            case CardEffectType.PoisonEnemy: body = L.F("Отравить врага: {0} урона в ход, {1} х.", v, t); break;
+            case CardEffectType.WeakenEnemy: body = L.F("Ослабить врага на {0} ({1} х.).", v, t); break;
+            case CardEffectType.BurnEnemy: body = L.F("Поджечь врага: {0} урона в начале его хода, {1} х.", v, t); break;
+            case CardEffectType.PierceDamage: body = L.F("Нанести {0} урона, игнорируя блок.", v); break;
+            case CardEffectType.Thorns: body = L.F("Если враг атакует в этот ход — он получает {0} урона.", v); break;
+            case CardEffectType.Cleanse: body = L.T("Снять с себя один отрицательный эффект."); break;
+            case CardEffectType.SelfDamage: body = L.F("Получить {0} урона самому.", v); break;
+            case CardEffectType.NoBlockNextTurn: body = L.T("В следующий ход нельзя играть защитные карты."); break;
+            case CardEffectType.NoAttackNextTurn: body = L.T("В следующий ход нельзя играть атакующие карты."); break;
+            case CardEffectType.MoltenGuard: body = L.F("Если враг пробьёт блок и ранит тебя — он загорится: {0} урона в ход, {1} х.", v, t); break;
+            case CardEffectType.Rage: body = L.F("Ярость на {0} хода: можно играть по 2 карты за ход (включая этот).", v); break;
+            case CardEffectType.Momentum: body = L.F("+{0} Замах.", v); break;
+            case CardEffectType.ConsumeMomentum: body = L.F("Забирает {0} Замах.", v); break;
+            case CardEffectType.MomentumThreshold: body = L.F("В этот ход пассивный удар срабатывает на {0} Замах раньше.", v); break;
+            case CardEffectType.PassiveStrikeBonus: body = L.F("Следующий пассивный удар наносит +{0} урона.", v); break;
+            case CardEffectType.Combo: body = L.T("Связка: после этой карты можно сразу сыграть ещё одну карту атаки."); break;
+            case CardEffectType.Retaliation: body = L.F("Если враг пробьёт блок и ранит тебя — +{0} Замах в начале следующего хода.", v); break;
+            case CardEffectType.Execute: body = L.F("Если после удара у врага останется меньше {0}% HP — добить.", v); break;
             default: body = type.ToString(); break;
         }
 
         switch (condition)
         {
-            case CardCondition.EnemyBurning: return $"Если враг горит — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
-            case CardCondition.EnemyHasBlock: return $"Если у врага есть блок — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
-            case CardCondition.EnemyAttacking: return $"Если враг готовит атаку — {LowerFirst(body)}";
-            case CardCondition.EnemyBelowHalf: return $"Если у врага меньше половины HP — {LowerFirst(body.TrimEnd('.'))} вместо этого.";
+            case CardCondition.EnemyBurning: return L.F("Если враг горит — {0} вместо этого.", LowerFirst(body.TrimEnd('.')));
+            case CardCondition.EnemyHasBlock: return L.F("Если у врага есть блок — {0} вместо этого.", LowerFirst(body.TrimEnd('.')));
+            case CardCondition.EnemyAttacking: return L.F("Если враг готовит атаку — {0}", LowerFirst(body));
+            case CardCondition.EnemyBelowHalf: return L.F("Если у врага меньше половины HP — {0} вместо этого.", LowerFirst(body.TrimEnd('.')));
             default: return body;
         }
     }
@@ -61,33 +61,33 @@ public class CardEffect
         string s;
         switch (type)
         {
-            case CardEffectType.Damage: s = hits > 1 ? $"{v} урона ×{hits}" : $"{v} урона"; break;
-            case CardEffectType.Block: s = $"{v} блока"; break;
+            case CardEffectType.Damage: s = hits > 1 ? L.F("{0} урона ×{1}", v, hits) : L.F("{0} урона", v); break;
+            case CardEffectType.Block: s = L.F("{0} блока", v); break;
             case CardEffectType.Heal: s = $"+{v} HP"; break;
-            case CardEffectType.PoisonEnemy: s = $"яд {v}×{t}"; break;
-            case CardEffectType.WeakenEnemy: s = $"ослабить −{v} ({t} х.)"; break;
-            case CardEffectType.BurnEnemy: s = $"горение {v}×{t}"; break;
-            case CardEffectType.PierceDamage: s = $"{v} сквозь блок"; break;
-            case CardEffectType.Thorns: s = $"шипы {v}"; break;
-            case CardEffectType.Cleanse: s = "снять эффект"; break;
-            case CardEffectType.SelfDamage: s = $"−{v} HP себе"; break;
-            case CardEffectType.NoBlockNextTurn: s = "без защиты в след. ход"; break;
-            case CardEffectType.NoAttackNextTurn: s = "без атаки в след. ход"; break;
-            case CardEffectType.MoltenGuard: s = $"пробил блок — горит {v}×{t}"; break;
-            case CardEffectType.Rage: s = $"2 карты за ход, {v} хода"; break;
-            case CardEffectType.Momentum: s = $"+{v} Замах"; break;
-            case CardEffectType.ConsumeMomentum: s = $"−{v} Замах"; break;
-            case CardEffectType.MomentumThreshold: s = $"порог удара −{v}"; break;
-            case CardEffectType.PassiveStrikeBonus: s = $"пасс. удар +{v}"; break;
-            case CardEffectType.Combo: s = "связка: ещё атака"; break;
-            case CardEffectType.Retaliation: s = $"ранят — +{v} Замах"; break;
-            case CardEffectType.Execute: s = $"< {v}% HP — добить"; break;
+            case CardEffectType.PoisonEnemy: s = L.F("яд {0}×{1}", v, t); break;
+            case CardEffectType.WeakenEnemy: s = L.F("ослабить −{0} ({1} х.)", v, t); break;
+            case CardEffectType.BurnEnemy: s = L.F("горение {0}×{1}", v, t); break;
+            case CardEffectType.PierceDamage: s = L.F("{0} сквозь блок", v); break;
+            case CardEffectType.Thorns: s = L.F("шипы {0}", v); break;
+            case CardEffectType.Cleanse: s = L.T("снять эффект"); break;
+            case CardEffectType.SelfDamage: s = L.F("−{0} HP себе", v); break;
+            case CardEffectType.NoBlockNextTurn: s = L.T("без защиты в след. ход"); break;
+            case CardEffectType.NoAttackNextTurn: s = L.T("без атаки в след. ход"); break;
+            case CardEffectType.MoltenGuard: s = L.F("пробил блок — горит {0}×{1}", v, t); break;
+            case CardEffectType.Rage: s = L.F("2 карты за ход, {0} хода", v); break;
+            case CardEffectType.Momentum: s = L.F("+{0} Замах", v); break;
+            case CardEffectType.ConsumeMomentum: s = L.F("−{0} Замах", v); break;
+            case CardEffectType.MomentumThreshold: s = L.F("порог удара −{0}", v); break;
+            case CardEffectType.PassiveStrikeBonus: s = L.F("пасс. удар +{0}", v); break;
+            case CardEffectType.Combo: s = L.T("связка: ещё атака"); break;
+            case CardEffectType.Retaliation: s = L.F("ранят — +{0} Замах", v); break;
+            case CardEffectType.Execute: s = L.F("< {0}% HP — добить", v); break;
             default: s = type.ToString(); break;
         }
-        if (condition == CardCondition.EnemyBurning) s = "если горит: " + s;
-        if (condition == CardCondition.EnemyBelowHalf) s = "если < ½ HP: " + s;
-        if (condition == CardCondition.EnemyHasBlock) s = "если враг в блоке: " + s;
-        if (condition == CardCondition.EnemyAttacking) s = "если враг атакует: " + s;
+        if (condition == CardCondition.EnemyBurning) s = L.T("если горит:") + " " + s;
+        if (condition == CardCondition.EnemyBelowHalf) s = L.T("если < ½ HP:") + " " + s;
+        if (condition == CardCondition.EnemyHasBlock) s = L.T("если враг в блоке:") + " " + s;
+        if (condition == CardCondition.EnemyAttacking) s = L.T("если враг атакует:") + " " + s;
         return s;
     }
 

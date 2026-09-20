@@ -60,7 +60,7 @@ public class RestRoomUI : MonoBehaviour
         {
             var option = options[i];
             float y = totalHeight / 2f - buttonHeight / 2f - i * (buttonHeight + gap);
-            var button = UIFactory.CreateButton(buttonsArea, "Option" + i, $"{option.label}\n<size=15><color=#d8d0c0>{option.description}</color></size>", 20, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(480, buttonHeight), new Color(0.25f, 0.3f, 0.25f));
+            var button = UIFactory.CreateButton(buttonsArea, "Option" + i, $"{option.label}\n<size=15><color=#d8d0c0>{L.T(option.description)}</color></size>", 20, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(480, buttonHeight), new Color(0.25f, 0.3f, 0.25f));
             button.onClick.AddListener(() => option.action?.Invoke());
         }
 

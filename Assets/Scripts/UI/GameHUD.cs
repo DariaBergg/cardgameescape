@@ -59,11 +59,11 @@ public class GameHUD : MonoBehaviour
         playerFrame = UnitFrame.Create(canvas, "PlayerFrame", new Color(0.3f, 0.8f, 0.35f));
         playerFrame.SetAnchor(PlayerTop);
 
-        exitButton = UIFactory.CreateButton(canvas, "ExitButton", "Выйти", 22, new Vector2(0.5f, 0), new Vector2(0, 40), new Vector2(220, 56), new Color(0.3f, 0.3f, 0.4f, 0.95f));
+        exitButton = UIFactory.CreateButton(canvas, "ExitButton", L.T("Выйти"), 22, new Vector2(0.5f, 0), new Vector2(0, 40), new Vector2(220, 56), new Color(0.3f, 0.3f, 0.4f, 0.95f));
         exitButton.onClick.AddListener(() => { var cb = onExit; HideExitButton(); cb?.Invoke(); });
         exitButton.gameObject.SetActive(false);
 
-        deckButton = UIFactory.CreateButton(canvas, "DeckButton", "Колода", 18, new Vector2(1, 1), new Vector2(-16, -14), new Vector2(130, 40), new Color(0.25f, 0.25f, 0.35f, 0.9f));
+        deckButton = UIFactory.CreateButton(canvas, "DeckButton", L.T("Колода"), 18, new Vector2(1, 1), new Vector2(-16, -14), new Vector2(130, 40), new Color(0.25f, 0.25f, 0.35f, 0.9f));
         deckButton.onClick.AddListener(OpenDeck);
         deckButton.gameObject.SetActive(false);
     }
@@ -74,7 +74,7 @@ public class GameHUD : MonoBehaviour
     void OpenDeck()
     {
         var gm = GameManager.Instance;
-        DeckPickerUI.Get().Show($"Колода — {gm.playerDeck.Count} карт", gm.playerDeck, card => false, null, null, closeLabel: "Закрыть");
+        DeckPickerUI.Get().Show(L.F("Колода — {0} карт", gm.playerDeck.Count), gm.playerDeck, card => false, null, null, closeLabel: L.T("Закрыть"));
     }
 
     Button exitButton;
@@ -120,9 +120,9 @@ public class GameHUD : MonoBehaviour
     {
         switch (id)
         {
-            case "SealedScroll": return "Свиток Коллекционера с нетронутой печатью. Кузнец хочет его получить — или можно вскрыть самому.";
-            case "OpenedScroll": return "Вскрытый свиток. Коллекционер будет недоволен.";
-            case "BrokenSeal": return "Сломанная печать Коллекционера. Ростовщик знает, что с ней делать.";
+            case "SealedScroll": return L.T("Свиток Коллекционера с нетронутой печатью. Кузнец хочет его получить — или можно вскрыть самому.");
+            case "OpenedScroll": return L.T("Вскрытый свиток. Коллекционер будет недоволен.");
+            case "BrokenSeal": return L.T("Сломанная печать Коллекционера. Ростовщик знает, что с ней делать.");
             default: return "";
         }
     }
@@ -164,9 +164,9 @@ public class GameHUD : MonoBehaviour
     {
         switch (id)
         {
-            case "SealedScroll": return "Запечатанный свиток";
-            case "OpenedScroll": return "Вскрытый свиток";
-            case "BrokenSeal": return "Сломанная печать";
+            case "SealedScroll": return L.T("Запечатанный свиток");
+            case "OpenedScroll": return L.T("Вскрытый свиток");
+            case "BrokenSeal": return L.T("Сломанная печать");
             default: return id;
         }
     }
@@ -209,7 +209,7 @@ public class GameHUD : MonoBehaviour
         {
             var combat = CombatManager.Instance;
             bool inCombat = combat != null && combat.CombatActive;
-            string name = gm.selectedCharacter != null ? gm.selectedCharacter.characterName : "";
+            string name = gm.selectedCharacter != null ? L.T(gm.selectedCharacter.characterName) : "";
             playerFrame.Set(name, gm.currentHP, gm.MaxHP, inCombat ? combat.PlayerBlock : 0, "");
             playerFrame.SetStatuses(inCombat ? combat.PlayerStatuses : null);
             bool showMomentum = inCombat && combat.UsesMomentum;
@@ -217,12 +217,12 @@ public class GameHUD : MonoBehaviour
 
             string elites = "";
             foreach (var elite in MarkedElites(gm))
-                elites += $"{elite.enemyName}: +{gm.EliteChance(elite)}% за фиолетовой дверью\n";
+                elites += L.F("{0}: +{1}% за фиолетовой дверью\n", L.T(elite.enemyName), gm.EliteChance(elite));
             foreach (var o in gm.obligations)
                 elites += $"<color=#ffb070>{o.HudText}</color>\n";
             eliteText.text = elites;
 
-            goldText.text = gm.gold > 0 ? $"Золото: {gm.gold}" : "";
+            goldText.text = gm.gold > 0 ? L.F("Золото: {0}", gm.gold) : "";
             UpdateItems(gm);
 
             deckButton.gameObject.SetActive(gm.combatsWon >= deckUnlockCombats && !inCombat);

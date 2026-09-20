@@ -21,6 +21,7 @@ MonoBehaviour:
   effects: []
   rarity: 0
   unplayable: 1
+  bad: 1
   permanent: 0
   failVariant: {fileID: 0}
   retain: 0

@@ -55,11 +55,37 @@ public class Tooltip : MonoBehaviour
         element.preferredWidth = 320;
 
         panel.gameObject.SetActive(false);
+
+        // Второе окно — словарь терминов (под основным)
+        extraPanel = UIFactory.CreateRect(canvas.transform, "Extra", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(340, 100));
+        extraPanel.pivot = new Vector2(0, 1);
+        var ebg = extraPanel.gameObject.AddComponent<Image>();
+        UISkin.Apply(ebg, UISkin.Get(k => k.panelMenu), new Color(0.06f, 0.08f, 0.12f, 0.95f));
+        ebg.pixelsPerUnitMultiplier = 2.5f;
+        ebg.raycastTarget = false;
+        var elayout = extraPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+        elayout.padding = skinned ? new RectOffset(22, 22, 18, 20) : new RectOffset(14, 14, 10, 12);
+        elayout.childControlWidth = true; elayout.childControlHeight = true;
+        elayout.childForceExpandWidth = false; elayout.childForceExpandHeight = false;
+        var efitter = extraPanel.gameObject.AddComponent<ContentSizeFitter>();
+        efitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        efitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        extraText = UIFactory.CreateText(extraPanel, "Text", "", 17, TextAnchor.UpperLeft, new Vector2(0, 1), Vector2.zero, new Vector2(320, 40));
+        extraText.raycastTarget = false;
+        extraText.supportRichText = true;
+        extraText.lineSpacing = 1.15f;
+        extraText.color = new Color(0.85f, 0.85f, 0.9f);
+        extraElement = extraText.gameObject.AddComponent<LayoutElement>();
+        extraElement.preferredWidth = 320;
+        extraPanel.gameObject.SetActive(false);
     }
 
+    RectTransform extraPanel;
+    Text extraText;
+    LayoutElement extraElement;
     bool preferLeft;
 
-    public void Show(string content, bool left = false, float width = 320f, Component owner = null)
+    public void Show(string content, bool left = false, float width = 320f, Component owner = null, string extra = null)
     {
         preferLeft = left;
         Owner = owner;
@@ -67,6 +93,14 @@ public class Tooltip : MonoBehaviour
         text.text = content;
         panel.gameObject.SetActive(true);
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+        bool hasExtra = !string.IsNullOrEmpty(extra);
+        extraPanel.gameObject.SetActive(hasExtra);
+        if (hasExtra)
+        {
+            extraElement.preferredWidth = width;
+            extraText.text = extra;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(extraPanel);
+        }
         UpdatePosition();
     }
 
@@ -74,6 +108,7 @@ public class Tooltip : MonoBehaviour
     {
         Owner = null;
         panel.gameObject.SetActive(false);
+        extraPanel.gameObject.SetActive(false);
     }
 
     // Скрыть, только если подсказку показывает именно этот источник
@@ -102,6 +137,13 @@ public class Tooltip : MonoBehaviour
         pos.y = Mathf.Min(pos.y, bounds.yMax - size.y - 8);
         pos.x = Mathf.Max(pos.x, bounds.xMin + 8);
         pos.y = Mathf.Max(pos.y, bounds.yMin + 8);
+        // Второе окно — под основным; если не влезает снизу, поднимаем оба
+        if (extraPanel.gameObject.activeSelf)
+        {
+            float extraH = extraPanel.rect.size.y + 6f;
+            if (pos.y - extraH < bounds.yMin + 8) pos.y = Mathf.Min(bounds.yMax - size.y - 8, pos.y + extraH);
+            extraPanel.anchoredPosition = new Vector2(pos.x, pos.y - 6f);
+        }
         panel.anchoredPosition = pos;
     }
 }
@@ -109,13 +151,15 @@ public class Tooltip : MonoBehaviour
 public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public string content;
+    [Tooltip("Второе окно: словарь терминов")]
+    public string extra;
     [Tooltip("Показывать подсказку слева от курсора")]
     public bool preferLeft;
     public float width = 320f;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!string.IsNullOrEmpty(content)) Tooltip.Get().Show(content, preferLeft, width, this);
+        if (!string.IsNullOrEmpty(content)) Tooltip.Get().Show(content, preferLeft, width, this, extra);
     }
 
     public void OnPointerExit(PointerEventData eventData)

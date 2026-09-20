@@ -31,7 +31,7 @@ public abstract class EventVisit
 
     protected void Say(string text, params MerchantUI.Option[] options)
     {
-        ui.Show(data.title, text, new List<MerchantUI.Option>(options));
+        ui.Show(L.T(data.title), text, new List<MerchantUI.Option>(options));
     }
 
     protected MerchantUI.Option Opt(string label, string description, Action action)
@@ -39,9 +39,9 @@ public abstract class EventVisit
         return new MerchantUI.Option { label = label, description = description, action = action };
     }
 
-    protected MerchantUI.Option Finish(string label = "Дальше")
+    protected MerchantUI.Option Finish(string label = null)
     {
-        return Opt(label, "", () => { ui.Hide(); onDone?.Invoke(); });
+        return Opt(label ?? L.T("Дальше"), "", () => { ui.Hide(); onDone?.Invoke(); });
     }
 
     protected void End(string text)
@@ -56,29 +56,29 @@ public class WandererEvent : EventVisit
 {
     protected override void Begin()
     {
-        Say("У стены сидит ящер в рваном плаще, прижимая руку к боку. Кровь тёмная, дыхание короткое.\n«Эй... подойди. Или не подходи. Мне уже всё равно.»",
-            Opt("Помочь", Hp(6) + ": перевязать его рану, оторвав лоскут собственной чешуи. Он отблагодарит", () =>
+        Say(L.T("У стены сидит ящер в рваном плаще, прижимая руку к боку. Кровь тёмная, дыхание короткое.\n«Эй... подойди. Или не подходи. Мне уже всё равно.»"),
+            Opt(L.T("Помочь"), Hp(6) + L.T(": перевязать его рану, оторвав лоскут собственной чешуи. Он отблагодарит"), () =>
             {
                 gm.LoseHPSafe(6);
                 var pool = CardPools.Instance.EventRares(1);
                 var card = pool.Count > 0 ? pool[0] : null;
                 if (card != null) gm.playerDeck.Add(card);
-                End($"Он выдыхает и суёт тебе в руку потёртую карту.\n«{(card != null ? card.cardName : "Пусто")}. Мне она больше не пригодится.»");
+                End(L.F("Он выдыхает и суёт тебе в руку потёртую карту.\n«{0}. Мне она больше не пригодится.»", (card != null ? L.T(card.cardName) : L.T("Пусто"))));
             }),
-            Opt("Обыскать", "Забрать, что есть. 30% — он не так уж и ранен", () =>
+            Opt(L.T("Обыскать"), L.T("Забрать, что есть. 30% — он не так уж и ранен"), () =>
             {
                 if (UnityEngine.Random.Range(0, 100) < 30)
                 {
                     ui.Hide();
-                    RoomManager.Instance.StartAmbush("Странник резко выпрямляется. Кровь на плаще — не его.");
+                    RoomManager.Instance.StartAmbush(L.T("Странник резко выпрямляется. Кровь на плаще — не его."));
                     return;
                 }
                 var pool = CardPools.Instance.RandomOfRarity(CardRarity.Common, 1);
                 var card = pool.Count > 0 ? pool[0] : null;
                 if (card != null) gm.playerDeck.Add(card);
-                End($"В сумке — {(card != null ? "«" + card.cardName + "»" : "ничего ценного")}. Странник не сопротивляется. Он просто смотрит.");
+                End(L.F("В сумке — {0}. Странник не сопротивляется. Он просто смотрит.", (card != null ? "«" + L.T(card.cardName) + "»" : L.T("ничего ценного"))));
             }),
-            Finish("Пройти мимо"));
+            Finish(L.T("Пройти мимо")));
     }
 }
 
@@ -86,36 +86,36 @@ public class CrackEvent : EventVisit
 {
     protected override void Begin()
     {
-        Say("В стене трещина шириной в ладонь. Из глубины тянет холодом, и что-то там блестит.",
-            Opt("Протиснуться", Hp(4) + ": чешуя оставит кусочки на камне. Внутри — тайник", () =>
+        Say(L.T("В стене трещина шириной в ладонь. Из глубины тянет холодом, и что-то там блестит."),
+            Opt(L.T("Протиснуться"), Hp(4) + L.T(": чешуя оставит кусочки на камне. Внутри — тайник"), () =>
             {
                 gm.LoseHPSafe(4);
                 ui.Hide();
-                OfferChest("Ты протискиваешься, обдирая бока. Внутри — небольшой тайник.");
+                OfferChest(L.T("Ты протискиваешься, обдирая бока. Внутри — небольшой тайник."));
             }),
-            Opt("Выжечь проход", "Дыхание расширит трещину. 50% — тайник, 50% — обвал: " + Hp(10), () =>
+            Opt(L.T("Выжечь проход"), L.T("Дыхание расширит трещину. 50% — тайник, 50% — обвал: ") + Hp(10), () =>
             {
                 if (UnityEngine.Random.Range(0, 2) == 0)
                 {
                     ui.Hide();
-                    OfferChest("Камень трескается от жара и осыпается. Проход свободен — и тайник цел.");
+                    OfferChest(L.T("Камень трескается от жара и осыпается. Проход свободен — и тайник цел."));
                 }
                 else
                 {
                     gm.LoseHPSafe(10);
-                    End("Стена дрожит и обрушивается. Ты едва успеваешь отскочить; тайник погребён под камнями.");
+                    End(L.T("Стена дрожит и обрушивается. Ты едва успеваешь отскочить; тайник погребён под камнями."));
                 }
             }),
-            Finish("Уйти"));
+            Finish(L.T("Уйти")));
     }
 
     void OfferChest(string intro)
     {
         var pool = CardPools.Instance.EventRares(3);
-        CardChoiceUI.Get().Show("Тайник: выбери карту", pool, chosen =>
+        CardChoiceUI.Get().Show(L.T("Тайник: выбери карту"), pool, chosen =>
         {
             if (chosen != null) gm.playerDeck.Add(chosen);
-            End(intro + (chosen != null ? $"\nТы забираешь «{chosen.cardName}»." : "\nТы ничего не берёшь."));
+            End(intro + (chosen != null ? L.F("\nТы забираешь «{0}».", L.T(chosen.cardName)) : L.T("\nТы ничего не берёшь.")));
         });
     }
 }
@@ -124,11 +124,11 @@ public class MirrorEvent : EventVisit
 {
     protected override void Begin()
     {
-        Say("Посреди комнаты стоит зеркало из чёрного стекла. Отражение смотрит на тебя, но не повторяет твоих движений.",
-            Opt("Коснуться", "Одна случайная карта станет сильнее, другая — слабее", () =>
+        Say(L.T("Посреди комнаты стоит зеркало из чёрного стекла. Отражение смотрит на тебя, но не повторяет твоих движений."),
+            Opt(L.T("Коснуться"), L.T("Одна случайная карта станет сильнее, другая — слабее"), () =>
             {
                 var candidates = gm.playerDeck.FindAll(c => !c.unplayable);
-                if (candidates.Count < 2) { End("Зеркало молчит. Отражение отворачивается."); return; }
+                if (candidates.Count < 2) { End(L.T("Зеркало молчит. Отражение отворачивается.")); return; }
                 var up = candidates[UnityEngine.Random.Range(0, candidates.Count)];
                 candidates.Remove(up);
                 var down = candidates[UnityEngine.Random.Range(0, candidates.Count)];
@@ -136,17 +136,17 @@ public class MirrorEvent : EventVisit
                 var weakened = down.CreateWeakenedCopy();
                 gm.ReplaceCard(down, weakened);
                 ui.Hide();
-                string outcome = $"Стекло холодное, как лёд. Ты чувствуешь, как что-то перетекает.\n«{upgraded.cardName}» стала сильнее, «{weakened.cardName}» — слабее.";
+                string outcome = L.F("Стекло холодное, как лёд. Ты чувствуешь, как что-то перетекает.\n«{0}» стала сильнее, «{1}» — слабее.", L.T(upgraded.cardName), L.T(weakened.cardName));
                 // Показываем «было → стало» для обеих карт
                 DeckPickerUI.Get().Show(
-                    "Зеркало: было → стало",
+                    L.T("Зеркало: было → стало"),
                     new List<CardData> { up, upgraded, down, weakened },
                     null,
                     _ => End(outcome),
                     () => End(outcome),
-                    closeLabel: "Дальше");
+                    closeLabel: L.T("Дальше"));
             }),
-            Opt("Разбить", Hp(5) + ": осколки. Все метки Короля исчезнут с карт, бонусы останутся", () =>
+            Opt(L.T("Разбить"), Hp(5) + L.T(": осколки. Все метки Короля исчезнут с карт, бонусы останутся"), () =>
             {
                 gm.LoseHPSafe(5);
                 RoomManager.Instance.HideRoomNpc();
@@ -158,10 +158,10 @@ public class MirrorEvent : EventVisit
                     cleared++;
                 }
                 End(cleared > 0
-                    ? $"Зеркало разлетается вдребезги. Осколки режут руки, но с карт сходит чужой знак: {cleared} мет. снято."
-                    : "Зеркало разлетается вдребезги. Осколки режут руки. Меток на картах и так не было.");
+                    ? L.F("Зеркало разлетается вдребезги. Осколки режут руки, но с карт сходит чужой знак: {0} мет. снято.", cleared)
+                    : L.T("Зеркало разлетается вдребезги. Осколки режут руки. Меток на картах и так не было."));
             }),
-            Finish("Уйти"));
+            Finish(L.T("Уйти")));
     }
 }
 
@@ -172,6 +172,6 @@ public class PitEvent : EventVisit
         gm.LoseHPSafe(5);
         var card = CardPools.Instance.RandomAny();
         if (card != null) gm.playerDeck.Add(card);
-        Say($"Плита под ногой проваливается. Ты летишь вниз и приземляешься на кости — {Hp(5)}.\nВ пыли рядом лежит «{(card != null ? card.cardName : "пусто")}». Наверх ведут выбитые в стене ступени.", Finish("Выбраться"));
+        Say(L.F("Плита под ногой проваливается. Ты летишь вниз и приземляешься на кости — {0}.\nВ пыли рядом лежит «{1}». Наверх ведут выбитые в стене ступени.", Hp(5), (card != null ? L.T(card.cardName) : L.T("пусто"))), Finish(L.T("Выбраться")));
     }
 }

@@ -44,6 +44,57 @@ public class CombatManager : MonoBehaviour
     int cardsPlayedThisTurn;
     Color playerPoisonColor = PoisonColor;
 
+    // --- Малыш: маленькая копия врага за фиолетовой дверью ---
+    GameObject minionVisual;
+    SpriteRenderer minionRenderer;
+    int minionHP, minionMaxHP, minionDamage;
+    bool minionPromoted; // малыш остался один и стал главной целью
+    bool targetMinion;   // выбранная цель атак: true — малыш
+    public bool TargetIsMinion => targetMinion && MinionAlive;
+    public void SelectTarget(bool minion)
+    {
+        if (!combatActive) return;
+        targetMinion = minion && MinionAlive;
+        ui.Refresh();
+    }
+    // Куда летит урон карт: в главного или в малыша
+    SpriteRenderer TargetRenderer => TargetIsMinion ? minionRenderer : enemyRenderer;
+    Transform TargetTransform => TargetIsMinion ? minionVisual.transform : enemyVisual.transform;
+    Vector3 TargetCenter => TargetIsMinion ? MinionCenter : EnemyCenter;
+    int TargetBlock => TargetIsMinion ? 0 : enemyBlock;
+    // Наносит урон цели с учётом её блока; возвращает прошедший урон
+    int HitTarget(int amount, bool pierce, out int absorbed)
+    {
+        absorbed = 0;
+        if (TargetIsMinion)
+        {
+            minionHP = Mathf.Max(0, minionHP - amount);
+            if (minionHP <= 0) StartCoroutine(MinionDies());
+            return amount;
+        }
+        if (!pierce) { absorbed = Mathf.Min(enemyBlock, amount); enemyBlock -= absorbed; }
+        int dmg = amount - absorbed;
+        enemyHP = Mathf.Max(0, enemyHP - dmg);
+        return dmg;
+    }
+
+    IEnumerator MinionDies()
+    {
+        targetMinion = false;
+        var v = minionVisual; var r = minionRenderer;
+        minionVisual = null; minionRenderer = null;
+        fx.FloatingText(r.bounds.center, L.T("Малыш повержен!"), DamageColor);
+        yield return fx.FadeOut(r, 0.5f);
+        if (v != null) Destroy(v);
+        ui.Refresh();
+    }
+    public bool MinionAlive => minionVisual != null && minionHP > 0 && !minionPromoted;
+    public int MinionHP => minionHP;
+    public int MinionMaxHP => minionMaxHP;
+    public int MinionDamage => minionDamage;
+    public Vector3 MinionTop => minionRenderer != null ? new Vector3(minionRenderer.bounds.center.x, minionRenderer.bounds.max.y, 0) : Vector3.zero;
+    Vector3 MinionCenter => minionRenderer != null ? minionRenderer.bounds.center + Vector3.up * 0.2f : Vector3.zero;
+
     // --- Замах (лев) ---
     int momentum;
     int pendingMomentum;      // придёт в начале следующего хода (Возмездие)
@@ -78,7 +129,8 @@ public class CombatManager : MonoBehaviour
     public string LastEvent { get; private set; } = "";
     public bool CombatActive => combatActive;
     public bool EnemyActing => enemyActing;
-    public string EnemyName => enemy != null ? enemy.enemyName : "";
+    public string EnemyName => enemy != null ? L.T(enemy.enemyName) : "";
+    public EnemyData CurrentEnemy => enemy;
     public int EnemyHP => enemyHP;
     public int EnemyMaxHP => enemy != null ? enemy.maxHP : 0;
     public int EnemyBlock => enemyBlock;
@@ -113,17 +165,17 @@ public class CombatManager : MonoBehaviour
         get
         {
             var list = new List<StatusInfo>();
-            if (poisonTurns > 0) list.Add(new StatusInfo { id = "poison", label = "Яд", turns = poisonTurns, color = PoisonColor, tooltip = $"<b>Яд</b>\n−{poisonDamage} HP в начале каждого твоего хода. Осталось ходов: {poisonTurns}." });
-            if (rageTurnsLeft > 0) list.Add(new StatusInfo { id = "rage", label = "Ярость", turns = rageTurnsLeft, color = DamageColor, tooltip = $"<b>Ярость</b>\nМожно играть по 2 карты за ход. Осталось ходов: {rageTurnsLeft}." });
-            if (playerThorns > 0) list.Add(new StatusInfo { id = "thorns", label = "Шипы", turns = playerThorns, color = BlockColor, tooltip = $"<b>Шипы</b>\nЕсли враг атакует в этот ход — получает {playerThorns} урона." });
-            if (moltenBurnTurns > 0) list.Add(new StatusInfo { id = "molten", label = "Жар", turns = moltenBurnTurns, color = BurnColor, tooltip = $"<b>Раскалённая броня</b>\nЕсли враг пробьёт блок и ранит тебя — он загорится: {moltenBurnDamage} урона в ход, {moltenBurnTurns} х." });
-            if (blockLocked) list.Add(new StatusInfo { id = "noblock", label = "Без защиты", turns = 1, color = DebuffColor, tooltip = "<b>Без защиты</b>\nВ этот ход нельзя играть защитные карты." });
-            else if (blockLockedNextTurn) list.Add(new StatusInfo { id = "noblock", label = "Без защиты", turns = 1, color = DebuffColor, tooltip = "<b>Без защиты</b>\nВ следующий ход нельзя играть защитные карты." });
-            if (attackLocked) list.Add(new StatusInfo { id = "noattack", label = "Без атаки", turns = 1, color = DebuffColor, tooltip = "<b>Без атаки</b>\nВ этот ход нельзя играть атакующие карты." });
-            else if (attackLockedNextTurn) list.Add(new StatusInfo { id = "noattack", label = "Без атаки", turns = 1, color = DebuffColor, tooltip = "<b>Без атаки</b>\nВ следующий ход нельзя играть атакующие карты." });
-            if (nextHandPenalty > 0) list.Add(new StatusInfo { id = "hand", label = "−карта", turns = nextHandPenalty, color = DebuffColor, tooltip = $"<b>Ослабление</b>\nВ следующий ход враг утащит {nextHandPenalty} карт(у) из руки." });
-            if (comboAttack && BaseCardsLeft == 0) list.Add(new StatusInfo { id = "combo", label = "Связка", turns = 1, color = MomentumColor, tooltip = "<b>Связка</b>\nМожно сыграть ещё одну карту атаки в этот ход." });
-            if (retaliationMomentum > 0) list.Add(new StatusInfo { id = "retaliation", label = "Возмездие", turns = retaliationMomentum, color = MomentumColor, tooltip = $"<b>Возмездие</b>\nЕсли враг пробьёт блок и ранит тебя — +{retaliationMomentum} Замах в начале следующего хода." });
+            if (poisonTurns > 0) list.Add(new StatusInfo { id = "poison", label = L.T("Яд"), turns = poisonTurns, color = PoisonColor, tooltip = L.F("<b>Яд</b>\n−{0} HP в начале каждого твоего хода. Осталось ходов: {1}.", poisonDamage, poisonTurns) });
+            if (rageTurnsLeft > 0) list.Add(new StatusInfo { id = "rage", label = L.T("Ярость"), turns = rageTurnsLeft, color = DamageColor, tooltip = L.F("<b>Ярость</b>\nМожно играть по 2 карты за ход. Осталось ходов: {0}.", rageTurnsLeft) });
+            if (playerThorns > 0) list.Add(new StatusInfo { id = "thorns", label = L.T("Шипы"), turns = playerThorns, color = BlockColor, tooltip = L.F("<b>Шипы</b>\nЕсли враг атакует в этот ход — получает {0} урона.", playerThorns) });
+            if (moltenBurnTurns > 0) list.Add(new StatusInfo { id = "molten", label = L.T("Жар"), turns = moltenBurnTurns, color = BurnColor, tooltip = L.F("<b>Раскалённая броня</b>\nЕсли враг пробьёт блок и ранит тебя — он загорится: {0} урона в ход, {1} х.", moltenBurnDamage, moltenBurnTurns) });
+            if (blockLocked) list.Add(new StatusInfo { id = "noblock", label = L.T("Без защиты"), turns = 1, color = DebuffColor, tooltip = L.T("<b>Без защиты</b>\nВ этот ход нельзя играть защитные карты.") });
+            else if (blockLockedNextTurn) list.Add(new StatusInfo { id = "noblock", label = L.T("Без защиты"), turns = 1, color = DebuffColor, tooltip = L.T("<b>Без защиты</b>\nВ следующий ход нельзя играть защитные карты.") });
+            if (attackLocked) list.Add(new StatusInfo { id = "noattack", label = L.T("Без атаки"), turns = 1, color = DebuffColor, tooltip = L.T("<b>Без атаки</b>\nВ этот ход нельзя играть атакующие карты.") });
+            else if (attackLockedNextTurn) list.Add(new StatusInfo { id = "noattack", label = L.T("Без атаки"), turns = 1, color = DebuffColor, tooltip = L.T("<b>Без атаки</b>\nВ следующий ход нельзя играть атакующие карты.") });
+            if (nextHandPenalty > 0) list.Add(new StatusInfo { id = "hand", label = L.T("−карта"), turns = nextHandPenalty, color = DebuffColor, tooltip = L.F("<b>Ослабление</b>\nВ следующий ход враг утащит {0} карт(у) из руки.", nextHandPenalty) });
+            if (comboAttack && BaseCardsLeft == 0) list.Add(new StatusInfo { id = "combo", label = L.T("Связка"), turns = 1, color = MomentumColor, tooltip = L.T("<b>Связка</b>\nМожно сыграть ещё одну карту атаки в этот ход.") });
+            if (retaliationMomentum > 0) list.Add(new StatusInfo { id = "retaliation", label = L.T("Возмездие"), turns = retaliationMomentum, color = MomentumColor, tooltip = L.F("<b>Возмездие</b>\nЕсли враг пробьёт блок и ранит тебя — +{0} Замах в начале следующего хода.", retaliationMomentum) });
             return list;
         }
     }
@@ -133,10 +185,10 @@ public class CombatManager : MonoBehaviour
         get
         {
             var list = new List<StatusInfo>();
-            if (enemyPoisonTurns > 0) list.Add(new StatusInfo { id = "poison", label = "Яд", turns = enemyPoisonTurns, color = PoisonColor, tooltip = $"<b>Яд</b>\nВраг теряет {enemyPoisonDamage} HP в начале своего хода. Осталось ходов: {enemyPoisonTurns}." });
-            if (enemyBurnTurns > 0) list.Add(new StatusInfo { id = "burn", label = "Горит", turns = enemyBurnTurns, color = BurnColor, tooltip = $"<b>Горение</b>\nВраг теряет {enemyBurnDamage} HP в начале своего хода. Осталось ходов: {enemyBurnTurns}." });
-            if (enemyWeakTurns > 0) list.Add(new StatusInfo { id = "weak", label = "Слаб", turns = enemyWeakTurns, color = DebuffColor, tooltip = $"<b>Ослаблен</b>\nАтаки врага слабее на {enemyWeakAmount}. Осталось ходов: {enemyWeakTurns}." });
-            if (enemyHidden) list.Add(new StatusInfo { id = "hidden", label = "Скрыт", turns = 0, color = BlockColor, tooltip = "<b>Скрылся</b>\nВраг ушёл под воду / рассыпался. Вынырнет на своём ходу." });
+            if (enemyPoisonTurns > 0) list.Add(new StatusInfo { id = "poison", label = L.T("Яд"), turns = enemyPoisonTurns, color = PoisonColor, tooltip = L.F("<b>Яд</b>\nВраг теряет {0} HP в начале своего хода. Осталось ходов: {1}.", enemyPoisonDamage, enemyPoisonTurns) });
+            if (enemyBurnTurns > 0) list.Add(new StatusInfo { id = "burn", label = L.T("Горит"), turns = enemyBurnTurns, color = BurnColor, tooltip = L.F("<b>Горение</b>\nВраг теряет {0} HP в начале своего хода. Осталось ходов: {1}.", enemyBurnDamage, enemyBurnTurns) });
+            if (enemyWeakTurns > 0) list.Add(new StatusInfo { id = "weak", label = L.T("Слаб"), turns = enemyWeakTurns, color = DebuffColor, tooltip = L.F("<b>Ослаблен</b>\nАтаки врага слабее на {0}. Осталось ходов: {1}.", enemyWeakAmount, enemyWeakTurns) });
+            if (enemyHidden) list.Add(new StatusInfo { id = "hidden", label = L.T("Скрыт"), turns = 0, color = BlockColor, tooltip = L.T("<b>Скрылся</b>\nВраг ушёл под воду / рассыпался. Вынырнет на своём ходу.") });
             return list;
         }
     }
@@ -146,10 +198,10 @@ public class CombatManager : MonoBehaviour
         get
         {
             var parts = new List<string>();
-            if (enemyBlock > 0) parts.Add($"Блок {enemyBlock}");
-            if (enemyPoisonTurns > 0) parts.Add($"Яд {enemyPoisonDamage}×{enemyPoisonTurns}");
-            if (enemyWeakTurns > 0) parts.Add($"Ослаблен −{enemyWeakAmount} ({enemyWeakTurns} х.)");
-            if (enemyBurnTurns > 0) parts.Add($"Горит {enemyBurnDamage}×{enemyBurnTurns}");
+            if (enemyBlock > 0) parts.Add(L.F("Блок {0}", enemyBlock));
+            if (enemyPoisonTurns > 0) parts.Add(L.F("Яд {0}×{1}", enemyPoisonDamage, enemyPoisonTurns));
+            if (enemyWeakTurns > 0) parts.Add(L.F("Ослаблен −{0} ({1} х.)", enemyWeakAmount, enemyWeakTurns));
+            if (enemyBurnTurns > 0) parts.Add(L.F("Горит {0}×{1}", enemyBurnDamage, enemyBurnTurns));
             return string.Join("   ", parts);
         }
     }
@@ -159,19 +211,31 @@ public class CombatManager : MonoBehaviour
         get
         {
             var parts = new List<string>();
-            if (playerThorns > 0) parts.Add($"Шипы {playerThorns}");
-            if (blockLocked) parts.Add("Нельзя защищаться в этот ход");
-            else if (blockLockedNextTurn) parts.Add("В следующий ход нельзя защищаться");
-            if (attackLocked) parts.Add("Нельзя атаковать в этот ход");
-            else if (attackLockedNextTurn) parts.Add("В следующий ход нельзя атаковать");
-            if (moltenBurnTurns > 0) parts.Add($"Раскалённая броня: пробьёт блок — загорится {moltenBurnDamage}×{moltenBurnTurns}");
-            if (rageTurnsLeft > 0) parts.Add($"Ярость: 2 карты за ход, ещё {rageTurnsLeft} х.");
-            if (comboAttack && BaseCardsLeft == 0) parts.Add("Связка: можно сыграть ещё одну атаку");
-            if (retaliationMomentum > 0) parts.Add($"Возмездие: ранят — +{retaliationMomentum} Замах");
-            if (poisonTurns > 0) parts.Add($"Яд: {poisonDamage} урона в начале хода, ещё {poisonTurns} х.");
-            if (nextHandPenalty > 0) parts.Add($"Ослаблен: −{nextHandPenalty} карта в следующий ход");
+            if (playerThorns > 0) parts.Add(L.F("Шипы {0}", playerThorns));
+            if (blockLocked) parts.Add(L.T("Нельзя защищаться в этот ход"));
+            else if (blockLockedNextTurn) parts.Add(L.T("В следующий ход нельзя защищаться"));
+            if (attackLocked) parts.Add(L.T("Нельзя атаковать в этот ход"));
+            else if (attackLockedNextTurn) parts.Add(L.T("В следующий ход нельзя атаковать"));
+            if (moltenBurnTurns > 0) parts.Add(L.F("Раскалённая броня: пробьёт блок — загорится {0}×{1}", moltenBurnDamage, moltenBurnTurns));
+            if (rageTurnsLeft > 0) parts.Add(L.F("Ярость: 2 карты за ход, ещё {0} х.", rageTurnsLeft));
+            if (comboAttack && BaseCardsLeft == 0) parts.Add(L.T("Связка: можно сыграть ещё одну атаку"));
+            if (retaliationMomentum > 0) parts.Add(L.F("Возмездие: ранят — +{0} Замах", retaliationMomentum));
+            if (poisonTurns > 0) parts.Add(L.F("Яд: {0} урона в начале хода, ещё {1} х.", poisonDamage, poisonTurns));
+            if (nextHandPenalty > 0) parts.Add(L.F("Ослаблен: −{0} карта в следующий ход", nextHandPenalty));
             return string.Join("   ", parts);
         }
+    }
+
+    void Update()
+    {
+        if (!combatActive || !MinionAlive) return;
+        var mouse = UnityEngine.InputSystem.Mouse.current;
+        if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
+        if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+        Vector3 world = Camera.main.ScreenToWorldPoint(mouse.position.ReadValue());
+        world.z = 0;
+        if (minionRenderer != null && minionRenderer.bounds.Contains(new Vector3(world.x, world.y, minionRenderer.bounds.center.z))) SelectTarget(true);
+        else if (enemyRenderer != null && enemyRenderer.bounds.Contains(new Vector3(world.x, world.y, enemyRenderer.bounds.center.z))) SelectTarget(false);
     }
 
     void Awake()
@@ -181,7 +245,7 @@ public class CombatManager : MonoBehaviour
         if (fx == null) fx = gameObject.AddComponent<CombatFX>();
     }
 
-    public void StartCombat(EnemyData data)
+    public void StartCombat(EnemyData data, bool withMinion = false)
     {
         enemy = data;
         enemyHP = data.maxHP;
@@ -222,7 +286,7 @@ public class CombatManager : MonoBehaviour
         playerRenderer = player != null ? player.GetComponent<SpriteRenderer>() : null;
         if (player != null) player.EnterCombatPose(data.overridePlayerPosition ? data.playerPosition : combatPlayerPosition, combatPlayerScale);
 
-        enemyVisual = new GameObject("Enemy_" + data.enemyName);
+        enemyVisual = new GameObject("Enemy_" + L.T(data.enemyName));
         enemyVisual.transform.position = data.overrideEnemyPosition ? data.enemyPosition : combatEnemyPosition;
         var spriteObject = new GameObject("Sprite");
         spriteObject.transform.SetParent(enemyVisual.transform, false);
@@ -240,9 +304,30 @@ public class CombatManager : MonoBehaviour
         }
         if (data.flying) spriteObject.AddComponent<HoverBob>();
 
+        // Малыш: уменьшенная копия рядом, со своим здоровьем и слабым ударом
+        if (minionVisual != null) Destroy(minionVisual);
+        minionVisual = null; minionRenderer = null; minionPromoted = false; minionHP = 0; targetMinion = false;
+        if (withMinion)
+        {
+            minionMaxHP = Mathf.Max(5, Mathf.RoundToInt(data.maxHP / 3f));
+            minionHP = minionMaxHP;
+            int totalDamage = 0, attacks = 0;
+            foreach (var m in data.moves) if (m.damage > 0) { totalDamage += m.damage * m.hits; attacks++; }
+            minionDamage = Mathf.Max(1, Mathf.RoundToInt(attacks > 0 ? totalDamage / (float)attacks / 2f : 2f));
+            minionVisual = new GameObject("Minion_" + L.T(data.enemyName));
+            minionVisual.transform.position = enemyVisual.transform.position + new Vector3(2.4f, data.flying ? -1.2f : -1.0f, 0);
+            var minionSprite = new GameObject("Sprite");
+            minionSprite.transform.SetParent(minionVisual.transform, false);
+            minionRenderer = minionSprite.AddComponent<SpriteRenderer>();
+            minionRenderer.sortingOrder = 3;
+            minionRenderer.sprite = enemyRenderer.sprite;
+            minionVisual.transform.localScale = enemyVisual.transform.localScale * 0.5f;
+            if (data.flying) minionSprite.AddComponent<HoverBob>();
+        }
+
         if (ui == null) ui = CombatUI.Create(this);
         ui.Show();
-        LastEvent = $"{enemy.enemyName} появляется!";
+        LastEvent = L.F("{0} появляется!", L.T(enemy.enemyName));
         ChooseNextMove();
         StartPlayerTurn();
     }
@@ -285,15 +370,15 @@ public class CombatManager : MonoBehaviour
         passiveStrikeReady = false;
         momentumThresholdCut = 0;
         retaliationMomentum = 0;
-        if (pendingMomentum > 0) { GainMomentum(pendingMomentum, "Возмездие"); pendingMomentum = 0; }
+        if (pendingMomentum > 0) { GainMomentum(pendingMomentum, L.T("Возмездие")); pendingMomentum = 0; }
         blockLocked = blockLockedNextTurn;
         blockLockedNextTurn = false;
         attackLocked = attackLockedNextTurn;
         attackLockedNextTurn = false;
         moltenBurnDamage = 0;
         moltenBurnTurns = 0;
-        if (blockLocked) fx.FloatingText(PlayerHead, "Без защиты!", DebuffColor);
-        if (attackLocked) fx.FloatingText(PlayerHead, "Без атаки!", DebuffColor);
+        if (blockLocked) fx.FloatingText(PlayerHead, L.T("Без защиты!"), DebuffColor);
+        if (attackLocked) fx.FloatingText(PlayerHead, L.T("Без атаки!"), DebuffColor);
 
         if (poisonTurns > 0 && poisonDamage > 0)
         {
@@ -301,10 +386,10 @@ public class CombatManager : MonoBehaviour
             GameManager.Instance.TakeDamage(tick);
             poisonTurns--;
             if (poisonTurns == 0) poisonDamage = 0;
-            LastEvent += $"  Яд: −{tick} HP.";
+            LastEvent += L.F("  Яд: −{0} HP.", tick);
             fx.Flash(playerRenderer, playerPoisonColor, 0.5f);
             if (playerRenderer != null) fx.Shake(playerRenderer.transform, 0.1f, 0.3f);
-            fx.FloatingText(PlayerHead, $"-{tick} яд", playerPoisonColor);
+            fx.FloatingText(PlayerHead, L.F("-{0} яд", tick), playerPoisonColor);
             if (GameManager.Instance.currentHP <= 0)
             {
                 Lose();
@@ -316,7 +401,7 @@ public class CombatManager : MonoBehaviour
         {
             enemyBlock += currentMove.block;
             fx.Flash(enemyRenderer, BlockColor);
-            fx.FloatingText(EnemyCenter, $"+{currentMove.block} блок", BlockColor);
+            fx.FloatingText(EnemyCenter, L.F("+{0} блок", currentMove.block), BlockColor);
         }
         // Если враг собирается уйти под воду — он уже там (защита ведь уже действует)
         if (currentMove != null && currentMove.submerge && !enemyHidden)
@@ -381,12 +466,12 @@ public class CombatManager : MonoBehaviour
     public string WhyCannotPlay(CardData card)
     {
         if (!combatActive) return "";
-        if (enemyActing) return "Ход врага";
-        if (card.unplayable) return "Нельзя разыграть";
-        if (blockLocked && card.IsDefense) return "Без защиты в этот ход";
-        if (attackLocked && card.IsAttack) return "Без атаки в этот ход";
-        if (CardsLeftThisTurn == 0) return "Карты на этот ход закончились";
-        if (BaseCardsLeft == 0 && !card.IsAttack) return "Связка: только атака";
+        if (enemyActing) return L.T("Ход врага");
+        if (card.unplayable) return L.T("Нельзя разыграть");
+        if (blockLocked && card.IsDefense) return L.T("Без защиты в этот ход");
+        if (attackLocked && card.IsAttack) return L.T("Без атаки в этот ход");
+        if (CardsLeftThisTurn == 0) return L.T("Карты на этот ход закончились");
+        if (BaseCardsLeft == 0 && !card.IsAttack) return L.T("Связка: только атака");
         return "";
     }
 
@@ -407,7 +492,7 @@ public class CombatManager : MonoBehaviour
         ui.NotifyCardPlayed(card);
         ApplyCardEffect(card);
 
-        if (enemyHP <= 0)
+        if (EnemyDown())
         {
             Win();
             return;
@@ -456,30 +541,28 @@ public class CombatManager : MonoBehaviour
                 {
                     int totalDamage = 0, totalAbsorbed = 0;
                     var hitLog = new List<int>();
+                    var hitRenderer = TargetRenderer; var hitTransform = TargetTransform; var hitCenter = TargetCenter;
                     for (int i = 0; i < effect.hits; i++)
                     {
-                        int absorbed = Mathf.Min(enemyBlock, effect.value);
-                        int damage = effect.value - absorbed;
-                        enemyBlock -= absorbed;
-                        enemyHP = Mathf.Max(0, enemyHP - damage);
+                        int damage = HitTarget(effect.value, false, out int absorbed);
                         totalDamage += damage;
                         totalAbsorbed += absorbed;
                         hitLog.Add(damage);
                     }
-                    string entry = $"{totalDamage} урона";
-                    if (totalAbsorbed > 0) entry += $" (блок поглотил {totalAbsorbed})";
+                    string entry = L.F("{0} урона", totalDamage);
+                    if (totalAbsorbed > 0) entry += L.F(" (блок поглотил {0})", totalAbsorbed);
                     log.Add(entry);
-                    fx.Flash(enemyRenderer, DamageColor);
-                    fx.Shake(enemyVisual.transform);
-                    if (effect.hits > 1) StartCoroutine(HitPopups(hitLog));
-                    else fx.FloatingText(EnemyCenter, totalDamage > 0 ? $"-{totalDamage}" : "Блок!", totalDamage > 0 ? DamageColor : BlockColor);
+                    fx.Flash(hitRenderer, DamageColor);
+                    if (hitTransform != null) fx.Shake(hitTransform);
+                    if (effect.hits > 1) StartCoroutine(HitPopups(hitLog, hitCenter, hitTransform));
+                    else fx.FloatingText(hitCenter, totalDamage > 0 ? $"-{totalDamage}" : L.T("Блок!"), totalDamage > 0 ? DamageColor : BlockColor);
                     break;
                 }
                 case CardEffectType.Block:
                     playerBlock += effect.value;
-                    log.Add($"+{effect.value} блока");
+                    log.Add(L.F("+{0} блока", effect.value));
                     fx.Flash(playerRenderer, BlockColor);
-                    fx.FloatingText(PlayerHead, $"+{effect.value} блок", BlockColor);
+                    fx.FloatingText(PlayerHead, L.F("+{0} блок", effect.value), BlockColor);
                     break;
                 case CardEffectType.Heal:
                     GameManager.Instance.Heal(effect.value);
@@ -490,125 +573,134 @@ public class CombatManager : MonoBehaviour
                 case CardEffectType.PoisonEnemy:
                     enemyPoisonDamage = Mathf.Max(enemyPoisonDamage, effect.value);
                     enemyPoisonTurns += effect.turns;
-                    log.Add($"яд {effect.value}×{effect.turns}");
+                    log.Add(L.F("яд {0}×{1}", effect.value, effect.turns));
                     fx.Flash(enemyRenderer, PoisonColor);
-                    fx.FloatingText(EnemyCenter, "Яд!", PoisonColor);
+                    fx.FloatingText(EnemyCenter, L.T("Яд!"), PoisonColor);
                     break;
                 case CardEffectType.WeakenEnemy:
                     enemyWeakAmount = Mathf.Max(enemyWeakAmount, effect.value);
                     enemyWeakTurns += effect.turns;
-                    log.Add($"враг ослаблен −{effect.value} ({effect.turns} х.)");
+                    log.Add(L.F("враг ослаблен −{0} ({1} х.)", effect.value, effect.turns));
                     fx.Flash(enemyRenderer, DebuffColor);
-                    fx.FloatingText(EnemyCenter, "Ослаблен!", DebuffColor);
+                    fx.FloatingText(EnemyCenter, L.T("Ослаблен!"), DebuffColor);
                     break;
                 case CardEffectType.BurnEnemy:
                     enemyBurnDamage = Mathf.Max(enemyBurnDamage, effect.value);
                     enemyBurnTurns += effect.turns;
-                    log.Add($"горение {effect.value}×{effect.turns}");
+                    log.Add(L.F("горение {0}×{1}", effect.value, effect.turns));
                     fx.Flash(enemyRenderer, BurnColor);
-                    fx.FloatingText(EnemyCenter, "Горит!", BurnColor);
+                    fx.FloatingText(EnemyCenter, L.T("Горит!"), BurnColor);
                     break;
                 case CardEffectType.PierceDamage:
-                    enemyHP = Mathf.Max(0, enemyHP - effect.value);
-                    log.Add($"{effect.value} урона сквозь блок");
-                    fx.Flash(enemyRenderer, DamageColor);
-                    fx.Shake(enemyVisual.transform);
-                    fx.FloatingText(EnemyCenter, $"-{effect.value}", DamageColor);
+                {
+                    var pr = TargetRenderer; var pt = TargetTransform; var pc = TargetCenter;
+                    HitTarget(effect.value, true, out _);
+                    log.Add(L.F("{0} урона сквозь блок", effect.value));
+                    fx.Flash(pr, DamageColor);
+                    if (pt != null) fx.Shake(pt);
+                    fx.FloatingText(pc, $"-{effect.value}", DamageColor);
                     break;
+                }
                 case CardEffectType.Thorns:
                     playerThorns += effect.value;
-                    log.Add($"шипы {effect.value}");
+                    log.Add(L.F("шипы {0}", effect.value));
                     fx.Flash(playerRenderer, BlockColor);
-                    fx.FloatingText(PlayerHead, $"Шипы {playerThorns}", BlockColor);
+                    fx.FloatingText(PlayerHead, L.F("Шипы {0}", playerThorns), BlockColor);
                     break;
                 case CardEffectType.SelfDamage:
                     GameManager.Instance.TakeDamage(effect.value);
-                    log.Add($"−{effect.value} HP себе");
+                    log.Add(L.F("−{0} HP себе", effect.value));
                     fx.Flash(playerRenderer, DamageColor);
                     fx.FloatingText(PlayerHead, $"-{effect.value}", DamageColor);
                     break;
                 case CardEffectType.NoBlockNextTurn:
                     blockLockedNextTurn = true;
-                    log.Add("без защиты в след. ход");
+                    log.Add(L.T("без защиты в след. ход"));
                     break;
                 case CardEffectType.NoAttackNextTurn:
                     attackLockedNextTurn = true;
-                    log.Add("без атаки в след. ход");
+                    log.Add(L.T("без атаки в след. ход"));
                     break;
                 case CardEffectType.Rage:
                     rageTurnsLeft += effect.value; // копии Ярости складываются
-                    log.Add($"ярость на {effect.value} хода");
+                    log.Add(L.F("ярость на {0} хода", effect.value));
                     fx.Flash(playerRenderer, DamageColor);
                     if (playerRenderer != null) fx.Shake(playerRenderer.transform, 0.12f, 0.35f);
-                    fx.FloatingText(PlayerHead, "ЯРОСТЬ!", DamageColor);
+                    fx.FloatingText(PlayerHead, L.T("ЯРОСТЬ!"), DamageColor);
                     break;
                 case CardEffectType.MoltenGuard:
                     moltenBurnDamage = Mathf.Max(moltenBurnDamage, effect.value);
                     moltenBurnTurns = Mathf.Max(moltenBurnTurns, effect.turns);
-                    log.Add("раскалённая броня");
+                    log.Add(L.T("раскалённая броня"));
                     fx.Flash(playerRenderer, BurnColor);
-                    fx.FloatingText(PlayerHead, "Раскалена!", BurnColor);
+                    fx.FloatingText(PlayerHead, L.T("Раскалена!"), BurnColor);
                     break;
                 case CardEffectType.Momentum:
-                    log.Add($"+{effect.value} Замах");
-                    GainMomentum(effect.value, card.cardName);
+                    log.Add(L.F("+{0} Замах", effect.value));
+                    GainMomentum(effect.value, L.T(card.cardName));
                     break;
                 case CardEffectType.ConsumeMomentum:
                 {
                     int taken = Mathf.Min(momentum, effect.value);
                     momentum -= taken;
-                    log.Add(taken > 0 ? $"−{taken} Замах" : "Замаха нет");
+                    log.Add(taken > 0 ? L.F("−{0} Замах", taken) : L.T("Замаха нет"));
                     break;
                 }
                 case CardEffectType.MomentumThreshold:
                     momentumThresholdCut += effect.value;
-                    log.Add($"порог удара {MomentumThreshold}");
-                    fx.FloatingText(PlayerHead, $"Удар на {MomentumThreshold}!", MomentumColor);
+                    log.Add(L.F("порог удара {0}", MomentumThreshold));
+                    fx.FloatingText(PlayerHead, L.F("Удар на {0}!", MomentumThreshold), MomentumColor);
                     break;
                 case CardEffectType.PassiveStrikeBonus:
                     passiveStrikeBonus += effect.value;
-                    log.Add($"след. пасс. удар +{effect.value}");
-                    fx.FloatingText(PlayerHead, $"Сила +{passiveStrikeBonus}", MomentumColor);
+                    log.Add(L.F("след. пасс. удар +{0}", effect.value));
+                    fx.FloatingText(PlayerHead, L.F("Сила +{0}", passiveStrikeBonus), MomentumColor);
                     break;
                 case CardEffectType.Combo:
                     comboAttack = true;
-                    log.Add("связка");
-                    fx.FloatingText(PlayerHead, "Связка!", MomentumColor);
+                    log.Add(L.T("связка"));
+                    fx.FloatingText(PlayerHead, L.T("Связка!"), MomentumColor);
                     break;
                 case CardEffectType.Retaliation:
                     retaliationMomentum += effect.value;
-                    log.Add($"возмездие +{effect.value}");
+                    log.Add(L.F("возмездие +{0}", effect.value));
                     break;
                 case CardEffectType.Execute:
-                    if (enemyHP > 0 && enemyHP * 100 <= enemy.maxHP * effect.value)
+                    if (TargetIsMinion && minionHP > 0 && minionHP * 100 <= minionMaxHP * effect.value)
+                    {
+                        HitTarget(minionHP, true, out _);
+                        log.Add(L.T("казнь"));
+                        break;
+                    }
+                    if (!TargetIsMinion && enemyHP > 0 && enemyHP * 100 <= enemy.maxHP * effect.value)
                     {
                         enemyHP = 0;
-                        log.Add("казнь");
+                        log.Add(L.T("казнь"));
                         fx.Flash(enemyRenderer, DamageColor);
                         fx.Shake(enemyVisual.transform, 0.3f, 0.4f);
-                        fx.FloatingText(EnemyCenter, "КАЗНЬ!", DamageColor);
+                        fx.FloatingText(EnemyCenter, L.T("КАЗНЬ!"), DamageColor);
                     }
                     break;
                 case CardEffectType.Cleanse:
-                    if (poisonTurns > 0) { poisonTurns = 0; poisonDamage = 0; log.Add("яд снят"); }
-                    else if (nextHandPenalty > 0) { nextHandPenalty = 0; log.Add("ослабление снято"); }
-                    else log.Add("нечего снимать");
+                    if (poisonTurns > 0) { poisonTurns = 0; poisonDamage = 0; log.Add(L.T("яд снят")); }
+                    else if (nextHandPenalty > 0) { nextHandPenalty = 0; log.Add(L.T("ослабление снято")); }
+                    else log.Add(L.T("нечего снимать"));
                     fx.Flash(playerRenderer, HealColor);
-                    fx.FloatingText(PlayerHead, "Очищение", HealColor);
+                    fx.FloatingText(PlayerHead, L.T("Очищение"), HealColor);
                     break;
             }
         }
-        LastEvent = $"«{card.cardName}»: {string.Join(", ", log)}";
+        LastEvent = $"«{L.T(card.cardName)}»: {string.Join(", ", log)}";
         if (UsesMomentum && momentum >= MomentumThreshold) passiveStrikeReady = true;
     }
 
     // Несколько ударов одной картой — по цифре на каждый, с паузой
-    IEnumerator HitPopups(List<int> hits)
+    IEnumerator HitPopups(List<int> hits, Vector3 center, Transform shake)
     {
         foreach (var dmg in hits)
         {
-            fx.FloatingText(EnemyCenter + new Vector3(Random.Range(-0.4f, 0.4f), 0, 0), dmg > 0 ? $"-{dmg}" : "Блок!", dmg > 0 ? DamageColor : BlockColor);
-            if (dmg > 0) fx.Shake(enemyVisual.transform, 0.1f, 0.15f);
+            fx.FloatingText(center + new Vector3(Random.Range(-0.4f, 0.4f), 0, 0), dmg > 0 ? $"-{dmg}" : L.T("Блок!"), dmg > 0 ? DamageColor : BlockColor);
+            if (dmg > 0 && shake != null) fx.Shake(shake, 0.1f, 0.15f);
             yield return new WaitForSeconds(0.28f);
         }
     }
@@ -617,7 +709,7 @@ public class CombatManager : MonoBehaviour
     {
         if (!UsesMomentum || amount <= 0) return;
         momentum += amount; // лишнее не пропадает: после молнии остаток переносится
-        fx.FloatingText(PlayerHead, $"Замах {Mathf.Min(momentum, MomentumMax)}/{MomentumMax}", MomentumColor);
+        fx.FloatingText(PlayerHead, L.F("Замах {0}/{1}", Mathf.Min(momentum, MomentumMax), MomentumMax), MomentumColor);
         ui.Refresh();
     }
 
@@ -632,16 +724,17 @@ public class CombatManager : MonoBehaviour
         int damage = (GameManager.Instance.selectedCharacter != null ? GameManager.Instance.selectedCharacter.passiveStrikeDamage : 6) + passiveStrikeBonus;
         passiveStrikeBonus = 0;
         momentum = Mathf.Max(0, momentum - MomentumThreshold); // 2 + 2 → молния, остаётся 1
-        yield return fx.Lightning(EnemyCenter, 0.35f);
-        enemyHP = Mathf.Max(0, enemyHP - damage);
-        fx.Flash(enemyRenderer, MomentumColor);
-        fx.Shake(enemyVisual.transform, 0.25f, 0.35f);
-        fx.FloatingText(EnemyCenter, $"⚡ -{damage}", MomentumColor);
-        LastEvent = $"Замах! Молния бьёт на {damage}.";
+        var lr = TargetRenderer; var lt = TargetTransform; var lc = TargetCenter;
+        yield return fx.Lightning(lc, 0.35f);
+        HitTarget(damage, true, out _);
+        fx.Flash(lr, MomentumColor);
+        if (lt != null) fx.Shake(lt, 0.25f, 0.35f);
+        fx.FloatingText(lc, $"⚡ -{damage}", MomentumColor);
+        LastEvent = L.F("Замах! Молния бьёт на {0}.", damage);
         yield return new WaitForSeconds(0.4f);
         enemyActing = false;
         strikeRunning = false;
-        if (enemyHP <= 0) { Win(); yield break; }
+        if (EnemyDown()) { Win(); yield break; }
         ui.Refresh();
         if (CardsLeftThisTurn == 0 || !hand.Exists(CanPlay)) StartCoroutine(AutoEndTurn());
     }
@@ -673,13 +766,13 @@ public class CombatManager : MonoBehaviour
             enemyHP = Mathf.Max(0, enemyHP - tick);
             enemyPoisonTurns--;
             if (enemyPoisonTurns == 0) enemyPoisonDamage = 0;
-            LastEvent = $"Яд: {enemy.enemyName} теряет {tick} HP.";
+            LastEvent = L.F("Яд: {0} теряет {1} HP.", L.T(enemy.enemyName), tick);
             fx.Flash(enemyRenderer, PoisonColor, 0.5f);
             fx.Shake(enemyVisual.transform, 0.1f, 0.3f);
-            fx.FloatingText(EnemyCenter, $"-{tick} яд", PoisonColor);
+            fx.FloatingText(EnemyCenter, L.F("-{0} яд", tick), PoisonColor);
             ui.Refresh();
             yield return new WaitForSeconds(0.6f);
-            if (enemyHP <= 0)
+            if (EnemyDown())
             {
                 enemyActing = false;
                 Win();
@@ -693,13 +786,13 @@ public class CombatManager : MonoBehaviour
             enemyHP = Mathf.Max(0, enemyHP - tick);
             enemyBurnTurns--;
             if (enemyBurnTurns == 0) enemyBurnDamage = 0;
-            LastEvent = $"Горение: {enemy.enemyName} теряет {tick} HP.";
+            LastEvent = L.F("Горение: {0} теряет {1} HP.", L.T(enemy.enemyName), tick);
             fx.Flash(enemyRenderer, BurnColor, 0.5f);
             fx.Shake(enemyVisual.transform, 0.1f, 0.3f);
-            fx.FloatingText(EnemyCenter, $"-{tick} огонь", BurnColor);
+            fx.FloatingText(EnemyCenter, L.F("-{0} огонь", tick), BurnColor);
             ui.Refresh();
             yield return new WaitForSeconds(0.6f);
-            if (enemyHP <= 0)
+            if (EnemyDown())
             {
                 enemyActing = false;
                 Win();
@@ -709,13 +802,13 @@ public class CombatManager : MonoBehaviour
 
         if (move == null)
         {
-            LastEvent = $"{enemy.enemyName} ничего не делает.";
+            LastEvent = L.F("{0} ничего не делает.", L.T(enemy.enemyName));
             ui.Refresh();
             yield return new WaitForSeconds(0.6f);
         }
         else
         {
-            LastEvent = $"{enemy.enemyName} использует «{move.moveName}»";
+            LastEvent = L.F("{0} использует «{1}»", L.T(enemy.enemyName), L.T(move.moveName));
             ui.Refresh();
             yield return new WaitForSeconds(0.5f);
 
@@ -733,7 +826,7 @@ public class CombatManager : MonoBehaviour
             if (!hasEffect)
             {
                 yield return fx.Flutter(enemyVisual.transform, 1.1f);
-                LastEvent = $"{enemy.enemyName} ничего не делает.";
+                LastEvent = L.F("{0} ничего не делает.", L.T(enemy.enemyName));
                 ui.Refresh();
                 yield return new WaitForSeconds(0.2f);
             }
@@ -752,10 +845,10 @@ public class CombatManager : MonoBehaviour
                     playerBlock -= absorbed;
                     GameManager.Instance.TakeDamage(damage);
 
-                    LastEvent = $"{enemy.enemyName} атакует на {move.damage + damageBonus}.";
-                    if (weakened > 0) LastEvent += $" Ослабление сняло {weakened}.";
-                    if (absorbed > 0) LastEvent += $" Блок поглотил {absorbed}.";
-                    LastEvent += damage > 0 ? $" Ты получил {damage} урона." : " Урон не прошёл.";
+                    LastEvent = L.F("{0} атакует на {1}.", L.T(enemy.enemyName), move.damage + damageBonus);
+                    if (weakened > 0) LastEvent += L.F(" Ослабление сняло {0}.", weakened);
+                    if (absorbed > 0) LastEvent += L.F(" Блок поглотил {0}.", absorbed);
+                    LastEvent += damage > 0 ? L.F(" Ты получил {0} урона.", damage) : L.T(" Урон не прошёл.");
 
                     if (damage > 0)
                     {
@@ -768,13 +861,13 @@ public class CombatManager : MonoBehaviour
                             enemyBurnDamage = Mathf.Max(enemyBurnDamage, moltenBurnDamage);
                             enemyBurnTurns += moltenBurnTurns;
                             fx.Flash(enemyRenderer, BurnColor);
-                            fx.FloatingText(EnemyCenter, "Горит!", BurnColor);
+                            fx.FloatingText(EnemyCenter, L.T("Горит!"), BurnColor);
                         }
                     }
                     else
                     {
                         fx.Flash(playerRenderer, BlockColor);
-                        fx.FloatingText(PlayerHead, "Блок!", BlockColor);
+                        fx.FloatingText(PlayerHead, L.T("Блок!"), BlockColor);
                     }
                     ui.Refresh();
                     yield return new WaitForSeconds(move.hits > 1 ? 0.25f : 0.5f);
@@ -784,13 +877,13 @@ public class CombatManager : MonoBehaviour
                 if (playerThorns > 0 && GameManager.Instance.currentHP > 0)
                 {
                     enemyHP = Mathf.Max(0, enemyHP - playerThorns);
-                    LastEvent = $"Шипы: {enemy.enemyName} получает {playerThorns} урона.";
+                    LastEvent = L.F("Шипы: {0} получает {1} урона.", L.T(enemy.enemyName), playerThorns);
                     fx.Flash(enemyRenderer, DamageColor);
                     fx.Shake(enemyVisual.transform);
-                    fx.FloatingText(EnemyCenter, $"-{playerThorns} шипы", DamageColor);
+                    fx.FloatingText(EnemyCenter, L.F("-{0} шипы", playerThorns), DamageColor);
                     ui.Refresh();
                     yield return new WaitForSeconds(0.5f);
-                    if (enemyHP <= 0)
+                    if (EnemyDown())
                     {
                         enemyActing = false;
                         Win();
@@ -804,8 +897,8 @@ public class CombatManager : MonoBehaviour
                 poisonDamage = Mathf.Max(poisonDamage, move.poisonDamage);
                 poisonTurns += move.poisonTurns;
                 playerPoisonColor = move.poisonColor;
-                string poisonName = string.IsNullOrEmpty(move.poisonLabel) ? "Яд" : move.poisonLabel;
-                LastEvent = $"{poisonName}: {move.poisonDamage} урона в начале хода, {move.poisonTurns} х.";
+                string poisonName = string.IsNullOrEmpty(L.T(move.poisonLabel)) ? L.T("Яд") : L.T(move.poisonLabel);
+                LastEvent = L.F("{0}: {1} урона в начале хода, {2} х.", poisonName, move.poisonDamage, move.poisonTurns);
                 fx.Flash(playerRenderer, move.poisonColor);
                 fx.FloatingText(PlayerHead, poisonName + "!", move.poisonColor);
                 ui.Refresh();
@@ -831,8 +924,8 @@ public class CombatManager : MonoBehaviour
                 }
                 if (corrupted > 0)
                 {
-                    LastEvent = $"{enemy.enemyName} портит твои карты: {corrupted} карта заменена слабой до конца боя.";
-                    fx.FloatingText(PlayerHead, corrupted > 1 ? $"Испорчено {corrupted} карты!" : "Карта испорчена!", DebuffColor);
+                    LastEvent = L.F("{0} портит твои карты: {1} карта заменена слабой до конца боя.", L.T(enemy.enemyName), corrupted);
+                    fx.FloatingText(PlayerHead, corrupted > 1 ? L.F("Испорчено {0} карты!", corrupted) : L.T("Карта испорчена!"), DebuffColor);
                     ui.Refresh();
                     yield return new WaitForSeconds(0.4f);
                 }
@@ -841,9 +934,9 @@ public class CombatManager : MonoBehaviour
             if (move.lockBlock)
             {
                 blockLockedNextTurn = true;
-                LastEvent = "Клешни держат щит: в следующий ход нельзя защищаться.";
+                LastEvent = L.T("Клешни держат щит: в следующий ход нельзя защищаться.");
                 fx.Flash(playerRenderer, DebuffColor);
-                fx.FloatingText(PlayerHead, "Без защиты!", DebuffColor);
+                fx.FloatingText(PlayerHead, L.T("Без защиты!"), DebuffColor);
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -851,9 +944,9 @@ public class CombatManager : MonoBehaviour
             if (move.handReduce > 0)
             {
                 nextHandPenalty += move.handReduce;
-                LastEvent = $"Ты ослаблен: в следующий ход на {move.handReduce} карту меньше.";
+                LastEvent = L.F("Ты ослаблен: в следующий ход на {0} карту меньше.", move.handReduce);
                 fx.Flash(playerRenderer, DebuffColor);
-                fx.FloatingText(PlayerHead, "Ослаблен!", DebuffColor);
+                fx.FloatingText(PlayerHead, L.T("Ослаблен!"), DebuffColor);
                 ui.Refresh();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -867,7 +960,7 @@ public class CombatManager : MonoBehaviour
                 yield return fx.Lunge(enemyVisual.transform, Vector3.down * 0.5f, 0.4f);
                 if (enemy.hiddenSprite != null) enemyRenderer.sprite = enemy.hiddenSprite;
             }
-            LastEvent = $"{enemy.enemyName} скрывается из виду.";
+            LastEvent = L.F("{0} скрывается из виду.", L.T(enemy.enemyName));
             ui.Refresh();
             yield return new WaitForSeconds(0.4f);
         }
@@ -875,6 +968,12 @@ public class CombatManager : MonoBehaviour
         {
             if (move.forceNextMove >= 0) forcedNextMove = move.forceNextMove;
             if (move.nextDamageBonus > 0) pendingDamageBonus += move.nextDamageBonus;
+        }
+
+        if (MinionAlive)
+        {
+            yield return MinionAttack();
+            if (GameManager.Instance.currentHP <= 0) { Lose(); yield break; }
         }
 
         if (enemyWeakTurns > 0) enemyWeakTurns--;
@@ -891,12 +990,91 @@ public class CombatManager : MonoBehaviour
         StartPlayerTurn();
     }
 
+    // Главный враг повержен? Если рядом жив малыш — он теряет половину здоровья и становится целью, бой продолжается.
+    bool EnemyDown()
+    {
+        if (enemyHP > 0) return false;
+        if (!MinionAlive) return true;
+        PromoteMinion();
+        return false;
+    }
+
+    void PromoteMinion()
+    {
+        minionPromoted = true;
+        targetMinion = false;
+        var old = enemyVisual;
+        var oldRenderer = enemyRenderer;
+        StartCoroutine(fx.FadeOut(oldRenderer, 0.6f));
+        Destroy(old, 0.7f);
+        fx.FloatingText(PlayerHead, L.F("{0} повержен!", L.T(enemy.enemyName)), DamageColor);
+
+        // Малыш становится главным: копия данных с ослабленными ходами
+        var copy = Instantiate(enemy);
+        copy.name = enemy.name;
+        copy.enemyName = enemy.enemyName;
+        copy.maxHP = minionMaxHP;
+        copy.moves = new List<EnemyMove>();
+        foreach (var m in enemy.moves)
+        {
+            var w = new EnemyMove
+            {
+                moveName = m.moveName, icon = m.icon, hits = m.hits, description = m.description,
+                damage = m.damage > 0 ? Mathf.Max(1, m.damage / 2) : 0,
+                block = m.block > 0 ? Mathf.Max(1, m.block / 2) : 0,
+                poisonDamage = m.poisonDamage > 0 ? Mathf.Max(1, m.poisonDamage / 2) : 0, poisonTurns = m.poisonTurns,
+                poisonLabel = m.poisonLabel, poisonColor = m.poisonColor,
+                handReduce = m.handReduce, corruptCards = m.corruptCards, lockBlock = m.lockBlock,
+                submerge = false, forceNextMove = -1, nextDamageBonus = 0
+            };
+            copy.moves.Add(w);
+        }
+        copy.hiddenSprite = null;
+        enemy = copy;
+        enemyHP = Mathf.Max(1, Mathf.CeilToInt(minionHP / 2f));
+        minionHP = 0;
+        enemyVisual = minionVisual;
+        enemyRenderer = minionRenderer;
+        minionVisual = null; minionRenderer = null;
+        enemyBlock = 0; enemyPoisonTurns = 0; enemyPoisonDamage = 0; enemyBurnTurns = 0; enemyBurnDamage = 0; enemyWeakTurns = 0; enemyWeakAmount = 0;
+        enemyHidden = false; forcedNextMove = -1; pendingDamageBonus = 0; moveIndex = -1;
+        fx.Flash(enemyRenderer, DamageColor, 0.5f);
+        fx.FloatingText(EnemyCenter, L.T("Остался один!"), DamageColor);
+        ChooseNextMove();
+        ui.Refresh();
+    }
+
+    // Удар малыша после хода главного врага
+    IEnumerator MinionAttack()
+    {
+        if (!MinionAlive) yield break;
+        yield return new WaitForSeconds(0.3f);
+        Vector3 toPlayer = (PlayerPos - minionVisual.transform.position).normalized * 1.0f;
+        yield return fx.Lunge(minionVisual.transform, toPlayer, 0.25f);
+        int weakened = Mathf.Min(EnemyWeakAmount, minionDamage);
+        int attack = minionDamage - weakened;
+        int absorbed = Mathf.Min(playerBlock, attack);
+        int damage = attack - absorbed;
+        playerBlock -= absorbed;
+        GameManager.Instance.TakeDamage(damage);
+        LastEvent = L.F("Малыш кусает на {0}.", minionDamage);
+        if (damage > 0)
+        {
+            fx.Flash(playerRenderer, DamageColor);
+            if (playerRenderer != null) fx.Shake(playerRenderer.transform, 0.1f, 0.2f);
+            fx.FloatingText(PlayerHead, $"-{damage}", DamageColor);
+        }
+        else fx.FloatingText(PlayerHead, L.T("Блок!"), BlockColor);
+        ui.Refresh();
+        yield return new WaitForSeconds(0.4f);
+    }
+
     void Win()
     {
         combatActive = false;
         enemyActing = true;
         GameManager.Instance.OnCombatWon();
-        LastEvent = $"{enemy.enemyName} повержен!";
+        LastEvent = L.F("{0} повержен!", L.T(enemy.enemyName));
         ui.Refresh();
         StartCoroutine(WinRoutine());
     }
@@ -926,14 +1104,14 @@ public class CombatManager : MonoBehaviour
     void ShowFixedReward(CardData card)
     {
         GameManager.Instance.playerDeck.Add(card);
-        CardChoiceUI.Get().Show("Победа! Новая карта в колоде", new List<CardData> { card }, _ => OnRewardChosen(null), allowSkip: false);
+        CardChoiceUI.Get().Show(L.T("Победа! Новая карта в колоде"), new List<CardData> { card }, _ => OnRewardChosen(null), allowSkip: false);
     }
 
     void ShowUpgradeReward()
     {
         var gm = GameManager.Instance;
         DeckPickerUI.Get().Show(
-            "Победа! Усиль одну карту",
+            L.T("Победа! Усиль одну карту"),
             gm.playerDeck,
             null,
             card =>
@@ -943,7 +1121,7 @@ public class CombatManager : MonoBehaviour
                 if (bonus != null)
                 {
                     gm.playerDeck.Add(bonus);
-                    CardChoiceUI.Get().Show("Ярость просыпается. Новая карта в колоде", new List<CardData> { bonus }, _ => OnRewardChosen(null), allowSkip: false);
+                    CardChoiceUI.Get().Show(L.T("Ярость просыпается. Новая карта в колоде"), new List<CardData> { bonus }, _ => OnRewardChosen(null), allowSkip: false);
                 }
                 else OnRewardChosen(null);
             },
@@ -974,6 +1152,8 @@ public class CombatManager : MonoBehaviour
     void EndCombat()
     {
         if (enemyVisual != null) Destroy(enemyVisual);
+        if (minionVisual != null) Destroy(minionVisual);
+        minionVisual = null; minionHP = 0;
         ui.Hide();
         enemy = null;
         currentMove = null;

@@ -23,6 +23,7 @@ MonoBehaviour:
   playerPosition: {x: -1.3, y: -2.15, z: 0}
   overrideEnemyPosition: 1
   enemyPosition: {x: 3.8, y: -0.6, z: 0}
+  hasMinion: 1
   flying: 0
   randomMoves: 1
   moves:

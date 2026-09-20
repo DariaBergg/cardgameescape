@@ -1,0 +1,648 @@
+# Русский<TAB>English. \n — перенос строки.
+Нельзя разыграть	Unplayable
+Метка: {0} (+{1}% к шансу встречи)	Mark: {0} (+{1}% encounter chance)
+Нельзя разыграть. Занимает место в руке.	Unplayable. Takes up a slot in your hand.
+редкая	rare
+обычная	common
+\n<color=#ff9090>Нельзя удалить обычным способом.</color>	\n<color=#ff9090>Cannot be removed by normal means.</color>
+\n<color=#9fd8ff>Остаётся в руке, пока не разыграна.</color>	\n<color=#9fd8ff>Stays in hand until played.</color>
+\n<color=#9fd8ff>Один раз за бой.</color>	\n<color=#9fd8ff>Once per combat.</color>
+\n\n<color=#d9a6ff>{0}</color>\nКаждая такая карта в колоде повышает шанс, что за фиолетовой дверью окажется {1}.	\n\n<color=#d9a6ff>{0}</color>\nEvery such card in your deck raises the chance that {1} waits behind the purple door.
+Нанести {0} урона {1} раза.	Deal {0} damage {1} times.
+Нанести {0} урона.	Deal {0} damage.
+Получить {0} блока.	Gain {0} block.
+Восстановить {0} HP.	Restore {0} HP.
+Отравить врага: {0} урона в ход, {1} х.	Poison the enemy: {0} damage per turn for {1} turns.
+Ослабить врага на {0} ({1} х.).	Weaken the enemy by {0} ({1} turns).
+Поджечь врага: {0} урона в начале его хода, {1} х.	Set the enemy ablaze: {0} damage at the start of its turn for {1} turns.
+Нанести {0} урона, игнорируя блок.	Deal {0} damage, ignoring block.
+Если враг атакует в этот ход — он получает {0} урона.	If the enemy attacks this turn, it takes {0} damage.
+Снять с себя один отрицательный эффект.	Remove one negative effect from yourself.
+Получить {0} урона самому.	Take {0} damage yourself.
+В следующий ход нельзя играть защитные карты.	You cannot play defense cards next turn.
+В следующий ход нельзя играть атакующие карты.	You cannot play attack cards next turn.
+Если враг пробьёт блок и ранит тебя — он загорится: {0} урона в ход, {1} х.	If the enemy breaks your block and wounds you, it catches fire: {0} damage per turn for {1} turns.
+Ярость на {0} хода: можно играть по 2 карты за ход (включая этот).	Rage for {0} turns: play 2 cards per turn (including this one).
++{0} Замах.	+{0} Momentum.
+Забирает {0} Замах.	Consumes {0} Momentum.
+В этот ход пассивный удар срабатывает на {0} Замах раньше.	This turn the passive strike triggers {0} Momentum earlier.
+Следующий пассивный удар наносит +{0} урона.	The next passive strike deals +{0} damage.
+Связка: после этой карты можно сразу сыграть ещё одну карту атаки.	Combo: after this card you may immediately play one more attack card.
+Если враг пробьёт блок и ранит тебя — +{0} Замах в начале следующего хода.	If the enemy breaks your block and wounds you: +{0} Momentum at the start of your next turn.
+Если после удара у врага останется меньше {0}% HP — добить.	If the enemy is left below {0}% HP after the hit, execute it.
+Если враг горит — {0} вместо этого.	If the enemy is burning, {0} instead.
+Если у врага есть блок — {0} вместо этого.	If the enemy has block, {0} instead.
+Если враг готовит атаку — {0}	If the enemy is preparing an attack, {0}
+Если у врага меньше половины HP — {0} вместо этого.	If the enemy is below half HP, {0} instead.
+{0} урона ×{1}	{0} damage ×{1}
+{0} урона	{0} damage
+{0} блока	{0} block
+яд {0}×{1}	poison {0}×{1}
+ослабить −{0} ({1} х.)	weaken −{0} ({1} t.)
+горение {0}×{1}	burn {0}×{1}
+{0} сквозь блок	{0} through block
+шипы {0}	thorns {0}
+снять эффект	cleanse
+−{0} HP себе	−{0} HP to self
+без защиты в след. ход	no defense next turn
+без атаки в след. ход	no attack next turn
+пробил блок — горит {0}×{1}	broke block — burns {0}×{1}
+2 карты за ход, {0} хода	2 cards per turn, {0} turns
++{0} Замах	+{0} Momentum
+−{0} Замах	−{0} Momentum
+порог удара −{0}	strike threshold −{0}
+пасс. удар +{0}	passive strike +{0}
+связка: ещё атака	combo: one more attack
+ранят — +{0} Замах	wounded — +{0} Momentum
+< {0}% HP — добить	< {0}% HP — execute
+если горит:	if burning:
+если < ½ HP:	if < ½ HP:
+если враг в блоке:	if enemy blocks:
+если враг атакует:	if enemy attacks:
+Яд	Poison
+<b>Яд</b>\n−{0} HP в начале каждого твоего хода. Осталось ходов: {1}.	<b>Poison</b>\n−{0} HP at the start of each of your turns. Turns left: {1}.
+Ярость	Rage
+<b>Ярость</b>\nМожно играть по 2 карты за ход. Осталось ходов: {0}.	<b>Rage</b>\nYou may play 2 cards per turn. Turns left: {0}.
+Шипы	Thorns
+<b>Шипы</b>\nЕсли враг атакует в этот ход — получает {0} урона.	<b>Thorns</b>\nIf the enemy attacks this turn, it takes {0} damage.
+Жар	Heat
+<b>Раскалённая броня</b>\nЕсли враг пробьёт блок и ранит тебя — он загорится: {0} урона в ход, {1} х.	<b>Molten Armor</b>\nIf the enemy breaks your block and wounds you, it catches fire: {0} damage per turn for {1} turns.
+Без защиты	No defense
+<b>Без защиты</b>\nВ этот ход нельзя играть защитные карты.	<b>No defense</b>\nYou cannot play defense cards this turn.
+<b>Без защиты</b>\nВ следующий ход нельзя играть защитные карты.	<b>No defense</b>\nYou cannot play defense cards next turn.
+Без атаки	No attack
+<b>Без атаки</b>\nВ этот ход нельзя играть атакующие карты.	<b>No attack</b>\nYou cannot play attack cards this turn.
+<b>Без атаки</b>\nВ следующий ход нельзя играть атакующие карты.	<b>No attack</b>\nYou cannot play attack cards next turn.
+−карта	−card
+<b>Ослабление</b>\nВ следующий ход враг утащит {0} карт(у) из руки.	<b>Weakened</b>\nNext turn the enemy will steal {0} card(s) from your hand.
+Связка	Combo
+<b>Связка</b>\nМожно сыграть ещё одну карту атаки в этот ход.	<b>Combo</b>\nYou may play one more attack card this turn.
+Возмездие	Retaliation
+<b>Возмездие</b>\nЕсли враг пробьёт блок и ранит тебя — +{0} Замах в начале следующего хода.	<b>Retaliation</b>\nIf the enemy breaks your block and wounds you: +{0} Momentum at the start of your next turn.
+<b>Яд</b>\nВраг теряет {0} HP в начале своего хода. Осталось ходов: {1}.	<b>Poison</b>\nThe enemy loses {0} HP at the start of its turn. Turns left: {1}.
+Горит	Burning
+<b>Горение</b>\nВраг теряет {0} HP в начале своего хода. Осталось ходов: {1}.	<b>Burning</b>\nThe enemy loses {0} HP at the start of its turn. Turns left: {1}.
+Слаб	Weak
+<b>Ослаблен</b>\nАтаки врага слабее на {0}. Осталось ходов: {1}.	<b>Weakened</b>\nThe enemy's attacks are weaker by {0}. Turns left: {1}.
+Скрыт	Hidden
+<b>Скрылся</b>\nВраг ушёл под воду / рассыпался. Вынырнет на своём ходу.	<b>Hidden</b>\nThe enemy dove underwater / fell apart. It will resurface on its turn.
+Блок {0}	Block {0}
+Яд {0}×{1}	Poison {0}×{1}
+Ослаблен −{0} ({1} х.)	Weakened −{0} ({1} t.)
+Горит {0}×{1}	Burning {0}×{1}
+Шипы {0}	Thorns {0}
+Нельзя защищаться в этот ход	Cannot defend this turn
+В следующий ход нельзя защищаться	Cannot defend next turn
+Нельзя атаковать в этот ход	Cannot attack this turn
+В следующий ход нельзя атаковать	Cannot attack next turn
+Раскалённая броня: пробьёт блок — загорится {0}×{1}	Molten Armor: breaks block — burns {0}×{1}
+Ярость: 2 карты за ход, ещё {0} х.	Rage: 2 cards per turn, {0} more turns
+Связка: можно сыграть ещё одну атаку	Combo: you may play one more attack
+Возмездие: ранят — +{0} Замах	Retaliation: wounded — +{0} Momentum
+Яд: {0} урона в начале хода, ещё {1} х.	Poison: {0} damage at the start of the turn, {1} more turns
+Ослаблен: −{0} карта в следующий ход	Weakened: −{0} card next turn
+{0} появляется!	{0} appears!
+Без защиты!	No defense!
+Без атаки!	No attack!
+  Яд: −{0} HP.	  Poison: −{0} HP.
+-{0} яд	-{0} poison
++{0} блок	+{0} block
+Ход врага	Enemy's turn
+Без защиты в этот ход	No defense this turn
+Без атаки в этот ход	No attack this turn
+Карты на этот ход закончились	No card plays left this turn
+Связка: только атака	Combo: attacks only
+ (блок поглотил {0})	 (block absorbed {0})
+Блок!	Blocked!
++{0} блока	+{0} block
+Яд!	Poisoned!
+враг ослаблен −{0} ({1} х.)	enemy weakened −{0} ({1} t.)
+Ослаблен!	Weakened!
+Горит!	Burning!
+{0} урона сквозь блок	{0} damage through block
+ярость на {0} хода	rage for {0} turns
+ЯРОСТЬ!	RAGE!
+раскалённая броня	molten armor
+Раскалена!	Red-hot!
+Замаха нет	No Momentum
+порог удара {0}	strike threshold {0}
+Удар на {0}!	Strike at {0}!
+след. пасс. удар +{0}	next passive strike +{0}
+Сила +{0}	Power +{0}
+связка	combo
+Связка!	Combo!
+возмездие +{0}	retaliation +{0}
+казнь	execution
+КАЗНЬ!	EXECUTED!
+яд снят	poison removed
+ослабление снято	weakness removed
+нечего снимать	nothing to cleanse
+Очищение	Cleanse
+Замах {0}/{1}	Momentum {0}/{1}
+Замах! Молния бьёт на {0}.	Momentum! Lightning strikes for {0}.
+Яд: {0} теряет {1} HP.	Poison: {0} loses {1} HP.
+Горение: {0} теряет {1} HP.	Burning: {0} loses {1} HP.
+-{0} огонь	-{0} fire
+{0} ничего не делает.	{0} does nothing.
+{0} использует «{1}»	{0} uses "{1}"
+{0} атакует на {1}.	{0} attacks for {1}.
+ Ослабление сняло {0}.	 Weakness removed {0}.
+ Блок поглотил {0}.	 Block absorbed {0}.
+ Ты получил {0} урона.	 You took {0} damage.
+ Урон не прошёл.	 No damage taken.
+Шипы: {0} получает {1} урона.	Thorns: {0} takes {1} damage.
+-{0} шипы	-{0} thorns
+{0}: {1} урона в начале хода, {2} х.	{0}: {1} damage at the start of the turn, {2} turns.
+{0} портит твои карты: {1} карта заменена слабой до конца боя.	{0} spoils your cards: {1} card replaced with a weak one until the end of combat.
+Испорчено {0} карты!	{0} cards spoiled!
+Карта испорчена!	Card spoiled!
+Клешни держат щит: в следующий ход нельзя защищаться.	Claws hold your shield: you cannot defend next turn.
+Ты ослаблен: в следующий ход на {0} карту меньше.	You are weakened: {0} fewer card next turn.
+{0} скрывается из виду.	{0} vanishes from sight.
+{0} повержен!	{0} is defeated!
+Победа! Новая карта в колоде	Victory! A new card joins your deck
+Победа! Усиль одну карту	Victory! Upgrade one card
+Ярость просыпается. Новая карта в колоде	Rage awakens. A new card joins your deck
+Атака {0}×{1}	Attack {0}×{1}
+Атака {0}	Attack {0}
+Защита {0}	Block {0}
+{0} {1}×{2}	{0} {1}×{2}
+−{0} карта	−{0} card
+портит {0} карты	spoils {0} cards
+портит карту	spoils a card
+Прячется	Hides
+Ничего	Nothing
+\n\n<color=#ff8080>Усиленный удар: +{0} урона.</color>	\n\n<color=#ff8080>Empowered strike: +{0} damage.</color>
+Кредит ({0}): расплата через {1} комн.	Loan ({0}): payment due in {1} rooms
+Залог ({0}): побед {1}/{2}, осталось {3} комн.	Pledge ({0}): wins {1}/{2}, {3} rooms left
+Залог ({0}): не лечиться, осталось {1} комн.	Pledge ({0}): no healing, {1} rooms left
+Дальше	Continue
+У стены сидит ящер в рваном плаще, прижимая руку к боку. Кровь тёмная, дыхание короткое.\n«Эй... подойди. Или не подходи. Мне уже всё равно.»	A lizardfolk in a torn cloak sits against the wall, pressing a hand to his side. The blood is dark, his breathing shallow.\n"Hey... come closer. Or don't. I no longer care."
+Помочь	Help
+: перевязать его рану, оторвав лоскут собственной чешуи. Он отблагодарит	: bind his wound with a strip torn from your own scales. He will repay you
+Пусто	Nothing
+Он выдыхает и суёт тебе в руку потёртую карту.\n«{0}. Мне она больше не пригодится.»	He exhales and presses a worn card into your hand.\n"{0}. I won't be needing it anymore."
+Обыскать	Search
+Забрать, что есть. 30% — он не так уж и ранен	Take what he has. 30% — he isn't as wounded as he looks
+Странник резко выпрямляется. Кровь на плаще — не его.	The wanderer straightens sharply. The blood on the cloak isn't his.
+ничего ценного	nothing of value
+В сумке — {0}. Странник не сопротивляется. Он просто смотрит.	In the bag: {0}. The wanderer doesn't resist. He just watches.
+Пройти мимо	Walk past
+В стене трещина шириной в ладонь. Из глубины тянет холодом, и что-то там блестит.	A crack as wide as a hand runs through the wall. Cold air drifts from the depths, and something glints inside.
+Протиснуться	Squeeze through
+: чешуя оставит кусочки на камне. Внутри — тайник	: your scales will leave pieces on the stone. There's a cache inside
+Ты протискиваешься, обдирая бока. Внутри — небольшой тайник.	You squeeze through, scraping your sides. Inside — a small cache.
+Выжечь проход	Burn a way through
+Дыхание расширит трещину. 50% — тайник, 50% — обвал: 	Your breath will widen the crack. 50% — a cache, 50% — a collapse:
+Камень трескается от жара и осыпается. Проход свободен — и тайник цел.	The stone cracks from the heat and crumbles. The way is clear — and the cache is intact.
+Стена дрожит и обрушивается. Ты едва успеваешь отскочить; тайник погребён под камнями.	The wall shudders and collapses. You barely leap back; the cache is buried under rubble.
+Уйти	Leave
+Тайник: выбери карту	Cache: choose a card
+\nТы забираешь «{0}».	\nYou take "{0}".
+\nТы ничего не берёшь.	\nYou take nothing.
+Посреди комнаты стоит зеркало из чёрного стекла. Отражение смотрит на тебя, но не повторяет твоих движений.	A mirror of black glass stands in the middle of the room. The reflection watches you, but does not mirror your movements.
+Коснуться	Touch
+Одна случайная карта станет сильнее, другая — слабее	One random card gets stronger, another gets weaker
+Зеркало молчит. Отражение отворачивается.	The mirror is silent. The reflection turns away.
+Стекло холодное, как лёд. Ты чувствуешь, как что-то перетекает.\n«{0}» стала сильнее, «{1}» — слабее.	The glass is cold as ice. You feel something flow.\n"{0}" grew stronger, "{1}" — weaker.
+Зеркало: было → стало	Mirror: before → after
+Разбить	Shatter
+: осколки. Все метки Короля исчезнут с карт, бонусы останутся	: shards. All the King's marks vanish from your cards, the bonuses stay
+Зеркало разлетается вдребезги. Осколки режут руки, но с карт сходит чужой знак: {0} мет. снято.	The mirror shatters. The shards cut your hands, but the foreign sign fades from your cards: {0} mark(s) removed.
+Зеркало разлетается вдребезги. Осколки режут руки. Меток на картах и так не было.	The mirror shatters. The shards cut your hands. There were no marks on your cards anyway.
+пусто	nothing
+Плита под ногой проваливается. Ты летишь вниз и приземляешься на кости — {0}.\nВ пыли рядом лежит «{1}». Наверх ведут выбитые в стене ступени.	The slab gives way underfoot. You fall and land on bones — {0}.\nIn the dust beside you lies "{1}". Steps cut into the wall lead back up.
+Выбраться	Climb out
+Кузнец не отрывается от наковальни.\n«Перековать? Или хочешь что-то посерьёзнее — под залог?»	The blacksmith doesn't look up from the anvil.\n"Reforge? Or do you want something heavier — on a pledge?"
+Перековка	Reforge
+Улучшить одну карту из колоды	Upgrade one card from your deck
+«Держи. Теперь она бьёт как надо.»	"Here. Now it hits the way it should."
+Залог	Pledge
+Улучшенная редкая карта. Условие: {0} победы за {1} комнат	An upgraded rare card. Condition: {0} wins within {1} rooms
+Перековка: какую карту улучшить?	Reforge: which card to upgrade?
+Залог: выбери карту. {0} победы за {1} комнат — или она ослабнет	Pledge: choose a card. {0} wins within {1} rooms — or it weakens
+«{0} твоя. Пока. Три победы — и забудем про залог.»	"{0} is yours. For now. Three wins and we forget the pledge."
+Кузнец смотрит на печать и хмурится.\n«Опять он... Что он тебе за это обещал?»	The blacksmith looks at the seal and frowns.\n"Him again... What did he promise you for this?"
+Передать свиток	Hand over the scroll
+Кузнец бесплатно улучшит одну карту	The blacksmith will upgrade one card for free
+«Ладно. За доставку — перекую что скажешь.»\n«Если снова встретишь Собирателя, передай ему: я больше не принимаю его долги.»	"Fine. For the delivery I'll reforge whatever you say."\n"If you meet the Collector again, tell him: I no longer take his debts."
+Открыть свиток	Open the scroll
+Нарушить просьбу Собирателя и посмотреть, что внутри	Break the Collector's request and see what's inside
+Печать хрустит. Внутри — «{0}».\nКузнец качает головой: «Сорванная печать. Улучшать бесплатно не стану. Но торговать — торгую.»	The seal cracks. Inside — "{0}".\nThe blacksmith shakes his head: "A broken seal. No free upgrades. But I still trade."
+Собиратель перебирает связки карт, не глядя на тебя.\n«Услуга за услугу. Если встретишь Кузнеца — передай ему этот запечатанный свиток. Не открывай его.»	The Collector sorts through bundles of cards without looking at you.\n"A favor for a favor. If you meet the Blacksmith, give him this sealed scroll. Do not open it."
+Взять свиток	Take the scroll
+Квестовый предмет, места в колоде не занимает	A quest item; takes no space in your deck
+«Кузнец сам найдётся. Они всегда находятся, когда должны.»\nА пока — обычные дела.	"The Blacksmith will turn up. They always do when they must."\nMeanwhile — business as usual.
+Отказаться	Decline
+Ничего не происходит, торговец работает как обычно	Nothing happens; the merchant trades as usual
+Собиратель поднимает глаза от свитков.\n«Ну? Что сказал Кузнец?»	The Collector looks up from his scrolls.\n"Well? What did the Blacksmith say?"
+«Он больше не принимает твои долги.»	"He no longer takes your debts."
+«Я... открыл свиток.»	"I... opened the scroll."
+Собиратель усмехается.\n«Так и знал. Что ж, ты сделал больше, чем большинство. Для таких у меня есть особая услуга.»	The Collector smirks.\n"Thought so. Well, you did more than most. For the likes of you I have a special service."
+Коллекционерский обмен	Collector's Exchange
+Удалить 2 карты из колоды — выбрать 1 редкую из 3	Remove 2 cards from your deck — choose 1 rare out of 3
+Собиратель долго молчит.\n«Любопытство — дорогое удовольствие. Особого обмена не будет. Но дело есть дело.»	The Collector is silent for a long while.\n"Curiosity is an expensive pleasure. No special exchange. But business is business."
+Обмен: первая карта на удаление	Exchange: first card to remove
+Обмен: вторая карта на удаление	Exchange: second card to remove
+Выбери редкую карту	Choose a rare card
+Собиратель достаёт из-под плаща расколотый кусок воска в оправе.\n«Сломанная печать. Отнеси её Ростовщику. Он поймёт.»\nА пока — обычные дела.	The Collector produces a cracked piece of wax in a setting from under his cloak.\n"A broken seal. Take it to the Usurer. He'll understand."\nMeanwhile — business as usual.
+Собиратель встречает тебя у входа.\n«Ну? Он взял печать?»	The Collector meets you at the entrance.\n"Well? Did he take the seal?"
+«Долг закрыт. Услуга — нет.»	"The debt is closed. The favor is not."
+Собиратель на секунду замолкает.\n«Конечно. Было бы слишком просто, если бы он просто отпустил долг.»\n«Ты прошёл всё это ради моих старых счетов. Я не люблю быть должным. Последний обмен — только для тебя.»	The Collector falls silent for a moment.\n"Of course. It would be too easy if he simply forgave the debt."\n"You went through all this for my old accounts. I don't like owing. One last exchange — for you alone."
+Последний обмен	Final Exchange
+Отдай одну карту — выбери 1 из 3 улучшенных редких	Give up one card — choose 1 of 3 upgraded rares
+«Разумно. Не всякая вещь становится ценнее после обмена.»	"Sensible. Not everything grows more valuable after a trade."
+Последний обмен: какую карту отдать?	Final Exchange: which card to give up?
+Выбери улучшенную редкую карту	Choose an upgraded rare card
+«Теперь мы в расчёте. Почти.»	"Now we're even. Almost."
+Собиратель окидывает тебя взглядом и задерживается на печати.\n«Полагаю, печать до него не дошла.»	The Collector looks you over and lingers on the seal.\n"I take it the seal never reached him."
+«Я оставил её себе.»	"I kept it."
+«Хм. Значит, ты нашёл ей лучшее применение.»\nСобиратель пожимает плечами и возвращается к товару.	"Hm. So you found a better use for it."\nThe Collector shrugs and returns to his wares.
+«С долгами покончено. Теперь можем говорить о действительно ценных вещах.»	"The debts are settled. Now we can talk about truly valuable things."
+«Береги эту печать. Такие вещи имеют привычку требовать больше, чем обещают.»	"Guard that seal. Such things have a habit of demanding more than they promise."
+Собиратель раскладывает карты веером.\n«Обмен, контракт или удача вслепую. Выбирай.»	The Collector fans out his cards.\n"An exchange, a contract, or blind luck. Choose."
+Обмен	Exchange
+Отдай карту — выбери 1 из 3 той же редкости	Give up a card — choose 1 of 3 of the same rarity
+Контракт	Contract
+Редкая карта бесплатно, но в колоду добавится Рана	A rare card for free, but a Wound joins your deck
+Неизвестный свиток	Unknown Scroll
+Отдай обычную карту — получи случайную карту, редкость скрыта	Give up a common card — receive a random card, rarity hidden
+Обмен: какую карту отдать?	Exchange: which card to give up?
+Выбери карту взамен	Choose a card in return
+«{0}. Хороший выбор. Или нет — время покажет.»	"{0}. A good choice. Or not — time will tell."
+«{0}. Бесплатно. Почти: в колоду ляжет Рана. Мелочь, правда?»	"{0}. Free. Almost: a Wound goes into your deck. A trifle, isn't it?"
+Подписать	Sign
+Получить «{0}» и «{1}»	Receive "{0}" and "{1}"
+«Приятно иметь дело с решительными.»	"A pleasure dealing with the decisive."
+Неизвестный свиток: отдай обычную карту	Unknown Scroll: give up a common card
+Редкая. Повезло.	Rare. Lucky.
+Обычная. Удача любит настойчивых.	Common. Fortune favors the persistent.
+Свиток рассыпается в руках. Внутри — «{0}».\n«{1}»	The scroll crumbles in your hands. Inside — "{0}".\n"{1}"
+Ростовщик вежливо улыбается, не поднимая глаз от книги.\n«Всё имеет цену. Не всегда её платят сразу.»	The Usurer smiles politely without looking up from his ledger.\n"Everything has a price. It isn't always paid at once."
+Редкая карта. Сломанная печать покрывает первую плату.	A rare card. The broken seal covers the first payment.
+Редкая карта. Через {0} комнат: −{1} HP.	A rare card. In {0} rooms: −{1} HP.
+Редкая карта. Через {0} комнат Ростовщик потребует плату кровью.	A rare card. In {0} rooms the Usurer will demand payment in blood.
+Кредит	Loan
+Улучшенная редкая карта. Условие: {0} комнат без лечения	An upgraded rare card. Condition: {0} rooms without healing
+Кровавый договор	Blood Pact
++5 к максимальному HP, в колоду ложится Долг (не удаляется)	+5 max HP; a Debt goes into your deck (cannot be removed)
+Кредит: возьми карту	Loan: take a card
+Ростовщик косится на печать у тебя на поясе.\n«Считай, что эта — за старый долг. Следующая будет дороже.»	The Usurer eyes the seal on your belt.\n"Consider this one payment for an old debt. The next will cost more."
+«Возьми. Вернёшь, когда придёт срок. Я всегда получаю своё.»	"Take it. You'll repay when the time comes. I always collect."
+Залог: выбери карту. {0} комнат без лечения — или она ослабнет	Pledge: choose a card. {0} rooms without healing — or it weakens
+«Береги мою вещь. И не пытайся залечить то, что должно болеть.»	"Take care of my property. And don't try to heal what is meant to hurt."
+Ростовщик делает пометку в книге.\n«Теперь ты можешь выдержать больше. Когда-нибудь и я попрошу кое-что взамен.»	The Usurer makes a note in his ledger.\n"Now you can endure more. Someday I'll ask for something in return."
+Ростовщик медленно закрывает книгу.\n«Давно я не видел эту печать. Значит, старые долги всё-таки пережили своих хозяев.»	The Usurer slowly closes his ledger.\n"It's been a long time since I saw this seal. So the old debts outlived their masters after all."
+Отдать печать	Give the seal
+Закрыть старый долг. Ростовщик окажет одну услугу	Close the old debt. The Usurer will grant one favor
+Оставить себе	Keep it
+Печать станет реликвией: первый кредит без платы. Но сделки Ростовщика станут хуже	The seal becomes a relic: the first loan is free. But the Usurer's deals get worse
+Списать Долг	Write off the Debt
+Удалить «{0}» из колоды	Remove "{0}" from your deck
+Простить кредит	Forgive the loan
+Отменить активный кредит без потери HP	Cancel the active loan with no HP loss
+Снять залог	Release the pledge
+Улучшенная карта остаётся без условия	The upgraded card stays with no condition
+Удалить плохую карту	Remove a bad card
+Убрать одну карту из колоды	Remove one card from your deck
+Какую карту убрать?	Which card to remove?
+Ростовщик прячет печать в ящик стола.\n«Долг закрыт. Одна услуга — за счёт заведения.»	The Usurer tucks the seal into a drawer.\n"The debt is closed. One favor — on the house."
+«Скажи ему: долг закрыт. Услуга — нет.»	"Tell him: the debt is closed. The favor is not."
+Ростовщик смотрит на печать долгим взглядом и ничего не говорит.\n«Как угодно. Вещи вроде этой сами выбирают хозяина. Но мои условия теперь... иные.»	The Usurer gives the seal a long look and says nothing.\n"As you wish. Things like this choose their own master. But my terms are now... different."
+Перекрёсток	Crossroads
+Пришло время расплаты.\n{0} забирает {1} HP.	Payment is due.\n{0} takes {1} HP.
+Залог выполнен.\nКарта остаётся у тебя ({0}).	Pledge fulfilled.\nThe card stays with you ({0}).
+Залог провален.\nКарта ослабла ({0}).	Pledge failed.\nThe card has weakened ({0}).
+Залог нарушен лечением.\nКарта ослабла ({0}).	Pledge broken by healing.\nThe card has weakened ({0}).
+Комната {0}: {1}	Room {0}: {1}
+Бой	Combat
+Опасная комната	Dangerous room
+{0} почуял тебя!	{0} has caught your scent!
+Отдых	Rest
+Сокровищница	Treasury
+Событие	Event
+Случайное событие (пока пусто)	Random event (empty for now)
+Ты отдохнул: +10 HP	You rested: +10 HP
+Отдохнуть	Rest
+Восстановить {0} HP	Restore {0} HP
+Ты отдохнул у костра: +{0} HP	You rested by the fire: +{0} HP
+Точить когти	Sharpen claws
+Выбери карту для улучшения	Choose a card to upgrade
+Помолиться	Pray
+Зелёный огонь теплеет. +{0} HP	The green flame grows warmer. +{0} HP
+Принести жертву	Make a sacrifice
+−{0} HP: убрать одну карту из колоды навсегда	−{0} HP: remove one card from your deck forever
+Какую карту отдать алтарю?	Which card to give to the altar?
+Алтарь принимает «{0}». −{1} HP	The altar accepts "{0}". −{1} HP
+Переночевать	Spend the night
+Ночь проходит тихо. +{0} HP	The night passes quietly. +{0} HP
+Обыскать лагерь	Search the camp
+Без отдыха. Найти одну из двух оставленных карт	No rest. Find one of two abandoned cards
+В вещах лагеря: выбери карту	Among the camp's belongings: choose a card
+«{0}» добавлена в колоду	"{0}" added to your deck
+Комната {0}: Засада	Room {0}: Ambush
+Сундук! Выбери карту	A chest! Choose a card
+Силы возвращаются — и с ними ярость. Взять карту?	Your strength returns — and with it, rage. Take the card?
+Пропустить	Skip
+Кем идти?	Who will you be?
+<size=24><b>{0}</b></size>\n\n{1}\n\n<color=#ffb07a>Здоровье: {2}</color>	<size=24><b>{0}</b></size>\n\n{1}\n\n<color=#ffb07a>Health: {2}</color>
+Стартовые карты	Starting cards
+В путь	Set out
+Пропустить ход	End turn
+Победа! Выбери карту	Victory! Choose a card
+Поражение	Defeat
+Заново	Try again
+Сброс — {0} карт	Discard — {0} cards
+Закрыть	Close
+Колода {0}	Deck {0}
+Сброс {0}	Discard {0}
+<color=#9fd0ff>защ. {0}</color>	<color=#9fd0ff>blk {0}</color>
+<color=#9de08a>яд {0}×{1}</color>	<color=#9de08a>poison {0}×{1}</color>
+<color=#d9a6ff>−{0} карта</color>	<color=#d9a6ff>−{0} card</color>
+Назад	Back
+Выйти	Leave
+Колода	Deck
+Колода — {0} карт	Deck — {0} cards
+Свиток Коллекционера с нетронутой печатью. Кузнец хочет его получить — или можно вскрыть самому.	The Collector's scroll with an unbroken seal. The Blacksmith wants it — or you could open it yourself.
+Вскрытый свиток. Коллекционер будет недоволен.	An opened scroll. The Collector won't be pleased.
+Сломанная печать Коллекционера. Ростовщик знает, что с ней делать.	The Collector's broken seal. The Usurer knows what to do with it.
+Запечатанный свиток	Sealed Scroll
+Вскрытый свиток	Opened Scroll
+Сломанная печать	Broken Seal
+{0}: +{1}% за фиолетовой дверью\n	{0}: +{1}% behind the purple door\n
+Золото: {0}	Gold: {0}
+Начать путь	Begin the journey
+Боевой инстинкт	Battle Instinct
+Чутьё воина: удар и защита в одном движении.	A warrior's instinct: strike and guard in one motion.
+Когти	Claws
+Два быстрых удара когтями.	Two quick claw strikes.
+Юркие, как у крысы, удары — и время прикрыться.	Rat-quick strikes — and time to cover up.
+Неловкий взмах	Clumsy Swipe
+Размашисто, но неточно.	Wide, but wild.
+Треснувшая чешуя	Cracked Scales
+От шипов остались одни трещины.	Only cracks remain where the spikes were.
+Долг	Debt
+Драконий рык	Dragon Roar
+Рык, от которого враг теряет уверенность.	A roar that shakes the enemy's confidence.
+Рык, который слышит сам Король крыс.	A roar the Rat King himself can hear.
+Кость древнего	Ancient Bone
+Тяжёлая кость из трещины. Кто-то был здесь до тебя.	A heavy bone from the crack. Someone was here before you.
+Сердце угля	Ember Heart
+Тлеющий уголёк из чужого костра. Греет — и жжёт.	A smoldering ember from someone else's fire. It warms — and burns.
+Ледяное сердце	Frost Heart
+Холод, который копится и бьёт.	Cold that gathers — and strikes.
+Чешуя странника	Wanderer's Scale
+Лоскут чужой чешуи держит удар не хуже своей.	A strip of another's scales holds a blow as well as your own.
+Дыхание огнём	Fire Breath
+Драконья кровь горит в жилах.	Dragon blood burns in your veins.
+Вспышка	Flare Up
+Слабее обычного дыхания, но по горящему врагу — сокрушительно.	Weaker than a normal breath, but devastating against a burning enemy.
+Раскалённая чешуя	Heated Scales
+Немного защиты и немного огня одной картой.	A little defense and a little fire in one card.
+Тяжёлое дыхание	Heavy Breath
+Сильнее обычной атаки, но потом нечем дышать.	Stronger than a normal attack, but leaves you breathless.
+Королевский хвост	King's Tail
+Сокрушительный удар хвостом.	A crushing tail strike.
+Удар топором	Axe Strike
+Тяжёлый топор не знает изящества. Ему это и не нужно.	A heavy axe knows no grace. It doesn't need any.
+Запах крови	Blood Scent
+Раненую добычу лев чует издалека.	A lion smells wounded prey from afar.
+Нарастающая сила	Building Force
+Каждый вдох — тяжелее. Каждый замах — шире.	Every breath heavier. Every swing wider.
+Рывок	Dash
+Короткий прыжок — и топор уже в движении.	A short leap — and the axe is already moving.
+Палач	Executioner
+Один удар. Больше не понадобится.	One blow. No more will be needed.
+Защитная стойка	Guard Stance
+Лев прячется за древком и копит силу для следующего замаха.	The lion hides behind the haft and gathers strength for the next swing.
+Львиная гордость	Lion's Pride
+Прайд изгнал его — но гордость осталась.	The pride cast him out — but the pride remained.
+Быстрый замах	Quick Swing
+Не столько удар, сколько разгон.	Not so much a strike as a wind-up.
+Боль лев запоминает. И возвращает.	A lion remembers pain. And returns it.
+Рана	Wound
+Глубокий порез под мехом. Мешает, пока не заживёт.	A deep cut beneath the fur. It gets in the way until it heals.
+Раскалённая броня	Molten Armor
+Иногда даже выгодно немного пропустить.	Sometimes it even pays to let a little through.
+Перегретая чешуя	Overheated Scales
+Иногда полезно, иногда нет.	Sometimes useful, sometimes not.
+Кровь дракона закипает. Два хода — по две карты.	Dragon blood boils. Two turns — two cards each.
+Драконья кровь	Dragon Blood
+Восстановить 8 HP.	Restore 8 HP.
+Чумное пламя	Plague Flame
+Огонь, отравленный королевской чумой.	Fire tainted by the king's plague.
+Рефлекторная защита	Reflex Guard
+Хороша ровно тогда, когда ты правильно читаешь врага.	Good exactly when you read the enemy right.
+Раздирающие когти	Rending Claws
+Пробивает любую защиту.	Pierces any defense.
+Драконья чешуя	Dragon Scales
+Чешуя твёрже стали.	Scales harder than steel.
+Сбросить чешую	Shed Skin
+Старая чешуя уходит вместе с ядом.	The old scales go — and the poison with them.
+Тлеющее дыхание	Smoldering Breath
+Огонь продолжает жечь, пока ты защищаешься. Повторный поджог продлевает горение.	The fire keeps burning while you defend. Igniting again extends the burn.
+Шипастая чешуя	Spiked Scales
+Ответный урон проходит, даже если удар полностью поглощён блоком.	The return damage lands even if the blow was fully absorbed by block.
+Каменная кожа	Stonehide
+Очень сильная защита с неприятным последствием.	Very strong defense with an unpleasant aftermath.
+Удар хвостом	Tail Strike
+Мощный удар хвостом.	A powerful tail strike.
+Удар, пропитанный крысиной чумой.	A blow steeped in rat plague.
+Тонкая чешуя	Thin Scales
+Просто слабая защита.	Just weak defense.
+Слабое пламя	Weak Flame
+Хуже обычного дыхания, но хоть что-то.	Worse than a normal breath, but better than nothing.
+Глубокая царапина, которая мешает сражаться.	A deep scratch that gets in the way of fighting.
+Дракорождённый ящеро-воин	Dragonborn Lizard Warrior
+Воин-ящеролюд с драконьей кровью. Дышит огнём и прячется за чешуёй: жжёт врага и держит удар.	A lizardfolk warrior with dragon blood. Breathes fire and hides behind scales: burns the enemy and takes the hit.
+Белый лев	White Lion
+Изгнанник прайда. Копит Замах ударами и стойками, а когда шкала полна — бьёт молнией сам, не тратя ход.	An exile from the pride. Builds Momentum with strikes and stances, and when the gauge is full, strikes with lightning on his own — without spending a turn.
+Мышь-альбинос	Albino Bat
+Укус	Bite
+Быстрый укус: 3 урона.	A quick bite: 3 damage.
+Визг	Screech
+Оглушительный визг: в следующий ход у тебя на 1 карту меньше.	A deafening screech: 1 fewer card next turn.
+Слепящий взмах	Blinding Sweep
+Бьёт крылом по глазам: 2 урона, в следующий ход на 1 карту меньше.	A wing across the eyes: 2 damage, 1 fewer card next turn.
+Пике	Dive
+Пикирует: 4 урона.	Dives: 4 damage.
+Сом	Catfish
+Хвост	Tail
+Тяжёлый удар хвостом: 5 урона.	A heavy tail slap: 5 damage.
+Ил	Silt
+Зарывается в ил: защита 8.	Burrows into the silt: block 8.
+Проглотить	Swallow
+Пытается проглотить: 3 урона, в следующий ход на 1 карту меньше.	Tries to swallow you: 3 damage, 1 fewer card next turn.
+Уйти на дно	Sink to the bottom
+Уходит на дно: защита 5. Выныривает и бьёт хвостом с +4 урона.	Sinks to the bottom: block 5. Surfaces and slaps with its tail for +4 damage.
+Пещерная летучая мышь	Cave Bat
+Мышь пикирует и кусает.	The bat dives and bites.
+Мышь визжит и мечется под потолком — в этот ход она ничего не делает.	The bat screeches and flits under the ceiling — it does nothing this turn.
+Царапины	Scratches
+Мышь проносится мимо, полосуя когтями.	The bat swoops past, raking with its claws.
+Пикирование	Dive Attack
+Мышь набирает высоту и обрушивается сверху.	The bat gains height and crashes down from above.
+Пещерный тритон	Cave Newt
+Хлёсткий удар хвостом: 4 урона.	A lashing tail strike: 4 damage.
+Ядовитая слизь	Toxic Slime
+Нырнуть	Dive under
+Уходит под воду: защита 5. Выныривает с укусом +3 урона.	Goes underwater: block 5. Surfaces with a bite for +3 damage.
+Укус из-под воды: 5 урона.	A bite from under the water: 5 damage.
+Пещерная крыса	Cave Rat
+Крыса кусает тебя острыми зубами.	The rat bites you with sharp teeth.
+Юркость	Nimbleness
+Крыса мечется и уворачивается: в этот ход у неё есть блок, который поглотит часть твоего урона.	The rat darts and dodges: it has block this turn, absorbing part of your damage.
+Грызть припасы	Gnaw Supplies
+Крыса грызёт твои припасы: одна карта в руке до конца боя становится слабой.	The rat gnaws your supplies: one card in your hand becomes weak until the end of combat.
+Чумной укус	Plague Bite
+Заражённый укус. Яд наносит урон в начале каждого твоего хода.	An infected bite. The poison deals damage at the start of each of your turns.
+Краб	Crab
+Панцирь	Shell
+Прячется в панцирь: защита 8.	Hides in its shell: block 8.
+Клешни	Claws
+Щёлкает обеими клешнями: 3 урона дважды.	Snaps both claws: 3 damage twice.
+Хватка	Grip
+Сжимает клешнёй: 3 урона, в следующий ход нельзя играть защитные карты.	Squeezes with a claw: 3 damage, no defense cards next turn.
+Удар клешнёй	Claw Smash
+Тяжёлая клешня: 6 урона.	A heavy claw: 6 damage.
+Болотный крокодил	Swamp Crocodile
+Крокодил смыкает челюсти.	The crocodile snaps its jaws shut.
+Захват	Grab
+Челюсти сжали тебя — в следующий ход не размахнуться: на одну карту меньше.	The jaws clamp down on you — no room to swing next turn: one fewer card.
+Два тяжёлых удара хвостом.	Two heavy tail strikes.
+Погружение	Submerge
+Крокодил залёг под водой: в этот ход у него есть блок, а следующий его ход — Укус с удвоенной силой. Готовься!	The crocodile lies in wait underwater: it has block this turn, and its next move is a Bite with doubled force. Brace yourself!
+Мёртвая голова	Death's-head Moth
+Взмах крыльев	Wing Beat
+Удар тяжёлым крылом: 4 урона.	A blow from a heavy wing: 4 damage.
+Пыльца	Dust
+Ядовитая пыльца: 2 урона и одна карта в руке становится слабой до конца боя.	Toxic dust: 2 damage and one card in your hand becomes weak until the end of combat.
+Морок	Haze
+Мотылёк растворяется в тумане: защита 5, в следующий ход у тебя на 1 карту меньше.	The moth dissolves into mist: block 5, 1 fewer card next turn.
+Крик черепа	Skull Scream
+Оглушительный крик: 6 урона. После него мотылёк всегда уходит в Морок.	A deafening scream: 6 damage. Afterwards the moth always slips into Haze.
+Гигантский таракан	Giant Cockroach
+Рой	Swarm
+Мелкие тараканы налетают: 2 урона дважды.	Small roaches swarm in: 2 damage twice.
+Шелест	Rustle
+Шуршит в темноте: в следующий ход у тебя на 1 карту меньше.	Rustling in the dark: 1 fewer card next turn.
+Хитин	Chitin
+Прячется под панцирь: защита 4.	Hides under its shell: block 4.
+Могильный жук	Grave Beetle
+Прячется под хитин: защита 7.	Hides under its chitin: block 7.
+Ядовитые жвала	Venomous Mandibles
+Кусает: 3 урона и яд 2 урона в ход, 2 хода.	Bites: 3 damage and poison 2 per turn for 2 turns.
+Таран	Ram
+Медленно, но тяжело: 6 урона.	Slow, but heavy: 6 damage.
+Могильная пыль	Grave Dust
+Взметает трупную пыль: защита 4 и яд 1 урона в ход, 3 хода.	Kicks up corpse dust: block 4 and poison 1 per turn for 3 turns.
+Пираньи	Piranhas
+Стая	Frenzy
+Стая налетает разом: 2 урона три раза.	The shoal strikes at once: 2 damage three times.
+Один крупный укус: 4 урона.	One big bite: 4 damage.
+Кровавая вода	Bloody Water
+Кровотечение	Bleeding
+Рвут рану: 2 урона и кровотечение 1 урон в ход, 2 хода.	They tear the wound: 2 damage and bleeding 1 per turn for 2 turns.
+Уйти на глубину	Go deep
+Стая уходит под воду: защита 6. Следующая Стая на +2 урона.	The shoal goes underwater: block 6. The next Frenzy deals +2 damage.
+Крысиный король	Rat King
+Королевский укус	Royal Bite
+Мощный укус короля крыс.	A mighty bite from the rat king.
+Крысиный заслон	Rat Wall
+Свита закрывает короля собой: в этот ход у него есть блок.	The retinue shields the king with their bodies: it has block this turn.
+Разграбление	Plunder
+Крысы растаскивают припасы: в следующий ход на одну карту меньше, а одна карта в руке до конца боя становится слабой.	The rats carry off your supplies: one fewer card next turn, and one card in your hand becomes weak until the end of combat.
+Пещерный скорпион	Cave Scorpion
+Клешня	Pincer
+Скорпион бьёт клешнёй.	The scorpion strikes with its pincer.
+Жало	Sting
+Удар хвостом: яд накапливается — второе жало продлит отравление.	A tail strike: the poison builds up — a second sting extends it.
+Скорпион прижимается к земле: в этот ход у него есть блок.	The scorpion presses itself to the ground: it has block this turn.
+Клешни держат щит: в следующий ход нельзя играть защитные карты.	Pincers hold your shield: no defense cards next turn.
+Панцирная черепаха	Shell Turtle
+Прячется в панцирь: защита 10.	Hides in its shell: block 10.
+Роговой клюв: 5 урона.	A horned beak: 5 damage.
+Уйти под воду	Go underwater
+Опускается на дно: защита 8. Всплывает и таранит с +3 урона.	Sinks to the bottom: block 8. Surfaces and rams for +3 damage.
+Тяжёлый таран панцирем: 7 урона.	A heavy shell ram: 7 damage.
+Скелет-рыцарь	Skeleton Knight
+Удар мечом	Sword Strike
+Ржавый клинок: 5 урона.	A rusty blade: 5 damage.
+Удар щитом	Shield Bash
+Оглушает щитом: 4 урона, в следующий ход ты не можешь играть защитные карты.	Stuns with the shield: 4 damage, no defense cards next turn.
+Костяная рука	Bone Hand
+Костлявая рука лезет в сумку: 2 урона, в следующий ход на 1 карту меньше.	A bony hand reaches into your bag: 2 damage, 1 fewer card next turn.
+Щит	Shield
+Прячется за щитом: защита 6.	Hides behind the shield: block 6.
+Рассыпаться	Collapse
+Рассыпается грудой костей: защита 10. Собирается и бьёт мечом с +3 урона.	Collapses into a heap of bones: block 10. Reassembles and strikes with the sword for +3 damage.
+Слизень	Slime
+Плевок	Spit
+Слизень плюётся едкой слизью.	The slime spits caustic goo.
+Слизь	Ooze
+Слизень покрывается плотной слизью: в этот ход у него есть блок, и твоя атака пробьёт его не полностью.	The slime coats itself in thick ooze: it has block this turn, and your attack won't fully get through.
+Слизень плюётся едкой слизью, сильнее.	The slime spits caustic goo, harder.
+Трещина в стене	Crack in the Wall
+Чёрное зеркало	Black Mirror
+Ловушка-колодец	Pit Trap
+Странник у стены	Wanderer by the Wall
+Кузнец	Blacksmith
+Собиратель	Collector
+Ростовщик	Usurer
+Старый алтарь	Old Altar
+Холодный зелёный огонь дрожит на алтаре.	A cold green flame flickers on the altar.
+Заброшенный лагерь	Abandoned Camp
+Кто-то ушёл отсюда в спешке...	Someone left here in a hurry...
+Костёр	Campfire
+Кто-то оставил тлеющий костёр. Можно передохнуть или заточить когти.	Someone left a smoldering fire. You can rest or sharpen your claws.
+Родник	Spring
+Ты пьёшь из целебного источника.	You drink from the healing spring.
+# Словарь терминов
+Пассивный удар	Passive strike
+Порог удара	Strike threshold
+Казнь	Execution
+Горение	Burning
+Блок	Block
+Сквозь блок	Through block
+Ослабление	Weakness
+Самоурон	Self-damage
+Один раз за бой	Once per combat
+Остаётся в руке	Stays in hand
+Метка	Mark
+Порча	Spoiling
+Защита	Block
+Замах	Momentum
+Копится от карт льва. Когда шкала полна (3/3), лев сам бьёт врага молнией на 6 урона сквозь блок — это не тратит ни карту, ни ход. Лишний Замах переносится дальше.	Builds up from the lion's cards. When the gauge is full (3/3), the lion strikes the enemy with lightning for 6 damage through block on his own — it costs neither a card nor a turn. Excess Momentum carries over.
+Молния льва при полной шкале Замаха. Карты могут усиливать следующую молнию.	The lion's lightning when the Momentum gauge is full. Cards can empower the next bolt.
+В этот ход молния срабатывает при меньшем Замахе (2/3 вместо 3/3).	This turn the lightning triggers at lower Momentum (2/3 instead of 3/3).
+После этой карты в этот же ход можно сразу сыграть ещё одну карту атаки.	After this card you may immediately play one more attack card this turn.
+Если враг в этот ход пробьёт блок и ранит тебя — в начале следующего хода получишь Замах.	If the enemy breaks your block and wounds you this turn, you gain Momentum at the start of your next turn.
+Если после удара у врага останется меньше указанной доли здоровья — он погибает сразу.	If the enemy is left below the stated share of health after the hit, it dies immediately.
+Позволяет играть по 2 карты за ход указанное число ходов. Остаётся в руке, пока не разыграна; один раз за бой. Несколько Яростей складывают ходы.	Lets you play 2 cards per turn for the stated number of turns. Stays in hand until played; once per combat. Multiple Rages add their turns together.
+Враг теряет указанное здоровье в начале каждого своего хода. Повторный поджог продлевает горение, урон берётся наибольший.	The enemy loses the stated health at the start of each of its turns. Igniting again extends the burn; the higher damage is kept.
+Отравленный теряет здоровье в начале своего хода указанное число ходов. Повторное отравление продлевает срок.	The poisoned loses health at the start of their turn for the stated number of turns. Poisoning again extends the duration.
+Поглощает урон до конца хода. Что не поглотил — бьёт по здоровью.	Absorbs damage until the end of the turn. Whatever isn't absorbed hits health.
+Этот урон блок не поглощает.	Block does not absorb this damage.
+Если враг атакует в этот ход — он получает урон, даже если удар полностью поглощён блоком.	If the enemy attacks this turn, it takes damage, even if the blow was fully absorbed by block.
+Атаки ослабленного слабее на указанное число указанное число ходов.	The weakened one's attacks are weaker by the stated amount for the stated number of turns.
+Если враг пробьёт блок и ранит тебя — он загорится.	If the enemy breaks your block and wounds you, it catches fire.
+Снимает с тебя яд или ослабление руки.	Removes poison or hand weakness from you.
+Карта ранит тебя самого при розыгрыше.	The card wounds you when played.
+В указанный ход нельзя играть защитные карты.	You cannot play defense cards on the stated turn.
+В указанный ход нельзя играть атакующие карты.	You cannot play attack cards on the stated turn.
+После розыгрыша карта выбывает до конца боя, а в следующем бою снова в колоде.	After being played the card leaves until the end of combat and is back in your deck for the next one.
+В конце хода карта не сбрасывается, враги не могут её украсть или испортить.	The card is not discarded at the end of the turn; enemies cannot steal or spoil it.
+Каждая карта с меткой элиты в колоде повышает шанс встретить его за фиолетовой дверью.	Every card with an elite's mark in your deck raises the chance of meeting it behind the purple door.
+Враг уходит под воду или рассыпается: получает защиту и в следующий ход бьёт сильнее. Пока он скрыт, ты всё равно можешь его бить.	The enemy goes underwater or falls apart: it gains block and hits harder next turn. You can still hit it while hidden.
+В следующий ход у тебя будет на одну карту меньше: враг утащит её из руки.	Next turn you will have one fewer card: the enemy drags it out of your hand.
+Одна карта в руке до конца боя заменяется слабой.	One card in your hand is replaced with a weak one until the end of combat.
+У врага в этот ход есть блок: часть твоего урона он поглотит.	The enemy has block this turn: it will absorb part of your damage.
+То же, что яд: теряешь здоровье в начале своего хода.	Same as poison: you lose health at the start of your turn.
+Остался один!	All alone now!
+Малыш кусает на {0}.	The little one bites for {0}.
+Малыш ({0})	Little one ({0})
+{0} — и с ним малыш!	{0} — and a little one with it!
+В колоду	To the deck
+Контракт подписан	Contract signed
+Малыш повержен!	The little one is down!
+<size=22><b>Малыш</b></size>\n\n<color=#ffb3a7>Атака {0}</color>\n\nБьёт после главного врага. Кликни по нему, чтобы направить на него атаки.	<size=22><b>Little one</b></size>\n\n<color=#ffb3a7>Attack {0}</color>\n\nStrikes after the main enemy. Click it to aim your attacks at it.

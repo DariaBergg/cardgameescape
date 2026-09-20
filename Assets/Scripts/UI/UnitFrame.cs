@@ -99,7 +99,10 @@ public class UnitFrame : MonoBehaviour
         blockBadge.SetActive(false);
 
         // Шкала Замаха: деления над именем (видны только у героя с Замахом)
-        momentumRow = UIFactory.CreateRect(rect, "Momentum", new Vector2(0.5f, 1f), new Vector2(0, 22), new Vector2(Width, 20));
+        momentumRow = UIFactory.CreateRect(rect, "Momentum", new Vector2(0.5f, 1f), new Vector2(0, 22), new Vector2(Width, 28));
+        momentumRow.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0.001f); // ловим наведение на шкалу
+        var momentumTip = momentumRow.gameObject.AddComponent<TooltipTrigger>();
+        momentumTip.content = Glossary.Explain("Замах");
         momentumRow.gameObject.SetActive(false);
 
         // Значки статусов под полоской: иконка + число ходов, подсказка по наведению

@@ -17,6 +17,8 @@ public class CardData : ScriptableObject
     public CardRarity rarity = CardRarity.Common;
     [Tooltip("Нельзя разыграть: карта-балласт (Рана, Долг)")]
     public bool unplayable;
+    [Tooltip("Плохая карта (рана, долг, испорченная): рисуется красным")]
+    public bool bad;
     [Tooltip("Нельзя удалить обычными способами (Долг)")]
     public bool permanent;
     [Tooltip("Во что превращается при провале залога (если пусто — снимается усиление)")]
@@ -41,7 +43,7 @@ public class CardData : ScriptableObject
 
     public bool upgraded => upgradeLevel > 0;
     public CardData BaseCard => baseCard != null ? baseCard : this;
-    public bool IsBad => unplayable;
+    public bool IsBad => unplayable || bad;
     public bool IsAttack => HasEffect(CardEffectType.Damage) || HasEffect(CardEffectType.PierceDamage);
     public bool IsDefense => HasEffect(CardEffectType.Block);
 
@@ -137,8 +139,8 @@ public class CardData : ScriptableObject
 
     public string RulesText => string.Join("\n", effects.Select(e => e.RulesText));
 
-    public string ShortText => unplayable ? "Нельзя разыграть" : string.Join("\n", effects.Select(e => Capitalize(e.Summary)));
-    public string ShortTextWithout(CardEffectType skip) => unplayable ? "Нельзя разыграть" : string.Join("\n", effects.Where(e => e.type != skip).Select(e => Capitalize(e.Summary)));
+    public string ShortText => unplayable ? L.T("Нельзя разыграть") : string.Join("\n", effects.Select(e => Capitalize(e.Summary)));
+    public string ShortTextWithout(CardEffectType skip) => unplayable ? L.T("Нельзя разыграть") : string.Join("\n", effects.Where(e => e.type != skip).Select(e => Capitalize(e.Summary)));
 
     public string UpgradePreviewShortText()
     {
@@ -157,8 +159,8 @@ public class CardData : ScriptableObject
         for (int i = 0; i < upgraded.effects.Count; i++)
             lines.Add(upgraded.effects[i].RulesTextComparedTo(effects[i]));
         DestroyImmediate(upgraded);
-        string text = $"<b>{cardName}</b>\n<color=#ffd27f>{string.Join("\n", lines)}</color>";
-        if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{description}</i>";
+        string text = $"<b>{L.T(cardName)}</b>\n<color=#ffd27f>{string.Join("\n", lines)}</color>";
+        if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{L.T(description)}</i>";
         if (IsMarked) text += $"\n\n<color=#d9a6ff>{MarkSummary}</color>";
         return text;
     }
@@ -175,19 +177,19 @@ public class CardData : ScriptableObject
         return string.Join("\n", lines);
     }
 
-    public string MarkSummary => IsMarked ? $"Метка: {eliteMark.enemyName} (+{eliteChanceBonus}% к шансу встречи)" : "";
+    public string MarkSummary => IsMarked ? L.F("Метка: {0} (+{1}% к шансу встречи)", L.T(eliteMark.enemyName), eliteChanceBonus) : "";
 
     public string TooltipText
     {
         get
         {
-            string rules = unplayable ? "Нельзя разыграть. Занимает место в руке." : RulesText;
-            string text = $"<b>{cardName}</b> <color=#aaaaaa>({(rarity == CardRarity.Rare ? "редкая" : "обычная")})</color>\n<color=#ffd27f>{rules}</color>";
-            if (permanent) text += "\n<color=#ff9090>Нельзя удалить обычным способом.</color>";
-            if (retain) text += "\n<color=#9fd8ff>Остаётся в руке, пока не разыграна.</color>";
-            if (exhaust) text += "\n<color=#9fd8ff>Один раз за бой.</color>";
-            if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{description}</i>";
-            if (IsMarked) text += $"\n\n<color=#d9a6ff>{MarkSummary}</color>\nКаждая такая карта в колоде повышает шанс, что за фиолетовой дверью окажется {eliteMark.enemyName}.";
+            string rules = unplayable ? L.T("Нельзя разыграть. Занимает место в руке.") : RulesText;
+            string text = L.F("<b>{0}</b> <color=#aaaaaa>({1})</color>\n<color=#ffd27f>{2}</color>", L.T(cardName), (rarity == CardRarity.Rare ? L.T("редкая") : L.T("обычная")), rules);
+            if (permanent) text += L.T("\n<color=#ff9090>Нельзя удалить обычным способом.</color>");
+            if (retain) text += L.T("\n<color=#9fd8ff>Остаётся в руке, пока не разыграна.</color>");
+            if (exhaust) text += L.T("\n<color=#9fd8ff>Один раз за бой.</color>");
+            if (!string.IsNullOrEmpty(description)) text += $"\n\n<i>{L.T(description)}</i>";
+            if (IsMarked) text += L.F("\n\n<color=#d9a6ff>{0}</color>\nКаждая такая карта в колоде повышает шанс, что за фиолетовой дверью окажется {1}.", MarkSummary, L.T(eliteMark.enemyName));
             return text;
         }
     }

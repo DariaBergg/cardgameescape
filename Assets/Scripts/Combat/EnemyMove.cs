@@ -37,22 +37,22 @@ public class EnemyMove
     {
         var parts = new List<string>();
         int dmg = damage + (damage > 0 ? damageBonus : 0);
-        if (damage > 0) parts.Add(hits > 1 ? $"Атака {dmg}×{hits}" : $"Атака {dmg}");
-        if (block > 0) parts.Add($"Защита {block}");
-        if (poisonTurns > 0) parts.Add($"{(string.IsNullOrEmpty(poisonLabel) ? "Яд" : poisonLabel)} {poisonDamage}×{poisonTurns}");
-        if (handReduce > 0) parts.Add($"−{handReduce} карта");
-        if (corruptCards > 0) parts.Add(corruptCards > 1 ? $"портит {corruptCards} карты" : "портит карту");
-        if (lockBlock) parts.Add("без защиты в след. ход");
-        if (submerge) parts.Add("Прячется");
-        return parts.Count > 0 ? string.Join(" + ", parts) : "Ничего";
+        if (damage > 0) parts.Add(hits > 1 ? L.F("Атака {0}×{1}", dmg, hits) : L.F("Атака {0}", dmg));
+        if (block > 0) parts.Add(L.F("Защита {0}", block));
+        if (poisonTurns > 0) parts.Add(L.F("{0} {1}×{2}", L.T(string.IsNullOrEmpty(poisonLabel) ? "Яд" : poisonLabel), poisonDamage, poisonTurns));
+        if (handReduce > 0) parts.Add(L.F("−{0} карта", handReduce));
+        if (corruptCards > 0) parts.Add(corruptCards > 1 ? L.F("портит {0} карты", corruptCards) : L.T("портит карту"));
+        if (lockBlock) parts.Add(L.T("без защиты в след. ход"));
+        if (submerge) parts.Add(L.T("Прячется"));
+        return parts.Count > 0 ? string.Join(" + ", parts) : L.T("Ничего");
     }
 
     public string TooltipText => TooltipTextWithBonus(0);
 
     public string TooltipTextWithBonus(int damageBonus)
     {
-        string text = $"<size=22><b>{moveName}</b></size>\n\n<color=#ffb3a7>{SummaryWithBonus(damageBonus).Replace(", ", "\n")}</color>\n\n{description}";
-        if (damageBonus > 0 && damage > 0) text += $"\n\n<color=#ff8080>Усиленный удар: +{damageBonus} урона.</color>";
+        string text = $"<size=22><b>{L.T(moveName)}</b></size>\n\n<color=#ffb3a7>{SummaryWithBonus(damageBonus).Replace(", ", "\n")}</color>\n\n{L.T(description)}";
+        if (damageBonus > 0 && damage > 0) text += L.F("\n\n<color=#ff8080>Усиленный удар: +{0} урона.</color>", damageBonus);
         return text;
     }
 }

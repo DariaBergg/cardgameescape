@@ -20,6 +20,8 @@ public class EnemyData : ScriptableObject
     [Tooltip("Своя позиция врага на этой арене")]
     public bool overrideEnemyPosition;
     public Vector3 enemyPosition = new Vector3(3.5f, 0.6f, 0);
+    [Tooltip("За фиолетовой дверью приходит с малышом — уменьшенной копией")]
+    public bool hasMinion;
     [Tooltip("Парит в воздухе: покачивается во время боя")]
     public bool flying;
     public bool randomMoves = true;

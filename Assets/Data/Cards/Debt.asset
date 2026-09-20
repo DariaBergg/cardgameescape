@@ -21,7 +21,13 @@ MonoBehaviour:
   effects: []
   rarity: 0
   unplayable: 1
+  bad: 1
   permanent: 1
   failVariant: {fileID: 0}
+  retain: 0
+  exhaust: 0
+  owner: {fileID: 0}
+  minRoom: 0
+  eventOnly: 0
   eliteMark: {fileID: 0}
   eliteChanceBonus: 0

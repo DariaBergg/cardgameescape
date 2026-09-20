@@ -39,7 +39,7 @@ public class CharacterSelectUI : MonoBehaviour
         var skin = UISkin.Instance;
         var titlePlate = UIFactory.CreatePanel(panel, "TitlePlate", new Vector2(0.5f, 1), new Vector2(0, -18), new Vector2(560, 60), skin != null ? skin.labelTitle : null, Color.clear);
         titlePlate.GetComponent<Image>().raycastTarget = false;
-        var title = UIFactory.CreateText(titlePlate, "Title", "Кем идти?", 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(480, 50));
+        var title = UIFactory.CreateText(titlePlate, "Title", L.T("Кем идти?"), 28, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(480, 50));
         title.font = UIFactory.TitleFont;
         title.color = new Color(0.93f, 0.88f, 0.78f);
         UIFactory.AddShadow(title);
@@ -62,7 +62,7 @@ public class CharacterSelectUI : MonoBehaviour
             portraits.Add(portraitImg);
 
             var trigger = frame.gameObject.AddComponent<TooltipTrigger>();
-            trigger.content = $"<size=24><b>{character.characterName}</b></size>\n\n{character.description}\n\n<color=#ffb07a>Здоровье: {character.maxHP}</color>";
+            trigger.content = L.F("<size=24><b>{0}</b></size>\n\n{1}\n\n<color=#ffb07a>Здоровье: {2}</color>", L.T(character.characterName), L.T(character.description), character.maxHP);
             trigger.width = 440f;
             trigger.preferLeft = i < characters.Count / 2f; // левые портреты — подсказка слева, правые — справа
 
@@ -74,7 +74,7 @@ public class CharacterSelectUI : MonoBehaviour
 
             var namePlate = UIFactory.CreatePanel(frame, "NamePlate", new Vector2(0.5f, 0), new Vector2(0, -22), new Vector2(PortraitSize.x + 40, 44), skin != null ? skin.labelTitle : null, Color.clear);
             namePlate.GetComponent<Image>().raycastTarget = false;
-            var nameLabel = UIFactory.CreateText(namePlate, "Name", character.characterName, 16, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(PortraitSize.x, 40));
+            var nameLabel = UIFactory.CreateText(namePlate, "Name", L.T(character.characterName), 16, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), new Vector2(0, 1), new Vector2(PortraitSize.x, 40));
             nameLabel.font = UIFactory.TitleFont;
             nameLabel.resizeTextForBestFit = true;
             nameLabel.resizeTextMinSize = 10;
@@ -86,14 +86,14 @@ public class CharacterSelectUI : MonoBehaviour
 
         // Описание и стартовые карты выбранного героя
         // Подпись и стартовые карты выбранного героя (описание — по наведению на портрет)
-        var cardsLabel = UIFactory.CreateText(panel, "CardsLabel", "Стартовые карты", 20, TextAnchor.MiddleCenter, new Vector2(0.5f, 0), new Vector2(0, 24 + CardSize.y + 6), new Vector2(400, 30));
+        var cardsLabel = UIFactory.CreateText(panel, "CardsLabel", L.T("Стартовые карты"), 20, TextAnchor.MiddleCenter, new Vector2(0.5f, 0), new Vector2(0, 24 + CardSize.y + 6), new Vector2(400, 30));
         cardsLabel.font = UIFactory.TitleFont;
         cardsLabel.color = new Color(0.93f, 0.88f, 0.78f);
         cardsLabel.raycastTarget = false;
         UIFactory.AddShadow(cardsLabel);
         cardsArea = UIFactory.CreateRect(panel, "Cards", new Vector2(0.5f, 0), new Vector2(0, 24), new Vector2(600, CardSize.y));
 
-        var start = UIFactory.CreateSpriteButton(panel, "Start", "В путь", 30, new Vector2(1, 0), new Vector2(-40, 40), new Vector2(300, 84), skin != null ? skin.mainButton : null, new Color(0.35f, 0.12f, 0.1f, 0.95f));
+        var start = UIFactory.CreateSpriteButton(panel, "Start", L.T("В путь"), 30, new Vector2(1, 0), new Vector2(-40, 40), new Vector2(300, 84), skin != null ? skin.mainButton : null, new Color(0.35f, 0.12f, 0.1f, 0.95f));
         start.onClick.AddListener(() =>
         {
             if (selected == null) return;

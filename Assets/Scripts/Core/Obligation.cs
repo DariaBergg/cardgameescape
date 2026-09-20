@@ -24,9 +24,9 @@ public class Obligation
         {
             switch (type)
             {
-                case ObligationType.Credit: return $"Кредит ({source}): расплата через {roomsRemaining} комн.";
-                case ObligationType.PledgeFights: return $"Залог ({source}): побед {fightsWon}/{fightsRequired}, осталось {roomsRemaining} комн.";
-                case ObligationType.PledgeNoHeal: return $"Залог ({source}): не лечиться, осталось {roomsRemaining} комн.";
+                case ObligationType.Credit: return L.F("Кредит ({0}): расплата через {1} комн.", source, roomsRemaining);
+                case ObligationType.PledgeFights: return L.F("Залог ({0}): побед {1}/{2}, осталось {3} комн.", source, fightsWon, fightsRequired, roomsRemaining);
+                case ObligationType.PledgeNoHeal: return L.F("Залог ({0}): не лечиться, осталось {1} комн.", source, roomsRemaining);
                 default: return type.ToString();
             }
         }

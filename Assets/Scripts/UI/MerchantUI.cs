@@ -69,9 +69,9 @@ public class MerchantUI : MonoBehaviour
         {
             var option = options[i];
             float y = totalHeight / 2f - buttonHeight / 2f - i * (buttonHeight + gap);
-            string text = string.IsNullOrEmpty(option.description)
+            string text = string.IsNullOrEmpty(L.T(option.description))
                 ? option.label
-                : $"{option.label}\n<size=14><color=#d8d0c0>{option.description}</color></size>";
+                : $"{option.label}\n<size=14><color=#d8d0c0>{L.T(option.description)}</color></size>";
             var button = UIFactory.CreateButton(optionsArea, "Option" + i, text, 19, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(Width - 72, buttonHeight), new Color(0.28f, 0.26f, 0.22f));
             button.interactable = option.enabled;
             var captured = option;

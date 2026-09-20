@@ -59,7 +59,7 @@ public class RoomManager : MonoBehaviour
     public float doorSpacing = 3f;
     public float fadeDuration = 0.3f;
 
-    const string HubName = "Перекрёсток";
+    static string HubName => L.T("Перекрёсток");
 
     static readonly DoorType[] tutorialDoors = { DoorType.Combat };
     static readonly DoorType[] earlyDoors = { DoorType.Combat, DoorType.Combat, DoorType.Combat, DoorType.Rest, DoorType.Treasure, DoorType.Event };
@@ -136,6 +136,12 @@ public class RoomManager : MonoBehaviour
                     });
                 }
                 else { player.enabled = true; SpawnDoors(); }
+            }, () =>
+            {
+                // HUD построен до выбора языка — пересобираем его на новом языке
+                Destroy(hud.gameObject);
+                hud = GameHUD.Create();
+                hud.SetRoom(HubName);
             });
         }
         else SpawnDoors();
@@ -151,13 +157,13 @@ public class RoomManager : MonoBehaviour
         switch (o.type)
         {
             case ObligationType.Credit:
-                Announce($"Пришло время расплаты.\n{o.source} забирает {o.hpCost} HP.", true);
+                Announce(L.F("Пришло время расплаты.\n{0} забирает {1} HP.", o.source, o.hpCost), true);
                 break;
             case ObligationType.PledgeFights:
-                Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог провален.\nКарта ослабла ({o.source}).", !success);
+                Announce(success ? L.F("Залог выполнен.\nКарта остаётся у тебя ({0}).", o.source) : L.F("Залог провален.\nКарта ослабла ({0}).", o.source), !success);
                 break;
             case ObligationType.PledgeNoHeal:
-                Announce(success ? $"Залог выполнен.\nКарта остаётся у тебя ({o.source})." : $"Залог нарушен лечением.\nКарта ослабла ({o.source}).", !success);
+                Announce(success ? L.F("Залог выполнен.\nКарта остаётся у тебя ({0}).", o.source) : L.F("Залог нарушен лечением.\nКарта ослабла ({0}).", o.source), !success);
                 break;
         }
     }
@@ -182,7 +188,7 @@ public class RoomManager : MonoBehaviour
 
         yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
         SetBackground(plan.background);
-        hud.SetRoom($"Комната {GameManager.Instance.roomsVisited}: {plan.title}");
+        hud.SetRoom(L.F("Комната {0}: {1}", GameManager.Instance.roomsVisited, L.T(plan.title)));
         PlacePlayer(playerSpawn);
         transitioning = false;
         plan.start();
@@ -200,7 +206,7 @@ public class RoomManager : MonoBehaviour
                     ? Tutorial[CurrentRoomIndex - 1]
                     : PickNotLast(CombatPool());
                 lastEnemy = enemy;
-                return new RoomPlan { title = "Бой", background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
+                return new RoomPlan { title = L.T("Бой"), background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds), start = () => CombatManager.Instance.StartCombat(enemy) };
             }
             case DoorType.Danger:
             {
@@ -208,12 +214,13 @@ public class RoomManager : MonoBehaviour
                 lastEnemy = enemy;
                 return new RoomPlan
                 {
-                    title = "Опасная комната",
+                    title = L.T("Опасная комната"),
                     background = enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds),
                     start = () =>
                     {
-                        if (isElite) hud.Notify($"{enemy.enemyName} почуял тебя!", 2.5f);
-                        CombatManager.Instance.StartCombat(enemy);
+                        if (isElite) hud.Notify(L.F("{0} почуял тебя!", L.T(enemy.enemyName)), 2.5f);
+                        else if (enemy.hasMinion) hud.Notify(L.F("{0} — и с ним малыш!", L.T(enemy.enemyName)), 2.5f);
+                        CombatManager.Instance.StartCombat(enemy, withMinion: !isElite && enemy.hasMinion); // только помеченные враги приходят с малышом
                     }
                 };
             }
@@ -222,7 +229,7 @@ public class RoomManager : MonoBehaviour
                 var variant = PickOrNull(restVariants);
                 return new RoomPlan
                 {
-                    title = variant != null ? variant.title : "Отдых",
+                    title = variant != null ? L.T(variant.title) : L.T("Отдых"),
                     background = variant != null ? variant.background : null,
                     start = () =>
                     {
@@ -240,10 +247,10 @@ public class RoomManager : MonoBehaviour
             {
                 var merchant = PickYellowRoomMerchant();
                 if (merchant == null)
-                    return new RoomPlan { title = "Сокровищница", background = treasureBackground, start = StartTreasureRoom };
+                    return new RoomPlan { title = L.T("Сокровищница"), background = treasureBackground, start = StartTreasureRoom };
                 return new RoomPlan
                 {
-                    title = merchant.displayName,
+                    title = L.T(merchant.displayName),
                     background = merchant.background != null ? merchant.background : treasureBackground,
                     start = () => StartMerchantRoom(merchant)
                 };
@@ -253,11 +260,11 @@ public class RoomManager : MonoBehaviour
                 var ev = PickNotLastEvent();
                 return new RoomPlan
                 {
-                    title = ev != null ? ev.title : "Событие",
+                    title = ev != null ? L.T(ev.title) : L.T("Событие"),
                     background = ev != null ? ev.background : null,
                     start = () =>
                     {
-                        if (ev == null) { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); return; }
+                        if (ev == null) { hud.Notify(L.T("Случайное событие (пока пусто)")); OnRoomCleared(); return; }
                         player.enabled = false;
                         player.EnterCombatPose(ev.playerPosition, ev.playerScale);
                         if (ev.npcSprite != null)
@@ -288,7 +295,7 @@ public class RoomManager : MonoBehaviour
         if (variant == null)
         {
             gm.Heal(10);
-            hud.Notify("Ты отдохнул: +10 HP");
+            hud.Notify(L.T("Ты отдохнул: +10 HP"));
             AfterHeal();
             return;
         }
@@ -306,7 +313,7 @@ public class RoomManager : MonoBehaviour
                 break;
             default:
                 gm.Heal(variant.healAmount);
-                hud.Notify($"{variant.description}  +{variant.healAmount} HP", 4f);
+                hud.Notify($"{L.T(variant.description)}  +{variant.healAmount} HP", 4f);
                 AfterHeal();
                 break;
         }
@@ -320,31 +327,31 @@ public class RoomManager : MonoBehaviour
         {
             new RestRoomUI.Option
             {
-                label = "Отдохнуть",
-                description = $"Восстановить {variant.healAmount} HP",
+                label = L.T("Отдохнуть"),
+                description = L.F("Восстановить {0} HP", variant.healAmount),
                 action = () =>
                 {
                     ui.Hide();
                     gm.Heal(variant.healAmount);
-                    hud.Notify($"Ты отдохнул у костра: +{variant.healAmount} HP");
+                    hud.Notify(L.F("Ты отдохнул у костра: +{0} HP", variant.healAmount));
                     AfterHeal();
                 }
             },
             new RestRoomUI.Option
             {
-                label = "Точить когти",
-                description = "Улучшить одну карту из колоды",
+                label = L.T("Точить когти"),
+                description = L.T("Улучшить одну карту из колоды"),
                 action = () =>
                 {
                     ui.Hide();
                     DeckPickerUI.Get().Show(
-                        "Выбери карту для улучшения",
+                        L.T("Выбери карту для улучшения"),
                         gm.playerDeck,
                         null,
                         card =>
                         {
                             var upgraded = gm.UpgradeCard(card);
-                            hud.Notify($"«{upgraded.cardName}»: {upgraded.EffectsSummary}", 4f);
+                            hud.Notify($"«{L.T(upgraded.cardName)}»: {upgraded.EffectsSummary}", 4f);
                             OnRoomCleared();
                         },
                         () => ShowCampfire(variant),
@@ -352,7 +359,7 @@ public class RoomManager : MonoBehaviour
                 }
             }
         };
-        ui.Show(variant.title, variant.description, options);
+        ui.Show(L.T(variant.title), L.T(variant.description), options);
     }
 
     // Алтарь: лечение — или жертва ради избавления от карты
@@ -366,13 +373,13 @@ public class RoomManager : MonoBehaviour
         {
             new RestRoomUI.Option
             {
-                label = "Помолиться",
-                description = $"Восстановить {variant.healAmount} HP",
+                label = L.T("Помолиться"),
+                description = L.F("Восстановить {0} HP", variant.healAmount),
                 action = () =>
                 {
                     ui.Hide();
                     gm.Heal(variant.healAmount);
-                    hud.Notify($"Зелёный огонь теплеет. +{variant.healAmount} HP");
+                    hud.Notify(L.F("Зелёный огонь теплеет. +{0} HP", variant.healAmount));
                     AfterHeal();
                 }
             }
@@ -381,27 +388,27 @@ public class RoomManager : MonoBehaviour
         {
             options.Add(new RestRoomUI.Option
             {
-                label = "Принести жертву",
-                description = $"−{sacrificeCost} HP: убрать одну карту из колоды навсегда",
+                label = L.T("Принести жертву"),
+                description = L.F("−{0} HP: убрать одну карту из колоды навсегда", sacrificeCost),
                 action = () =>
                 {
                     ui.Hide();
                     DeckPickerUI.Get().Show(
-                        "Какую карту отдать алтарю?",
+                        L.T("Какую карту отдать алтарю?"),
                         removable,
                         null,
                         card =>
                         {
                             gm.LoseHPSafe(sacrificeCost);
                             gm.RemoveCard(card);
-                            hud.Notify($"Алтарь принимает «{card.cardName}». −{sacrificeCost} HP", 4f);
+                            hud.Notify(L.F("Алтарь принимает «{0}». −{1} HP", L.T(card.cardName), sacrificeCost), 4f);
                             OnRoomCleared();
                         },
                         () => ShowAltar(variant));
                 }
             });
         }
-        ui.Show(variant.title, variant.description, options);
+        ui.Show(L.T(variant.title), L.T(variant.description), options);
     }
 
     // Заброшенный лагерь: переночевать — или порыться в чужих вещах
@@ -413,37 +420,37 @@ public class RoomManager : MonoBehaviour
         {
             new RestRoomUI.Option
             {
-                label = "Переночевать",
-                description = $"Восстановить {variant.healAmount} HP",
+                label = L.T("Переночевать"),
+                description = L.F("Восстановить {0} HP", variant.healAmount),
                 action = () =>
                 {
                     ui.Hide();
                     gm.Heal(variant.healAmount);
-                    hud.Notify($"Ночь проходит тихо. +{variant.healAmount} HP");
+                    hud.Notify(L.F("Ночь проходит тихо. +{0} HP", variant.healAmount));
                     AfterHeal();
                 }
             },
             new RestRoomUI.Option
             {
-                label = "Обыскать лагерь",
-                description = "Без отдыха. Найти одну из двух оставленных карт",
+                label = L.T("Обыскать лагерь"),
+                description = L.T("Без отдыха. Найти одну из двух оставленных карт"),
                 action = () =>
                 {
                     ui.Hide();
                     var pool = CardPools.Instance.RandomOfRarity(CardRarity.Common, 2);
-                    CardChoiceUI.Get().Show("В вещах лагеря: выбери карту", pool, card =>
+                    CardChoiceUI.Get().Show(L.T("В вещах лагеря: выбери карту"), pool, card =>
                     {
                         if (card != null)
                         {
                             gm.playerDeck.Add(card);
-                            hud.Notify($"«{card.cardName}» добавлена в колоду", 3f);
+                            hud.Notify(L.F("«{0}» добавлена в колоду", L.T(card.cardName)), 3f);
                         }
                         OnRoomCleared();
                     });
                 }
             }
         };
-        ui.Show(variant.title, variant.description, options);
+        ui.Show(L.T(variant.title), L.T(variant.description), options);
     }
 
     EventData lastEvent;
@@ -471,7 +478,7 @@ public class RoomManager : MonoBehaviour
         yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
         if (merchantVisual != null) Destroy(merchantVisual);
         SetBackground(enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds));
-        hud.SetRoom($"Комната {GameManager.Instance.roomsVisited}: Засада");
+        hud.SetRoom(L.F("Комната {0}: Засада", GameManager.Instance.roomsVisited));
         PlacePlayer(playerSpawn);
         CombatManager.Instance.StartCombat(enemy);
         yield return null;
@@ -563,13 +570,13 @@ public class RoomManager : MonoBehaviour
         if (pool.Count > treasureChoices) pool.RemoveRange(treasureChoices, pool.Count - treasureChoices);
         var bonus = GameManager.Instance.RollBonusCard();
         if (bonus != null) pool.Add(bonus); // особая карта героя — редкий гость в сундуке
-        CardChoiceUI.Get().Show("Сундук! Выбери карту", pool, card =>
+        CardChoiceUI.Get().Show(L.T("Сундук! Выбери карту"), pool, card =>
         {
             if (card != null)
             {
                 GameManager.Instance.playerDeck.Add(card);
                 if (card == bonus) GameManager.Instance.OnBonusCardTaken();
-                hud.Notify($"«{card.cardName}» добавлена в колоду", 3f);
+                hud.Notify(L.F("«{0}» добавлена в колоду", L.T(card.cardName)), 3f);
             }
             OnRoomCleared();
         });
@@ -596,7 +603,7 @@ public class RoomManager : MonoBehaviour
         var bonus = healedThisRoom ? GameManager.Instance.RollBonusCard() : null;
         healedThisRoom = false;
         if (bonus == null) { StartCoroutine(ReturnToHub()); return; }
-        CardChoiceUI.Get().Show("Силы возвращаются — и с ними ярость. Взять карту?", new List<CardData> { bonus }, card =>
+        CardChoiceUI.Get().Show(L.T("Силы возвращаются — и с ними ярость. Взять карту?"), new List<CardData> { bonus }, card =>
         {
             if (card != null) { GameManager.Instance.playerDeck.Add(card); GameManager.Instance.OnBonusCardTaken(); }
             StartCoroutine(ReturnToHub());

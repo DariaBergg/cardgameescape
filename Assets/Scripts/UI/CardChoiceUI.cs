@@ -35,7 +35,7 @@ public class CardChoiceUI : MonoBehaviour
         titleText.font = UIFactory.TitleFont;
         UIFactory.AddShadow(titleText);
         cardsArea = UIFactory.CreateRect(panel, "Cards", new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1000, 420));
-        skipButton = UIFactory.CreateButton(panel, "Skip", "Пропустить", 20, new Vector2(0.5f, 0.5f), new Vector2(0, -265), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
+        skipButton = UIFactory.CreateButton(panel, "Skip", L.T("Пропустить"), 20, new Vector2(0.5f, 0.5f), new Vector2(0, -265), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
         skipButton.onClick.AddListener(() => Choose(null));
         panel.gameObject.SetActive(false);
     }
@@ -56,6 +56,48 @@ public class CardChoiceUI : MonoBehaviour
         }
         skipButton.gameObject.SetActive(allowSkip);
         panel.gameObject.SetActive(true);
+    }
+
+    // Показать карты без выбора: кнопка «В колоду» — карты улетают вверх, потом колбэк
+    public void Reveal(string title, IList<CardData> cards, Action onDone)
+    {
+        Show(title, cards, _ => { }, allowSkip: true);
+        foreach (Transform child in cardsArea)
+        {
+            var b = child.GetComponent<Button>();
+            if (b != null) b.onClick.RemoveAllListeners();
+        }
+        skipButton.onClick.RemoveAllListeners();
+        skipButton.transform.Find("Label").GetComponent<Text>().text = L.T("В колоду");
+        skipButton.onClick.AddListener(() => StartCoroutine(FlyAway(onDone)));
+    }
+
+    System.Collections.IEnumerator FlyAway(Action onDone)
+    {
+        skipButton.interactable = false;
+        var views = new System.Collections.Generic.List<RectTransform>();
+        foreach (Transform child in cardsArea) views.Add(child.GetComponent<RectTransform>());
+        var starts = views.ConvertAll(v => v.anchoredPosition);
+        var target = new Vector2(560, 380); // к кнопке «Колода» в правом верхнем углу
+        for (float t = 0; t < 0.45f; t += Time.deltaTime)
+        {
+            float k = t / 0.45f; k = k * k;
+            for (int i = 0; i < views.Count; i++)
+            {
+                if (views[i] == null) continue;
+                views[i].anchoredPosition = Vector2.Lerp(starts[i], target, k);
+                views[i].localScale = Vector3.one * Mathf.Lerp(1f, 0.2f, k);
+            }
+            yield return null;
+        }
+        // вернуть кнопке стандартный вид
+        skipButton.interactable = true;
+        skipButton.onClick.RemoveAllListeners();
+        skipButton.onClick.AddListener(() => Choose(null));
+        skipButton.transform.Find("Label").GetComponent<Text>().text = L.T("Пропустить");
+        panel.gameObject.SetActive(false);
+        if (Tooltip.Instance != null) Tooltip.Instance.Hide();
+        onDone?.Invoke();
     }
 
     void Choose(CardData card)

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Локализация. Ключ — русский текст, как он написан в коде и данных.
-// Таблица переводов: Assets/Resources/Localization/<lang>.tsv, строки «русский<TAB>перевод», \n внутри — перенос.
+// Таблица переводов: Assets/Resources/Localization/<lang>.txt, строки «русский<TAB>перевод», \n внутри — перенос.
 public static class L
 {
     const string PrefKey = "language";

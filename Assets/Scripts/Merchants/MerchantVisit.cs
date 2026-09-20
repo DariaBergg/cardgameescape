@@ -31,7 +31,7 @@ public abstract class MerchantVisit
     protected void Say(string speech, params MerchantUI.Option[] options)
     {
         var list = new List<MerchantUI.Option>(options);
-        ui.Show(data.displayName, speech, list);
+        ui.Show(L.T(data.displayName), speech, list);
     }
 
     protected void Done(string speech)
@@ -39,9 +39,9 @@ public abstract class MerchantVisit
         Say(speech, Leave());
     }
 
-    protected MerchantUI.Option Leave(string label = "Уйти")
+    protected MerchantUI.Option Leave(string label = null)
     {
-        return new MerchantUI.Option { label = label, action = () => { ui.Hide(); onLeave?.Invoke(); } };
+        return new MerchantUI.Option { label = label ?? L.T("Уйти"), action = () => { ui.Hide(); onLeave?.Invoke(); } };
     }
 
     protected MerchantUI.Option Opt(string label, string description, Action action, bool enabled = true)

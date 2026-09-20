@@ -18,7 +18,7 @@ public class BlacksmithVisit : MerchantVisit
 
     void Shop()
     {
-        Say("Кузнец не отрывается от наковальни.\n«Перековать? Или хочешь что-то посерьёзнее — под залог?»", ShopOptions());
+        Say(L.T("Кузнец не отрывается от наковальни.\n«Перековать? Или хочешь что-то посерьёзнее — под залог?»"), ShopOptions());
     }
 
     MerchantUI.Option[] ShopOptions()
@@ -26,8 +26,8 @@ public class BlacksmithVisit : MerchantVisit
         bool hasPledge = gm.HasObligation(ObligationType.PledgeFights);
         return new[]
         {
-            Opt("Перековка", "Улучшить одну карту из колоды", () => Reforge("«Держи. Теперь она бьёт как надо.»")),
-            Opt("Залог", $"Улучшенная редкая карта. Условие: {PledgeFights} победы за {PledgeRooms} комнат", Pledge, !hasPledge),
+            Opt(L.T("Перековка"), L.T("Улучшить одну карту из колоды"), () => Reforge(L.T("«Держи. Теперь она бьёт как надо.»"))),
+            Opt(L.T("Залог"), L.F("Улучшенная редкая карта. Условие: {0} победы за {1} комнат", PledgeFights, PledgeRooms), Pledge, !hasPledge),
             Leave()
         };
     }
@@ -35,10 +35,10 @@ public class BlacksmithVisit : MerchantVisit
     void Reforge(string afterText)
     {
         ui.Hide();
-        DeckPickerUI.Get().Show("Перековка: какую карту улучшить?", gm.playerDeck, c => !c.unplayable, card =>
+        DeckPickerUI.Get().Show(L.T("Перековка: какую карту улучшить?"), gm.playerDeck, c => !c.unplayable, card =>
         {
             var upgraded = gm.UpgradeCard(card);
-            Done($"{afterText}\n«{upgraded.cardName}»: {upgraded.EffectsSummary}");
+            Done($"{afterText}\n«{L.T(upgraded.cardName)}»: {upgraded.EffectsSummary}");
         }, Shop, upgradePreview: true);
     }
 
@@ -48,33 +48,33 @@ public class BlacksmithVisit : MerchantVisit
         var upgraded = new List<CardData>();
         foreach (var c in pool) upgraded.Add(c.CreateUpgradedCopy());
         ui.Hide();
-        CardChoiceUI.Get().Show($"Залог: выбери карту. {PledgeFights} победы за {PledgeRooms} комнат — или она ослабнет", upgraded, chosen =>
+        CardChoiceUI.Get().Show(L.F("Залог: выбери карту. {0} победы за {1} комнат — или она ослабнет", PledgeFights, PledgeRooms), upgraded, chosen =>
         {
             if (chosen == null) { Shop(); return; }
             gm.playerDeck.Add(chosen);
             gm.AddObligation(new Obligation
             {
                 type = ObligationType.PledgeFights,
-                source = data.displayName,
+                source = L.T(data.displayName),
                 roomsRemaining = PledgeRooms,
                 fightsRequired = PledgeFights,
                 card = chosen
             });
-            Done($"«{chosen.cardName} твоя. Пока. Три победы — и забудем про залог.»");
+            Done(L.F("«{0} твоя. Пока. Три победы — и забудем про залог.»", L.T(chosen.cardName)));
         });
     }
 
     void ScrollDialogue()
     {
-        Say("Кузнец смотрит на печать и хмурится.\n«Опять он... Что он тебе за это обещал?»",
-            Opt("Передать свиток", "Кузнец бесплатно улучшит одну карту", () =>
+        Say(L.T("Кузнец смотрит на печать и хмурится.\n«Опять он... Что он тебе за это обещал?»"),
+            Opt(L.T("Передать свиток"), L.T("Кузнец бесплатно улучшит одну карту"), () =>
             {
                 gm.TakeItem("SealedScroll");
                 gm.SetFlag(QuestFlag, "Delivered");
                 RoomManager.Instance.ForceMerchant(MerchantKind.Collector);
-                Reforge("«Ладно. За доставку — перекую что скажешь.»\n«Если снова встретишь Собирателя, передай ему: я больше не принимаю его долги.»");
+                Reforge(L.T("«Ладно. За доставку — перекую что скажешь.»\n«Если снова встретишь Собирателя, передай ему: я больше не принимаю его долги.»"));
             }),
-            Opt("Открыть свиток", "Нарушить просьбу Собирателя и посмотреть, что внутри", () =>
+            Opt(L.T("Открыть свиток"), L.T("Нарушить просьбу Собирателя и посмотреть, что внутри"), () =>
             {
                 gm.TakeItem("SealedScroll");
                 gm.GiveItem("OpenedScroll");
@@ -83,7 +83,7 @@ public class BlacksmithVisit : MerchantVisit
                 var pool = CardPools.Instance.RandomOfRarity(CardRarity.Rare, 1);
                 var card = pool.Count > 0 ? pool[0] : null;
                 if (card != null) gm.playerDeck.Add(card);
-                Say($"Печать хрустит. Внутри — «{(card != null ? card.cardName : "пусто")}».\nКузнец качает головой: «Сорванная печать. Улучшать бесплатно не стану. Но торговать — торгую.»", ShopOptions());
+                Say(L.F("Печать хрустит. Внутри — «{0}».\nКузнец качает головой: «Сорванная печать. Улучшать бесплатно не стану. Но торговать — торгую.»", (card != null ? L.T(card.cardName) : L.T("пусто"))), ShopOptions());
             }));
     }
 }

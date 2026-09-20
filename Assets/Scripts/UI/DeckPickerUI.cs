@@ -60,17 +60,17 @@ public class DeckPickerUI : MonoBehaviour
         scroll.movementType = ScrollRect.MovementType.Clamped;
         scroll.scrollSensitivity = 40f;
 
-        cancelButton = UIFactory.CreateButton(panel, "Cancel", "Назад", 20, new Vector2(0.5f, 0), new Vector2(0, 26), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
+        cancelButton = UIFactory.CreateButton(panel, "Cancel", L.T("Назад"), 20, new Vector2(0.5f, 0), new Vector2(0, 26), new Vector2(180, 48), new Color(0.3f, 0.3f, 0.3f));
         cancelButton.onClick.AddListener(() => { Hide(); onCancel?.Invoke(); });
         panel.gameObject.SetActive(false);
     }
 
-    public void Show(string title, IList<CardData> cards, Func<CardData, bool> selectable, Action<CardData> picked, Action cancelled, bool upgradePreview = false, string closeLabel = "Назад")
+    public void Show(string title, IList<CardData> cards, Func<CardData, bool> selectable, Action<CardData> picked, Action cancelled, bool upgradePreview = false, string closeLabel = null)
     {
         onPicked = picked;
         onCancel = cancelled;
         titleText.text = title;
-        cancelButton.transform.Find("Label").GetComponent<Text>().text = closeLabel;
+        cancelButton.transform.Find("Label").GetComponent<Text>().text = closeLabel ?? L.T("Назад");
         foreach (Transform child in content) Destroy(child.gameObject);
 
         int rows = Mathf.Max(1, Mathf.CeilToInt(cards.Count / (float)PerRow));

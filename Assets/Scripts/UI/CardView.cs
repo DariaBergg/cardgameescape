@@ -14,12 +14,12 @@ public static class CardView
 
         if (composite)
         {
-            button = UIFactory.CreateButton(parent, "Card_" + card.cardName, "", 18, anchor, pos, size, new Color(0, 0, 0, 0));
+            button = UIFactory.CreateButton(parent, "Card_" + L.T(card.cardName), "", 18, anchor, pos, size, new Color(0, 0, 0, 0));
             BuildComposite(button.transform, card, size, visuals);
         }
         else if (card.artwork != null)
         {
-            button = UIFactory.CreateButton(parent, "Card_" + card.cardName, "", 18, anchor, pos, size, new Color(0, 0, 0, 0));
+            button = UIFactory.CreateButton(parent, "Card_" + L.T(card.cardName), "", 18, anchor, pos, size, new Color(0, 0, 0, 0));
             var art = UIFactory.CreateRect(button.transform, "Art", new Vector2(0.5f, 0.5f), Vector2.zero, size);
             var img = art.gameObject.AddComponent<Image>();
             img.sprite = card.artwork;
@@ -28,8 +28,8 @@ public static class CardView
         }
         else
         {
-            string text = $"{card.cardName}\n\n<size=17>{card.EffectsSummary}</size>";
-            button = UIFactory.CreateButton(parent, "Card_" + card.cardName, text, 20, anchor, pos, size, ColorFor(card));
+            string text = $"{L.T(card.cardName)}\n\n<size=17>{card.EffectsSummary}</size>";
+            button = UIFactory.CreateButton(parent, "Card_" + L.T(card.cardName), text, 20, anchor, pos, size, ColorFor(card));
         }
 
         if (card.upgraded && !composite)
@@ -53,7 +53,7 @@ public static class CardView
             var bg = badge.gameObject.AddComponent<Image>();
             bg.color = MarkColor;
             bg.raycastTarget = false;
-            var label = UIFactory.CreateText(badge, "Label", $"{card.eliteMark.enemyName}  +{card.eliteChanceBonus}%", 14, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, badge.sizeDelta);
+            var label = UIFactory.CreateText(badge, "Label", $"{L.T(card.eliteMark.enemyName)}  +{card.eliteChanceBonus}%", 14, TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, badge.sizeDelta);
             label.color = new Color(0.95f, 0.85f, 1f);
             label.resizeTextForBestFit = true;
             label.resizeTextMinSize = 6;
@@ -61,7 +61,9 @@ public static class CardView
             label.raycastTarget = false;
         }
 
-        button.gameObject.AddComponent<TooltipTrigger>().content = card.TooltipText;
+        var cardTip = button.gameObject.AddComponent<TooltipTrigger>();
+        cardTip.content = card.TooltipText;
+        cardTip.extra = Glossary.ForCard(card);
         return button;
     }
 
@@ -100,7 +102,7 @@ public static class CardView
         name.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.085f);
         name.horizontalOverflow = HorizontalWrapMode.Wrap;
         name.verticalOverflow = VerticalWrapMode.Truncate;
-        name.text = card.cardName;
+        name.text = L.T(card.cardName);
         name.raycastTarget = false;
 
         var textRect = PlaceRect(parent, "Rules", visuals.textArea, size);
@@ -116,6 +118,15 @@ public static class CardView
         rules.verticalOverflow = VerticalWrapMode.Truncate;
         rules.text = card.ShortText;
         rules.raycastTarget = false;
+
+        // Плохие карты (рана, долг, испорченные) — красные надписи и слегка красная рамка
+        if (card.IsBad)
+        {
+            var bad = new Color(0.62f, 0.08f, 0.06f);
+            name.color = bad;
+            rules.color = bad;
+            frameImg.color = new Color(1f, 0.8f, 0.8f);
+        }
 
         // Замах на карте — значками-молниями внизу текстового поля, а не текстом
         int momentum = 0;
@@ -178,9 +189,9 @@ public static class CardView
         {
             nameText = name;
             rulesText = rules;
-            originalName = card.cardName;
+            originalName = L.T(card.cardName);
             originalRules = card.ShortText;
-            previewName = card.cardName;
+            previewName = L.T(card.cardName);
             previewRules = card.UpgradePreviewShortText();
         }
 
