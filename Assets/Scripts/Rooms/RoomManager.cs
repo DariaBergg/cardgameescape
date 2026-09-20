@@ -224,6 +224,21 @@ public class RoomManager : MonoBehaviour
                     {
                         if (ev == null) { hud.Notify("Случайное событие (пока пусто)"); OnRoomCleared(); return; }
                         player.enabled = false;
+                        if (ev.npcSprite != null)
+                        {
+                            var npc = SpawnRoomNpc("Event_" + ev.kind, ev.npcSprite, ev.npcPosition);
+                            npc.flipX = ev.npcFlipX;
+                            if (ev.npcMaskSize.x > 0 && ev.npcMaskSize.y > 0)
+                            {
+                                npc.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                                var mask = new GameObject("Mask").AddComponent<SpriteMask>();
+                                mask.sprite = PlaceholderSprites.Square(Color.white);
+                                mask.transform.position = ev.npcMaskCenter;
+                                mask.transform.localScale = new Vector3(ev.npcMaskSize.x, ev.npcMaskSize.y, 1f);
+                                mask.transform.SetParent(npc.transform, true);
+                            }
+                            player.EnterCombatPose(ev.playerPosition, ev.playerScale);
+                        }
                         EventVisit.Start(ev, OnRoomCleared);
                     }
                 };
@@ -246,6 +261,12 @@ public class RoomManager : MonoBehaviour
         {
             case RestRoomKind.Campfire:
                 ShowCampfire(variant);
+                break;
+            case RestRoomKind.Altar:
+                ShowAltar(variant);
+                break;
+            case RestRoomKind.AbandonedCamp:
+                ShowAbandonedCamp(variant);
                 break;
             default:
                 gm.Heal(variant.healAmount);
@@ -298,6 +319,97 @@ public class RoomManager : MonoBehaviour
         ui.Show(variant.title, variant.description, options);
     }
 
+    // Алтарь: лечение — или жертва ради избавления от карты
+    void ShowAltar(RestRoomVariant variant)
+    {
+        var gm = GameManager.Instance;
+        var ui = RestRoomUI.Get();
+        const int sacrificeCost = 5;
+        var removable = gm.playerDeck.FindAll(c => c != null && !c.permanent);
+        var options = new List<RestRoomUI.Option>
+        {
+            new RestRoomUI.Option
+            {
+                label = "Помолиться",
+                description = $"Восстановить {variant.healAmount} HP",
+                action = () =>
+                {
+                    ui.Hide();
+                    gm.Heal(variant.healAmount);
+                    hud.Notify($"Зелёный огонь теплеет. +{variant.healAmount} HP");
+                    OnRoomCleared();
+                }
+            }
+        };
+        if (removable.Count > 1)
+        {
+            options.Add(new RestRoomUI.Option
+            {
+                label = "Принести жертву",
+                description = $"−{sacrificeCost} HP: убрать одну карту из колоды навсегда",
+                action = () =>
+                {
+                    ui.Hide();
+                    DeckPickerUI.Get().Show(
+                        "Какую карту отдать алтарю?",
+                        removable,
+                        null,
+                        card =>
+                        {
+                            gm.LoseHPSafe(sacrificeCost);
+                            gm.RemoveCard(card);
+                            hud.Notify($"Алтарь принимает «{card.cardName}». −{sacrificeCost} HP", 4f);
+                            OnRoomCleared();
+                        },
+                        () => ShowAltar(variant));
+                }
+            });
+        }
+        ui.Show(variant.title, variant.description, options);
+    }
+
+    // Заброшенный лагерь: переночевать — или порыться в чужих вещах
+    void ShowAbandonedCamp(RestRoomVariant variant)
+    {
+        var gm = GameManager.Instance;
+        var ui = RestRoomUI.Get();
+        var options = new List<RestRoomUI.Option>
+        {
+            new RestRoomUI.Option
+            {
+                label = "Переночевать",
+                description = $"Восстановить {variant.healAmount} HP",
+                action = () =>
+                {
+                    ui.Hide();
+                    gm.Heal(variant.healAmount);
+                    hud.Notify($"Ночь проходит тихо. +{variant.healAmount} HP");
+                    OnRoomCleared();
+                }
+            },
+            new RestRoomUI.Option
+            {
+                label = "Обыскать лагерь",
+                description = "Без отдыха. Найти одну из двух оставленных карт",
+                action = () =>
+                {
+                    ui.Hide();
+                    var pool = CardPools.Instance.RandomOfRarity(CardRarity.Common, 2);
+                    CardChoiceUI.Get().Show("В вещах лагеря: выбери карту", pool, card =>
+                    {
+                        if (card != null)
+                        {
+                            gm.playerDeck.Add(card);
+                            hud.Notify($"«{card.cardName}» добавлена в колоду", 3f);
+                        }
+                        OnRoomCleared();
+                    });
+                }
+            }
+        };
+        ui.Show(variant.title, variant.description, options);
+    }
+
     EventData lastEvent;
 
     EventData PickNotLastEvent()
@@ -320,6 +432,7 @@ public class RoomManager : MonoBehaviour
         hud.Announce(message, true, 2.5f);
         yield return new WaitForSeconds(1.2f);
         yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
+        if (merchantVisual != null) Destroy(merchantVisual);
         SetBackground(enemy.arena != null ? enemy.arena : PickOrNull(combatBackgrounds));
         hud.SetRoom($"Комната {GameManager.Instance.roomsVisited}: Засада");
         PlacePlayer(playerSpawn);
@@ -362,22 +475,31 @@ public class RoomManager : MonoBehaviour
         return merchants[Random.Range(0, merchants.Count)];
     }
 
-    void StartMerchantRoom(MerchantData merchant)
+    // Персонаж в комнате (купец, NPC события). Один за раз, убирается при возврате в хаб или засаде.
+    SpriteRenderer SpawnRoomNpc(string name, Sprite sprite, Vector3 position)
     {
         if (merchantVisual != null) Destroy(merchantVisual);
-        merchantVisual = new GameObject("Merchant_" + merchant.Id);
+        merchantVisual = new GameObject(name);
         var sr = merchantVisual.AddComponent<SpriteRenderer>();
         sr.sortingOrder = 1;
-        if (merchant.sprite != null)
-        {
-            sr.sprite = merchant.sprite;
-        }
-        else
+        sr.sprite = sprite;
+        merchantVisual.transform.position = position;
+        return sr;
+    }
+
+    public void HideRoomNpc()
+    {
+        if (merchantVisual != null) Destroy(merchantVisual);
+    }
+
+    void StartMerchantRoom(MerchantData merchant)
+    {
+        var sr = SpawnRoomNpc("Merchant_" + merchant.Id, merchant.sprite, merchant.position);
+        if (merchant.sprite == null)
         {
             sr.sprite = PlaceholderSprites.Square(merchant.placeholderColor);
             merchantVisual.transform.localScale = new Vector3(1.6f, merchant.spriteHeight, 1f);
         }
-        merchantVisual.transform.position = merchant.position;
 
         player.EnterCombatPose(merchantPlayerPosition, merchantPlayerScale);
         player.enabled = false;

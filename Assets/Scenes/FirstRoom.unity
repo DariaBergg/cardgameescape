@@ -625,6 +625,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 52b59945d5b904c4f8b001e2cf249260, type: 3}
   restVariants:
   - {fileID: 11400000, guid: 0daeebb012d4e41ceb13c86a8ff8c264, type: 2}
+  - {fileID: 11400000, guid: 4fd68444fe6f04847827d5d241f58a85, type: 2}
+  - {fileID: 11400000, guid: 6eb1f108367ce4066b7ac2bf70079cad, type: 2}
+  - {fileID: 11400000, guid: e94726c2b9cf84809a5f2a0ed8b1b660, type: 2}
   events:
   - {fileID: 11400000, guid: dd75e46e823c04c77b9ca25b26e0d2a9, type: 2}
   - {fileID: 11400000, guid: bf4aacfa3b333476088cd1af2d98d7ec, type: 2}
@@ -662,6 +665,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f7259fd198f924923805ecb51ec964b6, type: 2}
   - {fileID: 11400000, guid: 499724c8a5b94479097c0f7ece6a0ed3, type: 2}
   - {fileID: 11400000, guid: 1612ae07398534cb39babadecbd7c71b, type: 2}
+  - {fileID: 11400000, guid: 84e00f245101c4e3bbfed9b29438edef, type: 2}
   dangerEnemies: []
   elites:
   - {fileID: 11400000, guid: a8871c368cbc548f9bc1119a95857ea6, type: 2}

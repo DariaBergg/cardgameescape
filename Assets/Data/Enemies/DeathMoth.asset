@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fbb043fd60334a2b8b4a365775f7112, type: 3}
+  m_Name: DeathMoth
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: "\u041C\u0451\u0440\u0442\u0432\u0430\u044F \u0433\u043E\u043B\u043E\u0432\u0430"
+  maxHP: 22
+  color: {r: 0.75, g: 0.68, b: 0.5, a: 1}
+  sprite: {fileID: 21300000, guid: d42dd8a10c6f64d0b8dc906221ae7219, type: 3}
+  hiddenSprite: {fileID: 0}
+  arena: {fileID: 21300000, guid: d75b35bb0364843c7b2d1aad061cca15, type: 3}
+  overridePlayerPosition: 0
+  playerPosition: {x: -5.5, y: -1.6, z: 0}
+  overrideEnemyPosition: 1
+  enemyPosition: {x: 4, y: 0.9, z: 0}
+  flying: 1
+  randomMoves: 0
+  moves:
+  - moveName: "\u0412\u0437\u043C\u0430\u0445 \u043A\u0440\u044B\u043B\u044C\u0435\u0432"
+    icon: {fileID: 21300000, guid: f8769f0daf3fd4e1b94966d92d605b0b, type: 3}
+    damage: 4
+    hits: 1
+    block: 0
+    poisonDamage: 0
+    poisonTurns: 0
+    handReduce: 0
+    corruptCards: 0
+    lockBlock: 0
+    description: "\u0423\u0434\u0430\u0440 \u0442\u044F\u0436\u0451\u043B\u044B\u043C
+      \u043A\u0440\u044B\u043B\u043E\u043C: 4 \u0443\u0440\u043E\u043D\u0430."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
+  - moveName: "\u041F\u044B\u043B\u044C\u0446\u0430"
+    icon: {fileID: 21300000, guid: 435f3148eb1564c4b8f2b86ef597377a, type: 3}
+    damage: 2
+    hits: 1
+    block: 0
+    poisonDamage: 0
+    poisonTurns: 0
+    handReduce: 0
+    corruptCards: 1
+    lockBlock: 0
+    description: "\u042F\u0434\u043E\u0432\u0438\u0442\u0430\u044F \u043F\u044B\u043B\u044C\u0446\u0430:
+      2 \u0443\u0440\u043E\u043D\u0430 \u0438 \u043E\u0434\u043D\u0430 \u043A\u0430\u0440\u0442\u0430
+      \u0432 \u0440\u0443\u043A\u0435 \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0441\u044F
+      \u0441\u043B\u0430\u0431\u043E\u0439 \u0434\u043E \u043A\u043E\u043D\u0446\u0430
+      \u0431\u043E\u044F."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
+  - moveName: "\u041C\u043E\u0440\u043E\u043A"
+    icon: {fileID: 21300000, guid: 815e09abe6591498ebb0261c523ebb30, type: 3}
+    damage: 0
+    hits: 1
+    block: 5
+    poisonDamage: 0
+    poisonTurns: 0
+    handReduce: 1
+    corruptCards: 0
+    lockBlock: 0
+    description: "\u041C\u043E\u0442\u044B\u043B\u0451\u043A \u0440\u0430\u0441\u0442\u0432\u043E\u0440\u044F\u0435\u0442\u0441\u044F
+      \u0432 \u0442\u0443\u043C\u0430\u043D\u0435: \u0437\u0430\u0449\u0438\u0442\u0430
+      5, \u0432 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0445\u043E\u0434
+      \u0443 \u0442\u0435\u0431\u044F \u043D\u0430 1 \u043A\u0430\u0440\u0442\u0443
+      \u043C\u0435\u043D\u044C\u0448\u0435."
+    submerge: 0
+    forceNextMove: -1
+    nextDamageBonus: 0
+  - moveName: "\u041A\u0440\u0438\u043A \u0447\u0435\u0440\u0435\u043F\u0430"
+    icon: {fileID: 21300000, guid: fe3c475f0bf344057bd3425ae8ed0b8d, type: 3}
+    damage: 6
+    hits: 1
+    block: 0
+    poisonDamage: 0
+    poisonTurns: 0
+    handReduce: 0
+    corruptCards: 0
+    lockBlock: 0
+    description: "\u041E\u0433\u043B\u0443\u0448\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0439
+      \u043A\u0440\u0438\u043A: 6 \u0443\u0440\u043E\u043D\u0430. \u041F\u043E\u0441\u043B\u0435
+      \u043D\u0435\u0433\u043E \u043C\u043E\u0442\u044B\u043B\u0451\u043A \u0432\u0441\u0435\u0433\u0434\u0430
+      \u0443\u0445\u043E\u0434\u0438\u0442 \u0432 \u041C\u043E\u0440\u043E\u043A."
+    submerge: 0
+    forceNextMove: 2
+    nextDamageBonus: 0
+  rewardCards: []

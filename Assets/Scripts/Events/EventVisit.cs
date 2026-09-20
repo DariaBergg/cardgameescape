@@ -139,6 +139,7 @@ public class MirrorEvent : EventVisit
             Opt("Разбить", Hp(5) + ": осколки. Все метки Короля исчезнут с карт, бонусы останутся", () =>
             {
                 gm.LoseHPSafe(5);
+                RoomManager.Instance.HideRoomNpc();
                 int cleared = 0;
                 for (int i = 0; i < gm.playerDeck.Count; i++)
                 {
