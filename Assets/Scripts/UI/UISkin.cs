@@ -41,6 +41,18 @@ public class UISkin : ScriptableObject
         return null;
     }
 
+    [Header("Замах")]
+    [Tooltip("Значок Замаха (молния) — на картах и шкале льва")]
+    public Sprite momentumIcon;
+
+    [Header("Иконки предметов (id: SealedScroll, OpenedScroll, BrokenSeal)")]
+    public List<StatusIconEntry> itemIcons = new List<StatusIconEntry>();
+    public Sprite ItemIcon(string id)
+    {
+        foreach (var e in itemIcons) if (e.id == id && e.sprite != null) return e.sprite;
+        return null;
+    }
+
     [Header("Цвет текста на пергаменте")]
     public Color parchmentText = new Color(0.22f, 0.15f, 0.09f);
     public Color parchmentTitle = new Color(0.45f, 0.14f, 0.08f);

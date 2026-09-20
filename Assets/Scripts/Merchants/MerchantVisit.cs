@@ -21,6 +21,7 @@ public abstract class MerchantVisit
         visit.data = data;
         visit.gm = GameManager.Instance;
         visit.ui = MerchantUI.Get();
+        visit.ui.SetPanelOffset(null);
         visit.onLeave = onLeave;
         visit.Begin();
     }
@@ -46,6 +47,12 @@ public abstract class MerchantVisit
     protected MerchantUI.Option Opt(string label, string description, Action action, bool enabled = true)
     {
         return new MerchantUI.Option { label = label, description = description, action = action, enabled = enabled };
+    }
+
+    // Вариант с подсказкой при наведении (например, какие карты получишь)
+    protected MerchantUI.Option OptWithTooltip(string label, string description, string tooltip, Action action, bool enabled = true)
+    {
+        return new MerchantUI.Option { label = label, description = description, tooltip = tooltip, action = action, enabled = enabled };
     }
 
     protected int Visits

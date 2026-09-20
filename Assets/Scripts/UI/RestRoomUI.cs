@@ -44,6 +44,9 @@ public class RestRoomUI : MonoBehaviour
         panel.gameObject.SetActive(false);
     }
 
+    static readonly Vector2 DefaultPanelOffset = new Vector2(0, 40);
+    public void SetPanelOffset(Vector2? offset) => panel.anchoredPosition = offset ?? DefaultPanelOffset;
+
     public void Show(string title, string description, List<Option> options)
     {
         titleText.text = title;

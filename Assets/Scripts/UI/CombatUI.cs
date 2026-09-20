@@ -14,6 +14,8 @@ public class CombatUI : MonoBehaviour
     Image intentBadgeBg;
     Image intentIcon;
     Text intentNumber;
+    Outline intentOutline;
+    const int HeavyHitThreshold = 6;
     Text intentText;
     TooltipTrigger intentTooltip;
     Text drawPileText;
@@ -63,6 +65,10 @@ public class CombatUI : MonoBehaviour
         intentIcon = iconRect.gameObject.AddComponent<Image>();
         intentIcon.preserveAspect = true;
         intentIcon.raycastTarget = false;
+        intentOutline = iconRect.gameObject.AddComponent<Outline>();
+        intentOutline.effectColor = new Color(1f, 0.2f, 0.15f, 0.95f);
+        intentOutline.effectDistance = new Vector2(5, -5);
+        intentOutline.enabled = false;
         // Число под иконкой: урон / защита, чтобы не лезть в подсказку
         intentNumber = UIFactory.CreateText(intentBadge, "Number", "", 22, TextAnchor.MiddleCenter, new Vector2(0.5f, 0f), new Vector2(0, -6), new Vector2(160, 30));
         intentNumber.rectTransform.pivot = new Vector2(0.5f, 1f);
@@ -151,7 +157,10 @@ public class CombatUI : MonoBehaviour
             intentBadge.sizeDelta = hasIcon ? IntentIconSize : IntentWordSize;
             if (hasIcon) intentIcon.sprite = move.icon;
             else intentText.text = move.moveName;
-            intentNumber.text = IntentNumbers(move, combat.PendingDamageBonus);
+            intentNumber.text = "";
+            // Сильная атака — красный контур вокруг иконки
+            bool heavy = move.damage + combat.PendingDamageBonus >= HeavyHitThreshold;
+            intentOutline.enabled = heavy;
         }
 
         drawPileText.text = $"Колода {combat.DrawPileCount}";

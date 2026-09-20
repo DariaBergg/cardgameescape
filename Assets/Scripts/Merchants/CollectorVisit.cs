@@ -181,9 +181,9 @@ public class CollectorVisit : MerchantVisit
         var pool = CardPools.Instance.RandomOfRarity(CardRarity.Rare, 1);
         if (pool.Count == 0) { Shop(); return; }
         var rare = pool[0];
-        var wound = CardPools.Instance.wound;
+        var wound = CardPools.Instance.WoundFor(gm.selectedCharacter);
         Say($"«{rare.cardName}. Бесплатно. Почти: в колоду ляжет Рана. Мелочь, правда?»",
-            Opt("Подписать", $"Получить «{rare.cardName}» и «{wound.cardName}»", () =>
+            OptWithTooltip("Подписать", $"Получить «{rare.cardName}» и «{wound.cardName}»", rare.TooltipText + "\n\n" + wound.TooltipText, () =>
             {
                 gm.playerDeck.Add(rare);
                 gm.playerDeck.Add(wound);

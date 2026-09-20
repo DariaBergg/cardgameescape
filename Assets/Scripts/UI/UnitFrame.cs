@@ -146,7 +146,7 @@ public class UnitFrame : MonoBehaviour
         statusIcons.Clear();
         if (statuses == null || statuses.Count == 0) return;
         const float size = 46f, gap = 8f;
-        float columnX = isEnemy ? -Width / 2f - 34f : Width / 2f + 62f; // у героя правее щита блока
+        float columnX = isEnemy ? Width / 2f + 62f : -Width / 2f - 34f; // герой — слева, враг — справа (за щитом блока)
         var skin = UISkin.Instance;
         for (int i = 0; i < statuses.Count; i++)
         {
@@ -175,7 +175,7 @@ public class UnitFrame : MonoBehaviour
             }
             var trigger = icon.gameObject.AddComponent<TooltipTrigger>();
             trigger.content = st.tooltip;
-            trigger.preferLeft = isEnemy;
+            trigger.preferLeft = !isEnemy;
             statusIcons.Add(icon.gameObject);
         }
     }

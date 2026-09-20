@@ -12,6 +12,10 @@ public class CharacterData : ScriptableObject
     public Sprite portrait;
     [Tooltip("Свой шаблон карт (если пусто — общий)")]
     public CardVisuals cardVisuals;
+    [Tooltip("Отразить спрайт героя по горизонтали")]
+    public bool flipSprite;
+    [Tooltip("Своя карта Раны (если пусто — общая)")]
+    public CardData woundCard;
     public List<CardData> startingDeck = new List<CardData>();
     public List<CardData> rewardCards = new List<CardData>();
     [Tooltip("Карта-бонус после последнего обучающего боя (пусто — не выдаётся)")]

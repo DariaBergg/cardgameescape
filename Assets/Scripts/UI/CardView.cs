@@ -116,6 +116,25 @@ public static class CardView
         rules.verticalOverflow = VerticalWrapMode.Truncate;
         rules.text = card.ShortText;
         rules.raycastTarget = false;
+
+        // Замах на карте — значками-молниями внизу текстового поля, а не текстом
+        int momentum = 0;
+        foreach (var e in card.effects) if (e.type == CardEffectType.Momentum) momentum += e.value;
+        var momentumIcon = UISkin.Get(k => k.momentumIcon);
+        if (momentum > 0 && momentumIcon != null)
+        {
+            rules.text = card.ShortTextWithout(CardEffectType.Momentum);
+            float iconSize = size.x * 0.11f;
+            float gap = iconSize * 0.15f;
+            float rowWidth = momentum * iconSize + (momentum - 1) * gap;
+            for (int i = 0; i < momentum; i++)
+            {
+                var icon = UIFactory.CreateRect(textRect, "Momentum" + i, new Vector2(0.5f, 0f), new Vector2(-rowWidth / 2f + iconSize / 2f + i * (iconSize + gap), iconSize * 0.15f), new Vector2(iconSize, iconSize));
+                icon.pivot = new Vector2(0.5f, 0f);
+                var img = icon.gameObject.AddComponent<Image>();
+                img.sprite = momentumIcon; img.preserveAspect = true; img.raycastTarget = false;
+            }
+        }
     }
 
     static RectTransform PlaceRect(Transform parent, string name, Rect fraction, Vector2 size)

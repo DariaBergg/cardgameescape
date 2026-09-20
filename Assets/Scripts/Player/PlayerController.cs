@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
         if (character != null && character.sprite != null)
         {
             sr.sprite = character.sprite;
+            sr.flipX = character.flipSprite;
             transform.localScale = Vector3.one;
         }
         else if (sr.sprite == null)

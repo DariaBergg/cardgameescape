@@ -11,6 +11,7 @@ public class MerchantUI : MonoBehaviour
         public string description;
         public Action action;
         public bool enabled = true;
+        public string tooltip;
     }
 
     static MerchantUI instance;
@@ -41,11 +42,18 @@ public class MerchantUI : MonoBehaviour
         nameText.color = parchment ? UISkin.Instance.parchmentTitle : new Color(1f, 0.85f, 0.55f);
         nameText.font = UIFactory.TitleFont;
         nameText.fontStyle = FontStyle.Normal;
-        speechText = UIFactory.CreateText(panel, "Speech", "", 19, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(48, -84), new Vector2(Width - 72, 110));
+        speechText = UIFactory.CreateText(panel, "Speech", "", 19, TextAnchor.UpperLeft, new Vector2(0, 1), new Vector2(48, -96), new Vector2(Width - 72, 110));
         speechText.color = parchment ? UISkin.Instance.parchmentText : new Color(1f, 1f, 1f, 0.9f);
-        speechText.fontStyle = FontStyle.Italic;
         optionsArea = UIFactory.CreateRect(panel, "Options", new Vector2(0.5f, 0), new Vector2(0, 30), new Vector2(Width - 72, 160));
         panel.gameObject.SetActive(false);
+    }
+
+    static readonly Vector2 DefaultPanelOffset = new Vector2(-150, 30);
+
+    // Сдвиг окна (для событий, где герой стоит в другом месте)
+    public void SetPanelOffset(Vector2? offset)
+    {
+        panel.anchoredPosition = offset ?? DefaultPanelOffset;
     }
 
     public void Show(string merchantName, string speech, List<Option> options)
@@ -68,10 +76,11 @@ public class MerchantUI : MonoBehaviour
             button.interactable = option.enabled;
             var captured = option;
             button.onClick.AddListener(() => captured.action?.Invoke());
+            if (!string.IsNullOrEmpty(option.tooltip)) { var trig = button.gameObject.AddComponent<TooltipTrigger>(); trig.content = option.tooltip; trig.width = 360f; }
         }
 
         optionsArea.sizeDelta = new Vector2(Width - 72, totalHeight);
-        panel.sizeDelta = new Vector2(Width, 214 + totalHeight + 44);
+        panel.sizeDelta = new Vector2(Width, 226 + totalHeight + 44);
         panel.gameObject.SetActive(true);
     }
 

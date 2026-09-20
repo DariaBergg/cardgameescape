@@ -14,6 +14,12 @@ public class EventData : ScriptableObject
     public EventKind kind;
     public string title;
     public Sprite background;
+    [Tooltip("Чьё событие: пусто — для всех, иначе только этому герою")]
+    public CharacterData owner;
+    [Tooltip("Сдвиг окна диалога (по умолчанию −150, 30)")]
+    public Vector2 panelOffset = new Vector2(-150, 30);
+
+    public bool AvailableNow => GameManager.Instance == null || owner == null || owner == GameManager.Instance.selectedCharacter;
 
     [Header("Персонаж в комнате (если есть)")]
     public Sprite npcSprite;

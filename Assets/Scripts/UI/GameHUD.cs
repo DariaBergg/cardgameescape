@@ -112,6 +112,54 @@ public class GameHUD : MonoBehaviour
                 yield return card.eliteMark;
     }
 
+    RectTransform itemsRow;
+    string itemsSignature = "";
+    readonly List<GameObject> itemIcons = new List<GameObject>();
+
+    public static string ItemDescription(string id)
+    {
+        switch (id)
+        {
+            case "SealedScroll": return "Свиток Коллекционера с нетронутой печатью. Кузнец хочет его получить — или можно вскрыть самому.";
+            case "OpenedScroll": return "Вскрытый свиток. Коллекционер будет недоволен.";
+            case "BrokenSeal": return "Сломанная печать Коллекционера. Ростовщик знает, что с ней делать.";
+            default: return "";
+        }
+    }
+
+    // Предметы и реликвии: иконки (если нарисованы) с подсказкой, иначе текст
+    void UpdateItems(GameManager gm)
+    {
+        string signature = string.Join("|", gm.items) + "#" + string.Join("|", gm.relics);
+        if (signature == itemsSignature) return;
+        itemsSignature = signature;
+        foreach (var go in itemIcons) Destroy(go);
+        itemIcons.Clear();
+        if (itemsRow == null) itemsRow = UIFactory.CreateRect(itemsText.transform.parent, "ItemsRow", new Vector2(1, 1), new Vector2(-16, -60), new Vector2(400, 60));
+        var skin = UISkin.Instance;
+        string held = "";
+        int n = 0;
+        void Add(string id, bool relic)
+        {
+            var sprite = skin != null ? skin.ItemIcon(id) : null;
+            if (sprite == null) { held += (relic ? "<color=#ffd27f>" + ItemName(id) + "</color>" : ItemName(id)) + "\n"; return; }
+            const float size = 48f, gap = 8f;
+            var icon = UIFactory.CreateRect(itemsRow, "Item_" + id, new Vector2(1, 1), new Vector2(-n * (size + gap), 0), new Vector2(size, size));
+            icon.pivot = new Vector2(1, 1);
+            var img = icon.gameObject.AddComponent<Image>();
+            img.sprite = sprite; img.preserveAspect = true;
+            var trig = icon.gameObject.AddComponent<TooltipTrigger>();
+            trig.content = $"<b>{ItemName(id)}</b>\n{ItemDescription(id)}";
+            trig.preferLeft = true;
+            itemIcons.Add(icon.gameObject);
+            n++;
+        }
+        foreach (var item in gm.items) Add(item, false);
+        foreach (var relic in gm.relics) Add(relic, true);
+        itemsText.text = held;
+        itemsText.rectTransform.anchoredPosition = new Vector2(-16 - (n > 0 ? n * 56f : 0), -60);
+    }
+
     public static string ItemName(string id)
     {
         switch (id)
@@ -175,10 +223,7 @@ public class GameHUD : MonoBehaviour
             eliteText.text = elites;
 
             goldText.text = gm.gold > 0 ? $"Золото: {gm.gold}" : "";
-            string held = "";
-            foreach (var item in gm.items) held += ItemName(item) + "\n";
-            foreach (var relic in gm.relics) held += "<color=#ffd27f>" + ItemName(relic) + "</color>\n";
-            itemsText.text = held;
+            UpdateItems(gm);
 
             deckButton.gameObject.SetActive(gm.combatsWon >= deckUnlockCombats && !inCombat);
         }

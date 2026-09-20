@@ -224,7 +224,16 @@ public class RoomManager : MonoBehaviour
                 {
                     title = variant != null ? variant.title : "Отдых",
                     background = variant != null ? variant.background : null,
-                    start = () => { player.EnterCombatPose(restPlayerPosition, 1.15f); player.enabled = false; ResolveRest(variant); }
+                    start = () =>
+                    {
+                        // Родник без окна — герой в центре; у остальных — сбоку или там, где указано в варианте
+                        var pos = variant != null && variant.overridePlayerPosition ? variant.playerPosition : (variant != null && variant.kind == RestRoomKind.Spring ? new Vector3(0, -3.2f, 0) : restPlayerPosition);
+                        float scale = variant != null && variant.overridePlayerPosition ? variant.playerScale : 1.15f;
+                        player.EnterCombatPose(pos, scale);
+                        player.enabled = false;
+                        RestRoomUI.Get().SetPanelOffset(variant != null ? variant.panelOffset : (Vector2?)null);
+                        ResolveRest(variant);
+                    }
                 };
             }
             case DoorType.Treasure:
@@ -441,8 +450,9 @@ public class RoomManager : MonoBehaviour
 
     EventData PickNotLastEvent()
     {
-        if (events.Count == 0) return null;
-        var pool = events.Count > 1 && lastEvent != null ? events.FindAll(e => e != lastEvent) : events;
+        var mine = events.FindAll(e => e != null && e.AvailableNow);
+        if (mine.Count == 0) return null;
+        var pool = mine.Count > 1 && lastEvent != null ? mine.FindAll(e => e != lastEvent) : mine;
         lastEvent = pool[Random.Range(0, pool.Count)];
         return lastEvent;
     }

@@ -79,7 +79,7 @@ MonoBehaviour:
     forceNextMove: 3
     nextDamageBonus: 3
   - moveName: "\u0422\u0430\u0440\u0430\u043D"
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: b55b543332c0b41abb2d8c11afec19fa, type: 3}
     damage: 7
     hits: 1
     block: 0

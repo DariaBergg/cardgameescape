@@ -99,7 +99,7 @@ public class CombatManager : MonoBehaviour
         && (BaseCardsLeft > 0 || card.IsAttack); // связка даёт только атаку
 
     public bool UsesMomentum => GameManager.Instance.selectedCharacter != null && GameManager.Instance.selectedCharacter.usesMomentum;
-    public int Momentum => momentum;
+    public int Momentum => Mathf.Min(momentum, MomentumMax);
     public int MomentumMax => GameManager.Instance.selectedCharacter != null ? GameManager.Instance.selectedCharacter.momentumMax : 3;
     public int MomentumThreshold => Mathf.Max(1, MomentumMax - momentumThresholdCut);
     public bool CanEndTurn => combatActive && !enemyActing;
@@ -377,9 +377,28 @@ public class CombatManager : MonoBehaviour
         drawPile.RemoveAt(last);
     }
 
+    // Почему карту нельзя сыграть (для подсказки игроку)
+    public string WhyCannotPlay(CardData card)
+    {
+        if (!combatActive) return "";
+        if (enemyActing) return "Ход врага";
+        if (card.unplayable) return "Нельзя разыграть";
+        if (blockLocked && card.IsDefense) return "Без защиты в этот ход";
+        if (attackLocked && card.IsAttack) return "Без атаки в этот ход";
+        if (CardsLeftThisTurn == 0) return "Карты на этот ход закончились";
+        if (BaseCardsLeft == 0 && !card.IsAttack) return "Связка: только атака";
+        return "";
+    }
+
     public void PlayCard(CardData card)
     {
-        if (!CanPlay(card) || !hand.Contains(card)) return;
+        if (!hand.Contains(card)) return;
+        if (!CanPlay(card))
+        {
+            string why = WhyCannotPlay(card);
+            if (!string.IsNullOrEmpty(why)) fx.FloatingText(PlayerHead, why, DebuffColor);
+            return;
+        }
 
         hand.Remove(card);
         if (!card.exhaust) discardPile.Add(card); // exhaust: карта выбывает до конца боя
@@ -597,8 +616,8 @@ public class CombatManager : MonoBehaviour
     void GainMomentum(int amount, string source)
     {
         if (!UsesMomentum || amount <= 0) return;
-        momentum = Mathf.Min(MomentumMax, momentum + amount);
-        fx.FloatingText(PlayerHead, $"Замах {momentum}/{MomentumMax}", MomentumColor);
+        momentum += amount; // лишнее не пропадает: после молнии остаток переносится
+        fx.FloatingText(PlayerHead, $"Замах {Mathf.Min(momentum, MomentumMax)}/{MomentumMax}", MomentumColor);
         ui.Refresh();
     }
 
@@ -612,7 +631,7 @@ public class CombatManager : MonoBehaviour
         yield return new WaitForSeconds(0.35f);
         int damage = (GameManager.Instance.selectedCharacter != null ? GameManager.Instance.selectedCharacter.passiveStrikeDamage : 6) + passiveStrikeBonus;
         passiveStrikeBonus = 0;
-        momentum = 0;
+        momentum = Mathf.Max(0, momentum - MomentumThreshold); // 2 + 2 → молния, остаётся 1
         yield return fx.Lightning(EnemyCenter, 0.35f);
         enemyHP = Mathf.Max(0, enemyHP - damage);
         fx.Flash(enemyRenderer, MomentumColor);

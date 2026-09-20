@@ -22,6 +22,7 @@ public abstract class EventVisit
         visit.data = data;
         visit.gm = GameManager.Instance;
         visit.ui = MerchantUI.Get();
+        visit.ui.SetPanelOffset(data.panelOffset);
         visit.onDone = onDone;
         visit.Begin();
     }
@@ -171,6 +172,6 @@ public class PitEvent : EventVisit
         gm.LoseHPSafe(5);
         var card = CardPools.Instance.RandomAny();
         if (card != null) gm.playerDeck.Add(card);
-        End($"Плита под ногой проваливается. Ты летишь вниз и приземляешься на кости — {Hp(5)}.\nВ пыли рядом лежит «{(card != null ? card.cardName : "пусто")}». Наверх ведут выбитые в стене ступени.");
+        Say($"Плита под ногой проваливается. Ты летишь вниз и приземляешься на кости — {Hp(5)}.\nВ пыли рядом лежит «{(card != null ? card.cardName : "пусто")}». Наверх ведут выбитые в стене ступени.", Finish("Выбраться"));
     }
 }

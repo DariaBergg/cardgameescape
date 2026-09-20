@@ -23,6 +23,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 6c3d6d947ee9e40a5bd670436da45941, type: 3}
   portrait: {fileID: 21300000, guid: 2aba76ae430cd42f0b48a3bcbf1eceb1, type: 3}
   cardVisuals: {fileID: 11400000, guid: 34f966703f4bf4dd4bf1162a20d7227b, type: 2}
+  flipSprite: 1
+  woundCard: {fileID: 11400000, guid: 2e555f776f8964383a23a2adb61a9456, type: 2}
   startingDeck:
   - {fileID: 11400000, guid: b77643603c6b34dfc82688c09ab3f3e9, type: 2}
   - {fileID: 11400000, guid: 7f405f288c57940c5bdf85de9d878388, type: 2}

@@ -138,6 +138,7 @@ public class CardData : ScriptableObject
     public string RulesText => string.Join("\n", effects.Select(e => e.RulesText));
 
     public string ShortText => unplayable ? "Нельзя разыграть" : string.Join("\n", effects.Select(e => Capitalize(e.Summary)));
+    public string ShortTextWithout(CardEffectType skip) => unplayable ? "Нельзя разыграть" : string.Join("\n", effects.Where(e => e.type != skip).Select(e => Capitalize(e.Summary)));
 
     public string UpgradePreviewShortText()
     {
