@@ -119,6 +119,19 @@ public static class CardView
         rules.text = card.ShortText;
         rules.raycastTarget = false;
 
+        // «Один раз за бой» — маленькая метка в углу окна иллюстрации
+        if (card.exhaust)
+        {
+            var pill = UIFactory.CreateRect(window, "Exhaust", new Vector2(1f, 0f), new Vector2(-4, 4), new Vector2(size.x * 0.42f, size.y * 0.068f));
+            pill.pivot = new Vector2(1f, 0f);
+            var pillImg = pill.gameObject.AddComponent<Image>();
+            pillImg.color = new Color(0.05f, 0.05f, 0.08f, 0.85f);
+            pillImg.raycastTarget = false;
+            var pillText = UIFactory.CreateText(pill, "Text", L.T("1 раз за бой"), Mathf.RoundToInt(size.x * 0.06f), TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, pill.sizeDelta);
+            pillText.color = new Color(0.62f, 0.85f, 1f);
+            pillText.raycastTarget = false;
+        }
+
         // Плохие карты (рана, долг, испорченные) — красные надписи и слегка красная рамка
         if (card.IsBad)
         {

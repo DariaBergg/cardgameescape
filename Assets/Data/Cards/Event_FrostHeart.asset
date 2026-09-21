@@ -35,10 +35,11 @@ MonoBehaviour:
     condition: 0
   rarity: 1
   unplayable: 0
+  bad: 0
   permanent: 0
   failVariant: {fileID: 0}
   retain: 0
-  exhaust: 0
+  exhaust: 1
   owner: {fileID: 11400000, guid: 8808660730758438ab5674b4b347ff7c, type: 2}
   minRoom: 0
   eventOnly: 1

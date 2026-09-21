@@ -19,18 +19,14 @@ MonoBehaviour:
   illustration: {fileID: 21300000, guid: 4991cb5f2c3f7463fa74ffb5f6338789, type: 3}
   artwork: {fileID: 0}
   effects:
-  - type: 0
-    value: 5
-    hits: 1
-    turns: 1
-    condition: 0
-  - type: 14
-    value: 2
+  - type: 6
+    value: 6
     hits: 1
     turns: 1
     condition: 0
   rarity: 1
   unplayable: 0
+  bad: 0
   permanent: 0
   failVariant: {fileID: 0}
   retain: 0

@@ -16,7 +16,12 @@ public class CardPools : ScriptableObject
     // Рана в стиле героя, если у него есть своя
     public CardData WoundFor(CharacterData c) => c != null && c.woundCard != null ? c.woundCard : wound;
 
-    public CardData RandomWeak() => weakCards.Count > 0 ? weakCards[Random.Range(0, weakCards.Count)] : null;
+    // Слабая карта для порчи руки — только из карт текущего героя
+    public CardData RandomWeak()
+    {
+        var pool = weakCards.FindAll(c => c != null && c.AvailableNow);
+        return pool.Count > 0 ? pool[Random.Range(0, pool.Count)] : null;
+    }
 
     public List<CardData> OfRarity(CardRarity rarity, ICollection<CardData> exclude = null)
     {

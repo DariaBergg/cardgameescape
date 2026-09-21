@@ -29,7 +29,7 @@
 Следующий пассивный удар наносит +{0} урона.	The next passive strike deals +{0} damage.
 Связка: после этой карты можно сразу сыграть ещё одну карту атаки.	Combo: after this card you may immediately play one more attack card.
 Если враг пробьёт блок и ранит тебя — +{0} Замах в начале следующего хода.	If the enemy breaks your block and wounds you: +{0} Momentum at the start of your next turn.
-Если после удара у врага останется меньше {0}% HP — добить.	If the enemy is left below {0}% HP after the hit, execute it.
+Если после удара у врага останется не больше {0}% HP — добить.	If the enemy is left at {0}% HP or less after the hit, execute it.
 Если враг горит — {0} вместо этого.	If the enemy is burning, {0} instead.
 Если у врага есть блок — {0} вместо этого.	If the enemy has block, {0} instead.
 Если враг готовит атаку — {0}	If the enemy is preparing an attack, {0}
@@ -54,7 +54,7 @@
 пасс. удар +{0}	passive strike +{0}
 связка: ещё атака	combo: one more attack
 ранят — +{0} Замах	wounded — +{0} Momentum
-< {0}% HP — добить	< {0}% HP — execute
+≤ {0}% HP — добить	≤ {0}% HP — execute
 если горит:	if burning:
 если < ½ HP:	if < ½ HP:
 если враг в блоке:	if enemy blocks:
@@ -617,7 +617,7 @@
 В этот ход молния срабатывает при меньшем Замахе (2/3 вместо 3/3).	This turn the lightning triggers at lower Momentum (2/3 instead of 3/3).
 После этой карты в этот же ход можно сразу сыграть ещё одну карту атаки.	After this card you may immediately play one more attack card this turn.
 Если враг в этот ход пробьёт блок и ранит тебя — в начале следующего хода получишь Замах.	If the enemy breaks your block and wounds you this turn, you gain Momentum at the start of your next turn.
-Если после удара у врага останется меньше указанной доли здоровья — он погибает сразу.	If the enemy is left below the stated share of health after the hit, it dies immediately.
+Если после удара у врага останется не больше указанной доли здоровья — он погибает сразу.	If the enemy is left at the stated share of health or less after the hit, it dies immediately.
 Позволяет играть по 2 карты за ход указанное число ходов. Остаётся в руке, пока не разыграна; один раз за бой. Несколько Яростей складывают ходы.	Lets you play 2 cards per turn for the stated number of turns. Stays in hand until played; once per combat. Multiple Rages add their turns together.
 Враг теряет указанное здоровье в начале каждого своего хода. Повторный поджог продлевает горение, урон берётся наибольший.	The enemy loses the stated health at the start of each of its turns. Igniting again extends the burn; the higher damage is kept.
 Отравленный теряет здоровье в начале своего хода указанное число ходов. Повторное отравление продлевает срок.	The poisoned loses health at the start of their turn for the stated number of turns. Poisoning again extends the duration.
@@ -646,3 +646,12 @@
 Контракт подписан	Contract signed
 Малыш повержен!	The little one is down!
 <size=22><b>Малыш</b></size>\n\n<color=#ffb3a7>Атака {0}</color>\n\nБьёт после главного врага. Кликни по нему, чтобы направить на него атаки.	<size=22><b>Little one</b></size>\n\n<color=#ffb3a7>Attack {0}</color>\n\nStrikes after the main enemy. Click it to aim your attacks at it.
+Вялый взмах	Limp Swing
+Топор тяжёл, а рука дрожит.	The axe is heavy and the hand trembles.
+Шаткая стойка	Shaky Stance
+Ноги не держат, щит не держится.	The legs won't hold, the guard won't hold.
+Сбитый замах	Missed Swing
+Замах ушёл в пустоту.	The swing went into nothing.
+1 раз за бой	once a fight
+Стойка скалы	Rock Stance
+Лев врастает в камень. Сдвинуть его не проще, чем гору.	The lion roots himself into the stone. Moving him is no easier than moving a mountain.

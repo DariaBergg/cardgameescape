@@ -34,6 +34,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 442c7508e5ce74f6aaef616f915e80ec, type: 2}
   - {fileID: 11400000, guid: 656f59e643fee4d6fa79bad99ac863c6, type: 2}
   - {fileID: 11400000, guid: 1a26da0f1111d42aebcd5c82f84d1035, type: 2}
+  - {fileID: 11400000, guid: 746b67281ee434d9bb4ae1e972023bb1, type: 2}
   tutorialBonusCard: {fileID: 0}
   bonusCard: {fileID: 0}
   bonusCardChance: 60

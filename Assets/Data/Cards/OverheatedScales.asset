@@ -35,7 +35,7 @@ MonoBehaviour:
   failVariant: {fileID: 0}
   retain: 0
   exhaust: 0
-  owner: {fileID: 0}
+  owner: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
   minRoom: 0
   eventOnly: 0
   eliteMark: {fileID: 0}

@@ -38,7 +38,7 @@ public class CardEffect
             case CardEffectType.PassiveStrikeBonus: body = L.F("Следующий пассивный удар наносит +{0} урона.", v); break;
             case CardEffectType.Combo: body = L.T("Связка: после этой карты можно сразу сыграть ещё одну карту атаки."); break;
             case CardEffectType.Retaliation: body = L.F("Если враг пробьёт блок и ранит тебя — +{0} Замах в начале следующего хода.", v); break;
-            case CardEffectType.Execute: body = L.F("Если после удара у врага останется меньше {0}% HP — добить.", v); break;
+            case CardEffectType.Execute: body = L.F("Если после удара у врага останется не больше {0}% HP — добить.", v); break;
             default: body = type.ToString(); break;
         }
 
@@ -81,7 +81,7 @@ public class CardEffect
             case CardEffectType.PassiveStrikeBonus: s = L.F("пасс. удар +{0}", v); break;
             case CardEffectType.Combo: s = L.T("связка: ещё атака"); break;
             case CardEffectType.Retaliation: s = L.F("ранят — +{0} Замах", v); break;
-            case CardEffectType.Execute: s = L.F("< {0}% HP — добить", v); break;
+            case CardEffectType.Execute: s = L.F("≤ {0}% HP — добить", v); break;
             default: s = type.ToString(); break;
         }
         if (condition == CardCondition.EnemyBurning) s = L.T("если горит:") + " " + s;
