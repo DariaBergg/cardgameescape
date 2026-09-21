@@ -18,4 +18,6 @@ public class CardVisuals : ScriptableObject
 
     public Color nameColor = new Color(0.23f, 0.16f, 0.07f);
     public Color textColor = new Color(0.17f, 0.14f, 0.09f);
+    [Tooltip("Подложка под иллюстрацию (для картинок с прозрачным фоном)")]
+    public Color artBackdrop = new Color(0.12f, 0.1f, 0.1f);
 }

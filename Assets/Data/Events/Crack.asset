@@ -16,12 +16,14 @@ MonoBehaviour:
   title: "\u0422\u0440\u0435\u0449\u0438\u043D\u0430 \u0432 \u0441\u0442\u0435\u043D\u0435"
   background: {fileID: 21300000, guid: 0a9eda103681c400f8876929c3743faf, type: 3}
   owner: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
-  panelOffset: {x: -150, y: 30}
+  backgroundScale: 1.45
+  backgroundOffset: {x: -2.3, y: -1.5}
+  panelOffset: {x: -300, y: 40}
   npcSprite: {fileID: 0}
   npcPosition: {x: 3.5, y: -4.9, z: 0}
   npcFlipX: 0
   npcScale: 1
   npcMaskSize: {x: 0, y: 0}
   npcMaskCenter: {x: 0, y: 0, z: 0}
-  playerPosition: {x: 4.6, y: 0, z: 0}
-  playerScale: 1.1
+  playerPosition: {x: 6.2, y: -1.6, z: 0}
+  playerScale: 1.25

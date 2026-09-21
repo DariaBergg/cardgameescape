@@ -19,7 +19,7 @@ public class DeckPickerUI : MonoBehaviour
     const int PerRow = 3;
     const float SpacingX = 260f;
     const float SpacingY = 365f;
-    const float ViewportHeight = 560f;
+    const float ViewportHeight = 520f;
 
     public static DeckPickerUI Get()
     {
@@ -87,6 +87,8 @@ public class DeckPickerUI : MonoBehaviour
             float y = -(row * SpacingY + 34f);
             var button = CardView.Create(content, card, new Vector2(0.5f, 1f), new Vector2(x, y), CardSize);
             button.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
+            var tipTrigger = button.GetComponent<TooltipTrigger>();
+            if (tipTrigger != null) tipTrigger.preferLeft = col >= PerRow / 2; // у правых карт подсказка слева, чтобы не закрывать карту
             bool ok = selectable == null || selectable(card);
             if (picked != null) CardView.SetInteractable(button, ok);
             else button.interactable = false;

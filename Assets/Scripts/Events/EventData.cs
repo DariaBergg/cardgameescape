@@ -16,6 +16,9 @@ public class EventData : ScriptableObject
     public Sprite background;
     [Tooltip("Чьё событие: пусто — для всех, иначе только этому герою")]
     public CharacterData owner;
+    [Tooltip("Приближение фона (1 — как есть) и его сдвиг")]
+    public float backgroundScale = 1f;
+    public Vector2 backgroundOffset;
     [Tooltip("Сдвиг окна диалога (по умолчанию −150, 30)")]
     public Vector2 panelOffset = new Vector2(-150, 30);
 

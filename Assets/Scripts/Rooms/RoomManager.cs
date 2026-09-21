@@ -62,11 +62,11 @@ public class RoomManager : MonoBehaviour
     static string HubName => L.T("Перекрёсток");
 
     static readonly DoorType[] tutorialDoors = { DoorType.Combat };
-    static readonly DoorType[] earlyDoors = { DoorType.Combat, DoorType.Combat, DoorType.Combat, DoorType.Rest, DoorType.Treasure, DoorType.Event };
+    static readonly DoorType[] earlyDoors = { DoorType.Combat, DoorType.Combat, DoorType.Combat, DoorType.Rest, DoorType.Rest, DoorType.Treasure, DoorType.Event };
     static readonly DoorType[] fullDoors =
     {
         DoorType.Combat, DoorType.Combat, DoorType.Combat,
-        DoorType.Danger, DoorType.Rest, DoorType.Treasure, DoorType.Event, DoorType.Random
+        DoorType.Danger, DoorType.Rest, DoorType.Rest, DoorType.Treasure, DoorType.Event, DoorType.Random
     };
 
     int NextRoomIndex => GameManager.Instance.roomsVisited + 1;
@@ -94,6 +94,8 @@ public class RoomManager : MonoBehaviour
     {
         public string title;
         public Sprite background;
+        public float backgroundScale = 1f;
+        public Vector2 backgroundOffset;
         public Action start;
     }
 
@@ -130,6 +132,7 @@ public class RoomManager : MonoBehaviour
                     CharacterSelectUI.Show(titleScreen, gm.characters, character =>
                     {
                         gm.SelectCharacter(character);
+                        RunLog.NewRun(character.characterName);
                         player.ApplyCharacter(character);
                         player.enabled = true;
                         SpawnDoors();
@@ -185,9 +188,10 @@ public class RoomManager : MonoBehaviour
         GameManager.Instance.roomsVisited++;
         GameManager.Instance.OnRoomEntered();
         var plan = PlanRoom(type);
+        RunLog.Write($"Комната {GameManager.Instance.roomsVisited}: {type} — {plan.title}");
 
         yield return ScreenFader.Get().FadeTo(1f, fadeDuration);
-        SetBackground(plan.background);
+        SetBackground(plan.background, plan.backgroundScale, plan.backgroundOffset);
         hud.SetRoom(L.F("Комната {0}: {1}", GameManager.Instance.roomsVisited, L.T(plan.title)));
         PlacePlayer(playerSpawn);
         transitioning = false;
@@ -262,6 +266,8 @@ public class RoomManager : MonoBehaviour
                 {
                     title = ev != null ? L.T(ev.title) : L.T("Событие"),
                     background = ev != null ? ev.background : null,
+                    backgroundScale = ev != null ? ev.backgroundScale : 1f,
+                    backgroundOffset = ev != null ? ev.backgroundOffset : Vector2.zero,
                     start = () =>
                     {
                         if (ev == null) { hud.Notify(L.T("Случайное событие (пока пусто)")); OnRoomCleared(); return; }
@@ -548,7 +554,7 @@ public class RoomManager : MonoBehaviour
             merchantVisual.transform.localScale = new Vector3(1.6f, merchant.spriteHeight, 1f);
         }
 
-        player.EnterCombatPose(merchantPlayerPosition, merchantPlayerScale);
+        player.EnterCombatPose(merchant.hidePlayer ? new Vector3(0, -30f, 0) : merchantPlayerPosition, merchantPlayerScale);
         player.enabled = false;
         MerchantVisit.Start(merchant, LeaveRoom);
     }
@@ -613,6 +619,8 @@ public class RoomManager : MonoBehaviour
     // Сразу вернуться на перекрёсток без кнопки «Выйти» (после награды за бой)
     public void LeaveRoom()
     {
+        var gm = GameManager.Instance;
+        RunLog.Write($"Выход из комнаты. Колода ({gm.playerDeck.Count}): {string.Join(", ", gm.playerDeck.ConvertAll(c => c != null ? c.cardName + (c.upgraded ? "+" : "") : "?"))}");
         hud.HideExitButton();
         if (!transitioning) OfferBonusThenLeave();
     }
@@ -719,11 +727,13 @@ public class RoomManager : MonoBehaviour
         doors.Clear();
     }
 
-    void SetBackground(Sprite sprite)
+    void SetBackground(Sprite sprite, float scale = 1f, Vector2 offset = default)
     {
         if (background == null) return;
         background.sprite = sprite;
         background.enabled = sprite != null;
+        background.transform.localScale = Vector3.one * scale;
+        background.transform.localPosition = new Vector3(offset.x, offset.y, background.transform.localPosition.z);
     }
 
     EnemyData RollDangerEncounter(out bool isElite)

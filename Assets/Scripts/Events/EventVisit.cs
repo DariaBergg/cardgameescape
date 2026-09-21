@@ -63,7 +63,9 @@ public class WandererEvent : EventVisit
                 var pool = CardPools.Instance.EventRares(1);
                 var card = pool.Count > 0 ? pool[0] : null;
                 if (card != null) gm.playerDeck.Add(card);
-                End(L.F("Он выдыхает и суёт тебе в руку потёртую карту.\n«{0}. Мне она больше не пригодится.»", (card != null ? L.T(card.cardName) : L.T("Пусто"))));
+                string thanks = L.F("Он выдыхает и суёт тебе в руку потёртую карту.\n«{0}. Мне она больше не пригодится.»", (card != null ? L.T(card.cardName) : L.T("Пусто")));
+                if (card != null) { ui.Hide(); CardChoiceUI.Get().Reveal(L.T("Странник отдаёт карту"), new List<CardData> { card }, () => End(thanks)); }
+                else End(thanks);
             }),
             Opt(L.T("Обыскать"), L.T("Забрать, что есть. 30% — он не так уж и ранен"), () =>
             {
@@ -76,7 +78,9 @@ public class WandererEvent : EventVisit
                 var pool = CardPools.Instance.RandomOfRarity(CardRarity.Common, 1);
                 var card = pool.Count > 0 ? pool[0] : null;
                 if (card != null) gm.playerDeck.Add(card);
-                End(L.F("В сумке — {0}. Странник не сопротивляется. Он просто смотрит.", (card != null ? "«" + L.T(card.cardName) + "»" : L.T("ничего ценного"))));
+                string found = L.F("В сумке — {0}. Странник не сопротивляется. Он просто смотрит.", (card != null ? "«" + L.T(card.cardName) + "»" : L.T("ничего ценного")));
+                if (card != null) { ui.Hide(); CardChoiceUI.Get().Reveal(L.T("В сумке странника"), new List<CardData> { card }, () => End(found)); }
+                else End(found);
             }),
             Finish(L.T("Пройти мимо")));
     }
@@ -172,6 +176,12 @@ public class PitEvent : EventVisit
         gm.LoseHPSafe(5);
         var card = CardPools.Instance.RandomAny();
         if (card != null) gm.playerDeck.Add(card);
+        if (card != null) { CardChoiceUI.Get().Reveal(L.T("В пыли лежит карта"), new List<CardData> { card }, () => PitText(card)); return; }
+        PitText(card);
+    }
+
+    void PitText(CardData card)
+    {
         Say(L.F("Плита под ногой проваливается. Ты летишь вниз и приземляешься на кости — {0}.\nВ пыли рядом лежит «{1}». Наверх ведут выбитые в стене ступени.", Hp(5), (card != null ? L.T(card.cardName) : L.T("пусто"))), Finish(L.T("Выбраться")));
     }
 }

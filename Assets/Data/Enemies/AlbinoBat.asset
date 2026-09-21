@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: "\u041C\u044B\u0448\u044C-\u0430\u043B\u044C\u0431\u0438\u043D\u043E\u0441"
   owner: {fileID: 11400000, guid: 9938fa84eea864c77877ea78a5b9916c, type: 2}
-  maxHP: 14
+  maxHP: 20
   color: {r: 0.9, g: 0.9, b: 0.95, a: 1}
   sprite: {fileID: 21300000, guid: adace6cdab29c4279b7d4d9ed3ebcd34, type: 3}
   hiddenSprite: {fileID: 0}
@@ -23,6 +23,7 @@ MonoBehaviour:
   playerPosition: {x: -5.5, y: -1.6, z: 0}
   overrideEnemyPosition: 0
   enemyPosition: {x: 3.5, y: 0.6, z: 0}
+  hasMinion: 0
   flying: 1
   randomMoves: 1
   moves:
@@ -33,6 +34,8 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 0
     corruptCards: 0
     lockBlock: 0
@@ -48,6 +51,8 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 1
     corruptCards: 0
     lockBlock: 0
@@ -65,6 +70,8 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 1
     corruptCards: 0
     lockBlock: 0
@@ -82,6 +89,8 @@ MonoBehaviour:
     block: 0
     poisonDamage: 0
     poisonTurns: 0
+    poisonLabel: "\u042F\u0434"
+    poisonColor: {r: 0.45, g: 0.9, b: 0.3, a: 1}
     handReduce: 0
     corruptCards: 0
     lockBlock: 0

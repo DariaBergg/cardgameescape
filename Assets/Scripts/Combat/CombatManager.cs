@@ -328,9 +328,12 @@ public class CombatManager : MonoBehaviour
         if (ui == null) ui = CombatUI.Create(this);
         ui.Show();
         LastEvent = L.F("{0} появляется!", L.T(enemy.enemyName));
+        RunLog.Write($"Бой: {data.enemyName} ({data.maxHP} HP){(withMinion ? " + малыш" : "")}");
+        turnsThisCombat = 0;
         ChooseNextMove();
         StartPlayerTurn();
     }
+    int turnsThisCombat;
 
     void ChooseNextMove()
     {
@@ -362,6 +365,7 @@ public class CombatManager : MonoBehaviour
 
     void StartPlayerTurn()
     {
+        turnsThisCombat++;
         cardsPlayedThisTurn = 0;
         playerBlock = 0;
         playerThorns = 0;
@@ -490,6 +494,7 @@ public class CombatManager : MonoBehaviour
         if (BaseCardsLeft == 0 && comboAttack) comboAttack = false; // сыграно по связке
         else cardsPlayedThisTurn++;
         ui.NotifyCardPlayed(card);
+        RunLog.Write($"  ход {turnsThisCombat}: сыграна «{card.cardName}» (враг {enemyHP} HP, блок {enemyBlock})");
         ApplyCardEffect(card);
 
         if (EnemyDown())
@@ -1071,6 +1076,7 @@ public class CombatManager : MonoBehaviour
 
     void Win()
     {
+        RunLog.Write($"Победа над {enemy.enemyName} за {turnsThisCombat} ход(ов)");
         combatActive = false;
         enemyActing = true;
         GameManager.Instance.OnCombatWon();
@@ -1161,6 +1167,7 @@ public class CombatManager : MonoBehaviour
 
     void Lose()
     {
+        RunLog.Write($"ПОРАЖЕНИЕ от {(enemy != null ? enemy.enemyName : "?")} на ходу {turnsThisCombat}");
         combatActive = false;
         ui.Refresh();
         ui.ShowDefeat();

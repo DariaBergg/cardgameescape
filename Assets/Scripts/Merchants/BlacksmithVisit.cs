@@ -4,6 +4,7 @@ using UnityEngine;
 public class BlacksmithVisit : MerchantVisit
 {
     const string QuestFlag = "Quest_Merchant_Scroll";
+    const int ReforgeCost = 4;
     const int PledgeRooms = 5;
     const int PledgeFights = 3;
 
@@ -26,7 +27,7 @@ public class BlacksmithVisit : MerchantVisit
         bool hasPledge = gm.HasObligation(ObligationType.PledgeFights);
         return new[]
         {
-            Opt(L.T("Перековка"), L.T("Улучшить одну карту из колоды"), () => Reforge(L.T("«Держи. Теперь она бьёт как надо.»"))),
+            Opt(L.T("Перековка"), L.F("Улучшить одну карту из колоды. Плата: {0} HP — кузнец берёт кровью на закалку", ReforgeCost), () => { gm.LoseHPSafe(ReforgeCost); Reforge(L.T("«Держи. Теперь она бьёт как надо.»")); }, gm.currentHP > ReforgeCost),
             Opt(L.T("Залог"), L.F("Улучшенная редкая карта. Условие: {0} победы за {1} комнат", PledgeFights, PledgeRooms), Pledge, !hasPledge),
             Leave()
         };

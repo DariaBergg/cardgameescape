@@ -655,3 +655,21 @@
 1 раз за бой	once a fight
 Стойка скалы	Rock Stance
 Лев врастает в камень. Сдвинуть его не проще, чем гору.	The lion roots himself into the stone. Moving him is no easier than moving a mountain.
+Квестовый предмет, места в колоде не занимает. Собиратель окажет услугу: подарит карту на выбор	A quest item; takes no deck space. The Collector returns the favor: a card of your choice as a gift
+Услуга Собирателя: выбери карту в подарок	The Collector's favor: choose a card as a gift
+Собиратель обидится: заберёт одну обычную карту «в счёт услуг», а сделки станут хуже	The Collector takes offense: he keeps one of your common cards "for services", and his deals get worse
+Собиратель молча вынимает из твоей колоды «{0}».\n«В счёт будущих услуг. Торговать будем — но на моих условиях.»	The Collector silently pulls "{0}" from your deck.\n"For future services. We'll still trade — on my terms."
+Собиратель пожимает плечами.\n«Как хочешь. Но торговать будем на моих условиях.»	The Collector shrugs.\n"As you wish. But we trade on my terms."
+Отдай карту — выбери 1 из 2 той же редкости	Give up a card — choose 1 of 2 of the same rarity
+Отдай обычную карту — получи случайную обычную карту	Give up a common card — receive a random common card
+Свиток рассыпается в руках. Внутри:	The scroll crumbles in your hands. Inside:
+«Удача любит настойчивых.»	"Fortune favors the persistent."
+Улучшить одну карту из колоды. Плата: {0} HP — кузнец берёт кровью на закалку	Upgrade one card from your deck. Price: {0} HP — the blacksmith tempers with blood
+Странник отдаёт карту	The wanderer hands over a card
+В сумке странника	In the wanderer's bag
+В пыли лежит карта	A card lies in the dust
+Стая уходит под воду: защита 6. В следующий ход Стая бьёт сильнее — 4 урона три раза вместо 2.	The shoal goes underwater: block 6. Next turn the Frenzy hits harder — 4 damage three times instead of 2.
+Уходит на дно: защита 5. В следующий ход бьёт хвостом сильнее — 9 урона вместо 5.	Sinks to the bottom: block 5. Next turn the tail slap is harder — 9 damage instead of 5.
+Опускается на дно: защита 8. В следующий ход таранит сильнее — 10 урона вместо 7.	Sinks to the bottom: block 8. Next turn it rams harder — 10 damage instead of 7.
+Уходит под воду: защита 5. В следующий ход кусает сильнее — 8 урона вместо 5.	Goes underwater: block 5. Next turn it bites harder — 8 damage instead of 5.
+Рассыпается грудой костей: защита 10. В следующий ход собирается и бьёт мечом сильнее — 8 урона вместо 5.	Collapses into a heap of bones: block 10. Next turn it reassembles and strikes harder — 8 damage instead of 5.

@@ -45,7 +45,7 @@ public static class CardView
             label.raycastTarget = false;
         }
 
-        if (card.IsMarked)
+        if (card.IsMarked && !composite) // у составных карт метка рисуется плашкой в окне иллюстрации
         {
             var badge = composite
                 ? PlaceRect(button.transform, "MarkBadge", new Rect(0.12f, 0.9f, 0.76f, 0.068f), size)
@@ -73,6 +73,10 @@ public static class CardView
         window.gameObject.AddComponent<RectMask2D>();
         if (card.illustration != null)
         {
+            // Подложка под иллюстрацию — для картинок с прозрачным фоном
+            var backdrop = window.gameObject.AddComponent<Image>();
+            backdrop.color = visuals.artBackdrop;
+            backdrop.raycastTarget = false;
             var art = UIFactory.CreateRect(window, "Art", new Vector2(0.5f, 0.5f), Vector2.zero, CoverSize(window.sizeDelta, card.illustration));
             var artImg = art.gameObject.AddComponent<Image>();
             artImg.sprite = card.illustration;
@@ -118,6 +122,27 @@ public static class CardView
         rules.verticalOverflow = VerticalWrapMode.Truncate;
         rules.text = card.ShortText;
         rules.raycastTarget = false;
+
+        // Метка элиты — такая же плашка, слева
+        if (card.IsMarked)
+        {
+            var mpill = UIFactory.CreateRect(window, "Mark", new Vector2(0f, 0f), new Vector2(4, 4), new Vector2(size.x * 0.62f, size.y * 0.068f));
+            mpill.pivot = new Vector2(0f, 0f);
+            var mImg = mpill.gameObject.AddComponent<Image>();
+            mImg.color = new Color(0.16f, 0.05f, 0.22f, 0.9f);
+            mImg.raycastTarget = false;
+            var mText = UIFactory.CreateText(mpill, "Text", L.T(card.eliteMark.enemyName) + " +" + card.eliteChanceBonus + "%", Mathf.RoundToInt(size.x * 0.05f), TextAnchor.MiddleCenter, new Vector2(0.5f, 0.5f), Vector2.zero, mpill.sizeDelta);
+            mText.resizeTextForBestFit = true; mText.resizeTextMinSize = 6; mText.resizeTextMaxSize = Mathf.RoundToInt(size.x * 0.055f);
+            mText.color = new Color(0.85f, 0.65f, 1f);
+            mText.raycastTarget = false;
+            // Бонус метки (последняя строка правил) — фиолетовым
+            var lines = card.ShortText.Split('\n');
+            if (lines.Length > 1)
+            {
+                lines[lines.Length - 1] = "<color=#c07bff>" + lines[lines.Length - 1] + "</color>";
+                rules.text = string.Join("\n", lines);
+            }
+        }
 
         // «Один раз за бой» — маленькая метка в углу окна иллюстрации
         if (card.exhaust)
